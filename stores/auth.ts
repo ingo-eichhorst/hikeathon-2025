@@ -80,26 +80,25 @@ export const useAuthStore = defineStore('auth', {
           throw new Error('Invalid team code')
         }
 
-        // Get token from environment or API
-        let token = teamConfig.tokenValue
-        
-        if (!token) {
-          // Call Supabase Edge Function to validate and get token
-          const { $supabase } = useNuxtApp()
-          if ($supabase) {
-            const { data, error } = await $supabase.functions.invoke('auth-validate', {
-              body: { teamCode: teamCode.toUpperCase() }
-            })
-            
-            if (error) {
-              throw new Error('Authentication failed: ' + error.message)
-            }
-            
-            token = data.token
-          } else {
-            throw new Error('Supabase client not initialized')
-          }
+        // Call Supabase Edge Function to validate and get token
+        const { $supabase } = useNuxtApp()
+        if (!$supabase) {
+          throw new Error('Supabase client not initialized')
         }
+        
+        const { data, error } = await $supabase.functions.invoke('auth-validate', {
+          body: { teamCode: teamCode.toUpperCase() }
+        })
+        
+        if (error) {
+          throw new Error('Authentication failed: ' + error.message)
+        }
+        
+        if (!data || !data.token) {
+          throw new Error('Invalid response from authentication server')
+        }
+        
+        const token = data.token
 
         // Encrypt the token
         const encryptedToken = await tokenSecurity.encryptToken(token, teamCode.toUpperCase())

@@ -5,10 +5,6 @@ schemas = ["public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
-[db]
-schema = ["public"]
-pooler_enabled = false
-
 [db.pooler]
 default_pool_size = 10
 max_client_conn = 100
@@ -18,7 +14,6 @@ enabled = true
 
 [auth]
 enable_signup = true
-enable_login = true
 
 [auth.email]
 enable_confirmations = true
