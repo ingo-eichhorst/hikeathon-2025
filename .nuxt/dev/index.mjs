@@ -649,7 +649,7 @@ const _inlineRuntimeConfig = {
   },
   "public": {
     "supabaseUrl": "https://rfilczzagqljwvgwxwwa.supabase.co",
-    "supabaseAnonKey": ""
+    "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmaWxjenphZ3Fsand2Z3d4d3dhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5ODIwMjQsImV4cCI6MjA3MjU1ODAyNH0.ibtIZPmJDhAWCO8CBtzYmB14tymqjgtnF0nuERgN_NI"
   }
 };
 const envOptions = {
@@ -1028,7 +1028,7 @@ const _fWGFIP1cgDMhIqUJ7Qvr4nUFxV45nHL4MzKUu3KDqU = (function(nitro) {
 
 const rootDir = "/Users/ingo/projects/hikeathon-2025";
 
-const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"name":"description","content":"HIKEathon 2025 Event Management Platform"}],"link":[{"rel":"icon","type":"image/x-icon","href":"/hikeathon-2025/favicon.ico"}],"style":[],"script":[],"noscript":[],"title":"HIKEathon 2025"};
+const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"name":"description","content":"HIKEathon 2025 Event Management Platform"},{"http-equiv":"Content-Security-Policy","content":"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://ai-proxy.ionos.com https://google.serper.dev; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"},{"http-equiv":"X-Content-Type-Options","content":"nosniff"},{"http-equiv":"X-Frame-Options","content":"DENY"},{"http-equiv":"X-XSS-Protection","content":"1; mode=block"},{"http-equiv":"Referrer-Policy","content":"strict-origin-when-cross-origin"}],"link":[{"rel":"icon","type":"image/x-icon","href":"/hikeathon-2025/favicon.ico"}],"style":[],"script":[],"noscript":[],"title":"HIKEathon 2025"};
 
 const appRootTag = "div";
 

@@ -23,8 +23,10 @@
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@pinia/nuxt": "^0.7.0",
     "@supabase/supabase-js": "^2.50.0",
+    "@types/dompurify": "^3.2.0",
     "@vueuse/core": "^13.9.0",
     "@vueuse/nuxt": "^11.3.0",
+    "dompurify": "^3.2.6",
     "nuxt": "^3.14.1",
     "pinia": "^2.2.8"
   },
