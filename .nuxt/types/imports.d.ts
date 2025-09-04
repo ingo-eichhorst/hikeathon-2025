@@ -2,7 +2,9 @@
 export {}
 declare global {
   const AuthenticatedAPIClient: typeof import('../../utils/api-client')['AuthenticatedAPIClient']
+  const CHAT_MODELS: typeof import('../../stores/chat')['CHAT_MODELS']
   const CSRFProtection: typeof import('../../utils/sanitize')['CSRFProtection']
+  const IMAGE_MODELS: typeof import('../../stores/images')['IMAGE_MODELS']
   const TokenSecurityService: typeof import('../../utils/crypto')['TokenSecurityService']
   const abortNavigation: typeof import('../../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/composables/router')['abortNavigation']
   const acceptHMRUpdate: typeof import('../../node_modules/.pnpm/@pinia+nuxt@0.7.0_magicast@0.3.5_typescript@5.9.2_vue@3.5.21_typescript@5.9.2_/node_modules/@pinia/nuxt/dist/runtime/composables')['acceptHMRUpdate']
@@ -151,6 +153,7 @@ declare global {
   const toRefs: typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['toRefs']
   const toValue: typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['toValue']
   const tokenSecurity: typeof import('../../utils/crypto')['tokenSecurity']
+  const translations: typeof import('../../stores/settings')['translations']
   const triggerRef: typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['triggerRef']
   const tryOnBeforeMount: typeof import('@vueuse/core')['tryOnBeforeMount']
   const tryOnBeforeUnmount: typeof import('@vueuse/core')['tryOnBeforeUnmount']
@@ -189,6 +192,7 @@ declare global {
   const useBroadcastChannel: typeof import('@vueuse/core')['useBroadcastChannel']
   const useBrowserLocation: typeof import('@vueuse/core')['useBrowserLocation']
   const useCached: typeof import('@vueuse/core')['useCached']
+  const useChatStore: typeof import('../../stores/chat')['useChatStore']
   const useClipboard: typeof import('@vueuse/core')['useClipboard']
   const useClipboardItems: typeof import('@vueuse/core')['useClipboardItems']
   const useCloned: typeof import('@vueuse/core')['useCloned']
@@ -239,6 +243,7 @@ declare global {
   const useHydration: typeof import('../../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/composables/hydrate')['useHydration']
   const useId: typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['useId']
   const useIdle: typeof import('@vueuse/core')['useIdle']
+  const useImagesStore: typeof import('../../stores/images')['useImagesStore']
   const useInfiniteScroll: typeof import('@vueuse/core')['useInfiniteScroll']
   const useIntersectionObserver: typeof import('@vueuse/core')['useIntersectionObserver']
   const useInterval: typeof import('@vueuse/core')['useInterval']
@@ -338,6 +343,7 @@ declare global {
   const useServerHeadSafe: typeof import('../../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/composables/head')['useServerHeadSafe']
   const useServerSeoMeta: typeof import('../../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/composables/head')['useServerSeoMeta']
   const useSessionStorage: typeof import('@vueuse/core')['useSessionStorage']
+  const useSettingsStore: typeof import('../../stores/settings')['useSettingsStore']
   const useShadowRoot: typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['useShadowRoot']
   const useShare: typeof import('@vueuse/core')['useShare']
   const useSlots: typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['useSlots']
@@ -419,13 +425,24 @@ declare global {
   // @ts-ignore
   export type { CSRFProtection } from '../../utils/sanitize'
   import('../../utils/sanitize')
+  // @ts-ignore
+  export type { Message, Attachment, ChatModel } from '../../stores/chat'
+  import('../../stores/chat')
+  // @ts-ignore
+  export type { GeneratedImage, ImageModel } from '../../stores/images'
+  import('../../stores/images')
+  // @ts-ignore
+  export type { Language, Theme } from '../../stores/settings'
+  import('../../stores/settings')
 }
 // for vue template auto import
 import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface ComponentCustomProperties {
     readonly AuthenticatedAPIClient: UnwrapRef<typeof import('../../utils/api-client')['AuthenticatedAPIClient']>
+    readonly CHAT_MODELS: UnwrapRef<typeof import('../../stores/chat')['CHAT_MODELS']>
     readonly CSRFProtection: UnwrapRef<typeof import('../../utils/sanitize')['CSRFProtection']>
+    readonly IMAGE_MODELS: UnwrapRef<typeof import('../../stores/images')['IMAGE_MODELS']>
     readonly TokenSecurityService: UnwrapRef<typeof import('../../utils/crypto')['TokenSecurityService']>
     readonly abortNavigation: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/composables/router')['abortNavigation']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('../../node_modules/.pnpm/@pinia+nuxt@0.7.0_magicast@0.3.5_typescript@5.9.2_vue@3.5.21_typescript@5.9.2_/node_modules/@pinia/nuxt/dist/runtime/composables')['acceptHMRUpdate']>
@@ -574,6 +591,7 @@ declare module 'vue' {
     readonly toRefs: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['toRefs']>
     readonly toValue: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['toValue']>
     readonly tokenSecurity: UnwrapRef<typeof import('../../utils/crypto')['tokenSecurity']>
+    readonly translations: UnwrapRef<typeof import('../../stores/settings')['translations']>
     readonly triggerRef: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['triggerRef']>
     readonly tryOnBeforeMount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeMount']>
     readonly tryOnBeforeUnmount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeUnmount']>
@@ -612,6 +630,7 @@ declare module 'vue' {
     readonly useBroadcastChannel: UnwrapRef<typeof import('@vueuse/core')['useBroadcastChannel']>
     readonly useBrowserLocation: UnwrapRef<typeof import('@vueuse/core')['useBrowserLocation']>
     readonly useCached: UnwrapRef<typeof import('@vueuse/core')['useCached']>
+    readonly useChatStore: UnwrapRef<typeof import('../../stores/chat')['useChatStore']>
     readonly useClipboard: UnwrapRef<typeof import('@vueuse/core')['useClipboard']>
     readonly useClipboardItems: UnwrapRef<typeof import('@vueuse/core')['useClipboardItems']>
     readonly useCloned: UnwrapRef<typeof import('@vueuse/core')['useCloned']>
@@ -662,6 +681,7 @@ declare module 'vue' {
     readonly useHydration: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/composables/hydrate')['useHydration']>
     readonly useId: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['useId']>
     readonly useIdle: UnwrapRef<typeof import('@vueuse/core')['useIdle']>
+    readonly useImagesStore: UnwrapRef<typeof import('../../stores/images')['useImagesStore']>
     readonly useInfiniteScroll: UnwrapRef<typeof import('@vueuse/core')['useInfiniteScroll']>
     readonly useIntersectionObserver: UnwrapRef<typeof import('@vueuse/core')['useIntersectionObserver']>
     readonly useInterval: UnwrapRef<typeof import('@vueuse/core')['useInterval']>
@@ -761,6 +781,7 @@ declare module 'vue' {
     readonly useServerHeadSafe: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/composables/head')['useServerHeadSafe']>
     readonly useServerSeoMeta: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/composables/head')['useServerSeoMeta']>
     readonly useSessionStorage: UnwrapRef<typeof import('@vueuse/core')['useSessionStorage']>
+    readonly useSettingsStore: UnwrapRef<typeof import('../../stores/settings')['useSettingsStore']>
     readonly useShadowRoot: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['useShadowRoot']>
     readonly useShare: UnwrapRef<typeof import('@vueuse/core')['useShare']>
     readonly useSlots: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.21_typescript@5.9.2/node_modules/vue')['useSlots']>

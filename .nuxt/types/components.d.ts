@@ -16,6 +16,8 @@ type LazyComponent<T> = (T & DefineComponent<HydrationStrategies, {}, {}, {}, {}
 interface _GlobalComponents {
       'AppFooter': typeof import("../components/AppFooter.vue")['default']
     'AppHeader': typeof import("../components/AppHeader.vue")['default']
+    'ChatInput': typeof import("../components/ChatInput.vue")['default']
+    'ChatMessage': typeof import("../components/ChatMessage.vue")['default']
     'NuxtWelcome': typeof import("../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/components/welcome.vue")['default']
     'NuxtLayout': typeof import("../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/components/nuxt-layout")['default']
     'NuxtErrorBoundary': typeof import("../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']
@@ -42,6 +44,8 @@ interface _GlobalComponents {
     'NuxtRouteAnnouncer': typeof import("../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/components/server-placeholder")['default']
       'LazyAppFooter': LazyComponent<typeof import("../components/AppFooter.vue")['default']>
     'LazyAppHeader': LazyComponent<typeof import("../components/AppHeader.vue")['default']>
+    'LazyChatInput': LazyComponent<typeof import("../components/ChatInput.vue")['default']>
+    'LazyChatMessage': LazyComponent<typeof import("../components/ChatMessage.vue")['default']>
     'LazyNuxtWelcome': LazyComponent<typeof import("../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/components/welcome.vue")['default']>
     'LazyNuxtLayout': LazyComponent<typeof import("../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
     'LazyNuxtErrorBoundary': LazyComponent<typeof import("../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']>

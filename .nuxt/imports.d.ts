@@ -34,6 +34,9 @@ export { AuthenticatedAPIClient, AuthenticatedAPIClient, apiClient } from '../ut
 export { TokenSecurityService, TokenSecurityService, tokenSecurity, EncryptedToken } from '../utils/crypto';
 export { sanitizeHTML, sanitizeInput, sanitizeURL, sanitizeFileName, CSRFProtection, CSRFProtection } from '../utils/sanitize';
 export { useAuthStore } from '../stores/auth';
+export { CHAT_MODELS, useChatStore, Message, Attachment, ChatModel } from '../stores/chat';
+export { IMAGE_MODELS, useImagesStore, GeneratedImage, ImageModel } from '../stores/images';
+export { translations, useSettingsStore, Language, Theme } from '../stores/settings';
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/.pnpm/@pinia+nuxt@0.7.0_magicast@0.3.5_typescript@5.9.2_vue@3.5.21_typescript@5.9.2_/node_modules/@pinia/nuxt/dist/runtime/composables';
 export { useNuxtDevTools } from '../node_modules/.pnpm/@nuxt+devtools@2.6.3_vite@7.1.4_@types+node@22.18.1_jiti@2.5.1_terser@5.44.0_yaml@2.8.1__vue@3.5.21_typescript@5.9.2_/node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools';
 export { definePageMeta } from '../node_modules/.pnpm/nuxt@3.19.0_@parcel+watcher@2.5.1_@types+node@22.18.1_@vue+compiler-sfc@3.5.21_db0@0.3.2_esli_tr3zvkqudrgqo6fabqlpid5wey/node_modules/nuxt/dist/pages/runtime/composables';
