@@ -640,7 +640,7 @@ function _expandFromEnv(value) {
 const _inlineRuntimeConfig = {
   "app": {
     "baseURL": "/hikeathon-2025/",
-    "buildId": "790e8349-afad-4d59-a763-e70982c765ff",
+    "buildId": "24ce23b6-6dbc-4bc2-bd07-8eda1c537505",
     "buildAssetsDir": "assets/",
     "cdnURL": ""
   },
@@ -669,7 +669,7 @@ const _inlineRuntimeConfig = {
   },
   "public": {
     "supabaseUrl": "https://rfilczzagqljwvgwxwwa.supabase.co",
-    "supabaseAnonKey": ""
+    "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmaWxjenphZ3Fsand2Z3d4d3dhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5ODIwMjQsImV4cCI6MjA3MjU1ODAyNH0.ibtIZPmJDhAWCO8CBtzYmB14tymqjgtnF0nuERgN_NI"
   }
 };
 const envOptions = {
@@ -1060,10 +1060,12 @@ const _BlnCVO = eventHandler((event) => {
 
 const _SxA8c9 = defineEventHandler(() => {});
 
+const _lazy_fSjdEU = () => import('../routes/api/health.get.mjs');
 const _lazy_Bzlrae = () => import('../_/renderer.mjs');
 
 const handlers = [
   { route: '', handler: _BlnCVO, lazy: false, middleware: true, method: undefined },
+  { route: '/api/health', handler: _lazy_fSjdEU, lazy: true, middleware: false, method: "get" },
   { route: '/__nuxt_island/**', handler: _SxA8c9, lazy: false, middleware: false, method: undefined },
   { route: '/**', handler: _lazy_Bzlrae, lazy: true, middleware: false, method: undefined }
 ];

@@ -1,7 +1,8 @@
 <template>
   <div class="min-h-screen flex flex-col">
     <AppHeader />
-    <main class="flex-1 container mx-auto px-4 py-8">
+    <BroadcastBanner />
+    <main class="flex-1 flex flex-col container mx-auto px-4 py-4 overflow-hidden">
       <slot />
     </main>
     <AppFooter />
@@ -9,4 +10,9 @@
 </template>
 
 <script setup lang="ts">
+const { initializeRealtime } = useRealtime()
+
+onMounted(() => {
+  initializeRealtime()
+})
 </script>

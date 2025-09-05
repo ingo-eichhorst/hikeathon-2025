@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { apiClient } from '~/utils/api-client'
+import { useAuthStore } from './auth'
 
 export interface Message {
   id: string
@@ -20,6 +21,7 @@ export interface Attachment {
   size: number
   content?: string
   url?: string
+  processedData?: any
 }
 
 export interface ChatModel {
@@ -30,17 +32,18 @@ export interface ChatModel {
   provider: string
 }
 
-// Available IONOS chat models
-export const CHAT_MODELS: ChatModel[] = [
-  { id: 'gpt-oss-120b', name: 'GPT OSS 120B', description: 'Most capable open-source model', contextLength: 32768, provider: 'IONOS' },
-  { id: 'llama-3.3-70b', name: 'Llama 3.3 70B', description: 'Latest Llama model', contextLength: 16384, provider: 'Meta' },
-  { id: 'llama-3.1-70b', name: 'Llama 3.1 70B', description: 'Previous Llama generation', contextLength: 8192, provider: 'Meta' },
-  { id: 'qwen-2.5-72b', name: 'Qwen 2.5 72B', description: 'Alibaba multilingual model', contextLength: 32768, provider: 'Alibaba' },
-  { id: 'mistral-nemo-12b', name: 'Mistral Nemo 12B', description: 'Fast and efficient', contextLength: 8192, provider: 'Mistral' },
-  { id: 'codestral-22b', name: 'Codestral 22B', description: 'Optimized for coding', contextLength: 16384, provider: 'Mistral' },
-  { id: 'gemma-2-27b', name: 'Gemma 2 27B', description: 'Google\'s efficient model', contextLength: 8192, provider: 'Google' },
-  { id: 'phi-3.5-mini', name: 'Phi 3.5 Mini', description: 'Smallest, fastest model', contextLength: 4096, provider: 'Microsoft' }
-]
+// Model descriptions and metadata
+const MODEL_METADATA: Record<string, Partial<ChatModel>> = {
+  'openai/gpt-oss-120b': { name: 'GPT OSS 120B', description: 'Most capable open-source model', contextLength: 32768, provider: 'OpenAI' },
+  'meta-llama/Llama-3.3-70B-Instruct': { name: 'Llama 3.3 70B', description: 'Latest Llama model', contextLength: 128000, provider: 'Meta' },
+  'meta-llama/Meta-Llama-3.1-405B-Instruct-FP8': { name: 'Llama 3.1 405B', description: 'Largest Llama model', contextLength: 128000, provider: 'Meta' },
+  'meta-llama/Meta-Llama-3.1-8B-Instruct': { name: 'Llama 3.1 8B', description: 'Efficient Llama model', contextLength: 128000, provider: 'Meta' },
+  'meta-llama/CodeLlama-13b-Instruct-hf': { name: 'CodeLlama 13B', description: 'Optimized for coding', contextLength: 16384, provider: 'Meta' },
+  'mistralai/Mistral-Small-24B-Instruct': { name: 'Mistral Small 24B', description: 'Compact Mistral model', contextLength: 32768, provider: 'Mistral' },
+  'mistralai/Mistral-Nemo-Instruct-2407': { name: 'Mistral Nemo', description: 'Fast and efficient', contextLength: 128000, provider: 'Mistral' },
+  'mistralai/Mixtral-8x7B-Instruct-v0.1': { name: 'Mixtral 8x7B', description: 'MoE architecture', contextLength: 32768, provider: 'Mistral' },
+  'openGPT-X/Teuken-7B-instruct-commercial': { name: 'Teuken 7B', description: 'Commercial model', contextLength: 8192, provider: 'OpenGPT-X' }
+}
 
 interface ChatState {
   messages: Message[]
@@ -54,12 +57,15 @@ interface ChatState {
   maxTokens: number
   topP: number
   abortController: AbortController | null
+  availableModels: ChatModel[]
+  modelsLoading: boolean
+  modelsError: string | null
 }
 
 export const useChatStore = defineStore('chat', {
   state: (): ChatState => ({
     messages: [],
-    currentModel: 'gpt-oss-120b',
+    currentModel: '',
     systemPrompt: 'You are a helpful AI assistant supporting teams at HIKEathon 2025. Be concise, accurate, and friendly.',
     isGenerating: false,
     currentStreamingMessage: null,
@@ -68,16 +74,19 @@ export const useChatStore = defineStore('chat', {
     temperature: 0.7,
     maxTokens: 2048,
     topP: 0.9,
-    abortController: null
+    abortController: null,
+    availableModels: [],
+    modelsLoading: false,
+    modelsError: null
   }),
 
   getters: {
     currentModelInfo: (state): ChatModel | undefined => {
-      return CHAT_MODELS.find(m => m.id === state.currentModel)
+      return state.availableModels.find(m => m.id === state.currentModel)
     },
     
     contextUsagePercent: (state): number => {
-      const model = CHAT_MODELS.find(m => m.id === state.currentModel)
+      const model = state.availableModels.find(m => m.id === state.currentModel)
       if (!model) return 0
       return Math.min(100, (state.contextTokens / model.contextLength) * 100)
     },
@@ -88,6 +97,75 @@ export const useChatStore = defineStore('chat', {
   },
 
   actions: {
+    async fetchAvailableModels() {
+      if (this.modelsLoading) return
+      
+      this.modelsLoading = true
+      this.modelsError = null
+      
+      try {
+        const { $supabase } = useNuxtApp()
+        
+        const response = await fetch(
+          `${$supabase.functions.url}/get-models`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${$supabase.supabaseKey}`,
+              'apikey': $supabase.supabaseKey
+            },
+            body: JSON.stringify({}) // No token needed - hardcoded in edge function
+          }
+        )
+        
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'Failed to fetch models')
+        }
+        
+        const data = await response.json()
+        
+        // Transform IONOS models to our ChatModel format
+        this.availableModels = data.data?.map((model: any) => {
+          const metadata = MODEL_METADATA[model.id] || {}
+          return {
+            id: model.id,
+            name: metadata.name || model.id.split('/').pop(),
+            description: metadata.description || 'AI model',
+            contextLength: metadata.contextLength || 8192,
+            provider: metadata.provider || model.id.split('/')[0]
+          }
+        }).filter((model: any) => 
+          // Only include text generation models (exclude embedding and image models)
+          !model.id.includes('bge-') && 
+          !model.id.includes('paraphrase-') && 
+          !model.id.includes('FLUX') && 
+          !model.id.includes('stable-diffusion')
+        ) || []
+        
+        // Set default model if not set
+        if (!this.currentModel && this.availableModels.length > 0) {
+          // Prefer Llama 3.1 8B as default
+          const defaultModel = this.availableModels.find(m => m.id === 'meta-llama/Meta-Llama-3.1-8B-Instruct')
+          this.currentModel = defaultModel?.id || this.availableModels[0].id
+        }
+        
+      } catch (error: any) {
+        console.error('Failed to fetch models:', error)
+        this.modelsError = error.message
+        // Set some fallback models
+        this.availableModels = [
+          { id: 'meta-llama/Meta-Llama-3.1-8B-Instruct', name: 'Llama 3.1 8B', description: 'Efficient Llama model', contextLength: 128000, provider: 'Meta' }
+        ]
+        if (!this.currentModel) {
+          this.currentModel = this.availableModels[0].id
+        }
+      } finally {
+        this.modelsLoading = false
+      }
+    },
+    
     async sendMessage(content: string, attachments?: Attachment[]) {
       if (this.isGenerating) return
       
@@ -112,14 +190,16 @@ export const useChatStore = defineStore('chat', {
         isStreaming: true
       }
       
+      console.log('Created assistant message:', assistantMessage.id, 'Content:', assistantMessage.content)
       this.messages.push(assistantMessage)
       this.currentStreamingMessage = assistantMessage
+      console.log('Messages array now has:', this.messages.length, 'messages')
       
       try {
-        // Prepare messages for API
+        // Prepare messages for API (exclude the empty assistant message we just created)
         const apiMessages = [
           { role: 'system', content: this.systemPrompt },
-          ...this.messages.slice(-20).map(m => ({
+          ...this.messages.slice(-21, -1).map(m => ({
             role: m.role,
             content: m.content
           }))
@@ -128,15 +208,24 @@ export const useChatStore = defineStore('chat', {
         // Create abort controller
         this.abortController = new AbortController()
         
-        // Call streaming API
+        // Check if user is authenticated
+        const authStore = useAuthStore()
+        if (!authStore.isAuthenticated) {
+          throw new Error('Not authenticated. Please login first.')
+        }
+        
+        // Call streaming API through Supabase Functions
         const { $supabase } = useNuxtApp()
+        
+        // Just use the Supabase anon key - token is hardcoded in edge function
         const response = await fetch(
           `${$supabase.functions.url}/proxy-chat`,
           {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${await useAuthStore().getToken()}`
+              'Authorization': `Bearer ${$supabase.supabaseKey}`, // Use Supabase anon key
+              'apikey': $supabase.supabaseKey // Also send as apikey header
             },
             body: JSON.stringify({
               model: this.currentModel,
@@ -145,12 +234,15 @@ export const useChatStore = defineStore('chat', {
               max_tokens: this.maxTokens,
               top_p: this.topP,
               stream: true
+              // No token needed - hardcoded in edge function
             }),
             signal: this.abortController.signal
           }
         )
         
         if (!response.ok) {
+          const errorText = await response.text()
+          console.error('API error response:', errorText)
           throw new Error(`API error: ${response.statusText}`)
         }
         
@@ -169,10 +261,16 @@ export const useChatStore = defineStore('chat', {
           buffer = lines.pop() || ''
           
           for (const line of lines) {
+            if (line.trim() === '') continue // Skip empty lines
+            
             if (line.startsWith('data: ')) {
-              const data = line.slice(6)
+              const data = line.slice(6).trim()
               if (data === '[DONE]') {
-                assistantMessage.isStreaming = false
+                const msgIndex = this.messages.findIndex(m => m.id === assistantMessage.id)
+                if (msgIndex !== -1) {
+                  console.log('Stream completed, final content:', this.messages[msgIndex].content)
+                  this.messages[msgIndex].isStreaming = false
+                }
                 this.currentStreamingMessage = null
                 break
               }
@@ -181,26 +279,37 @@ export const useChatStore = defineStore('chat', {
                 const parsed = JSON.parse(data)
                 const content = parsed.choices?.[0]?.delta?.content
                 if (content) {
-                  assistantMessage.content += content
+                  // Find the message in the array and update it directly for reactivity
+                  const msgIndex = this.messages.findIndex(m => m.id === assistantMessage.id)
+                  if (msgIndex !== -1) {
+                    this.messages[msgIndex].content += content
+                    console.log('Added content chunk:', content, 'Total length:', this.messages[msgIndex].content.length)
+                  }
                 }
               } catch (e) {
-                console.error('Failed to parse SSE:', e)
+                console.warn('Failed to parse SSE line:', line, e)
               }
             }
           }
         }
         
         // Update token counts
-        assistantMessage.tokens = this.estimateTokens(assistantMessage.content)
+        const msgIndex = this.messages.findIndex(m => m.id === assistantMessage.id)
+        if (msgIndex !== -1) {
+          this.messages[msgIndex].tokens = this.estimateTokens(this.messages[msgIndex].content)
+        }
         this.updateTokenCounts()
         
       } catch (error: any) {
         if (error.name !== 'AbortError') {
           console.error('Chat error:', error)
-          assistantMessage.error = error.message
-          assistantMessage.content = 'Sorry, an error occurred while generating the response.'
+          const msgIndex = this.messages.findIndex(m => m.id === assistantMessage.id)
+          if (msgIndex !== -1) {
+            this.messages[msgIndex].error = error.message
+            this.messages[msgIndex].content = 'Sorry, an error occurred while generating the response.'
+            this.messages[msgIndex].isStreaming = false
+          }
         }
-        assistantMessage.isStreaming = false
         this.currentStreamingMessage = null
       } finally {
         this.isGenerating = false

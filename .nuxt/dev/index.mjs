@@ -1028,7 +1028,7 @@ const _fWGFIP1cgDMhIqUJ7Qvr4nUFxV45nHL4MzKUu3KDqU = (function(nitro) {
 
 const rootDir = "/Users/ingo/projects/hikeathon-2025";
 
-const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"name":"description","content":"HIKEathon 2025 Event Management Platform"},{"http-equiv":"Content-Security-Policy","content":"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://ai-proxy.ionos.com https://google.serper.dev; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"},{"http-equiv":"X-Content-Type-Options","content":"nosniff"},{"http-equiv":"X-Frame-Options","content":"DENY"},{"http-equiv":"X-XSS-Protection","content":"1; mode=block"},{"http-equiv":"Referrer-Policy","content":"strict-origin-when-cross-origin"}],"link":[{"rel":"icon","type":"image/x-icon","href":"/hikeathon-2025/favicon.ico"}],"style":[],"script":[],"noscript":[],"title":"HIKEathon 2025"};
+const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"name":"description","content":"HIKEathon 2025 Event Management Platform"},{"http-equiv":"Content-Security-Policy","content":"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://ai-proxy.ionos.com https://google.serper.dev; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"},{"http-equiv":"X-Content-Type-Options","content":"nosniff"},{"http-equiv":"X-Frame-Options","content":"DENY"},{"http-equiv":"X-XSS-Protection","content":"1; mode=block"},{"http-equiv":"Referrer-Policy","content":"strict-origin-when-cross-origin"}],"link":[{"rel":"icon","type":"image/x-icon","href":"/hikeathon-2025/favicon.ico"},{"rel":"manifest","href":"/hikeathon-2025/manifest.json"}],"style":[],"script":[{"innerHTML":"\n            if ('serviceWorker' in navigator) {\n              window.addEventListener('load', function() {\n                navigator.serviceWorker.register('/hikeathon-2025/sw.js')\n                  .then(function(registration) {\n                    console.log('SW registered: ', registration);\n                  })\n                  .catch(function(registrationError) {\n                    console.log('SW registration failed: ', registrationError);\n                  });\n              });\n            }\n          ","type":"text/javascript"}],"noscript":[],"title":"HIKEathon 2025"};
 
 const appRootTag = "div";
 
@@ -1526,10 +1526,12 @@ async function getIslandContext(event) {
   return ctx;
 }
 
+const _lazy_fSjdEU = () => Promise.resolve().then(function () { return health_get$1; });
 const _lazy_Bzlrae = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
   { route: '', handler: _BlnCVO, lazy: false, middleware: true, method: undefined },
+  { route: '/api/health', handler: _lazy_fSjdEU, lazy: true, middleware: false, method: "get" },
   { route: '/__nuxt_error', handler: _lazy_Bzlrae, lazy: true, middleware: false, method: undefined },
   { route: '/__nuxt_island/**', handler: _SxA8c9, lazy: false, middleware: false, method: undefined },
   { route: '/**', handler: _lazy_Bzlrae, lazy: true, middleware: false, method: undefined }
@@ -1868,6 +1870,49 @@ const styles = {};
 const styles$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: styles
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const health_get = defineEventHandler(async (event) => {
+  try {
+    const { createClient } = await import('file:///Users/ingo/projects/hikeathon-2025/node_modules/.pnpm/@supabase+supabase-js@2.57.0/node_modules/@supabase/supabase-js/dist/main/index.js');
+    const config = useRuntimeConfig();
+    const supabase = createClient(
+      config.public.supabase.url,
+      config.public.supabase.anonKey
+    );
+    const { data, error } = await supabase.from("teams").select("count(*)").limit(1);
+    const services = {
+      database: error ? "error" : "connected",
+      storage: "available",
+      // Assuming storage is available if DB works
+      realtime: "active"
+      // Assuming realtime is active if DB works
+    };
+    return {
+      status: "healthy",
+      timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+      services,
+      version: process.env.npm_package_version || "1.0.0",
+      environment: "development"
+    };
+  } catch (error) {
+    setResponseStatus(event, 503);
+    return {
+      status: "unhealthy",
+      timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+      error: error instanceof Error ? error.message : "Unknown error",
+      services: {
+        database: "error",
+        storage: "unknown",
+        realtime: "unknown"
+      }
+    };
+  }
+});
+
+const health_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: health_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
 function renderPayloadResponse(ssrContext) {

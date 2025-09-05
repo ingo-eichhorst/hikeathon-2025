@@ -1,45 +1,22 @@
 import { defineStore } from 'pinia'
-import { tokenSecurity, type EncryptedToken } from '~/utils/crypto'
-
-interface TeamConfig {
-  teamCode: string
-  teamName: string
-  tokenId: string
-  tokenValue: string
-}
 
 interface AuthState {
   isAuthenticated: boolean
   teamName: string | null
   teamCode: string | null
-  encryptedToken: EncryptedToken | null
   sessionExpiresAt: number | null
   isLoading: boolean
   error: string | null
 }
 
-// Team configurations - tokens will be fetched from edge function
-const TEAM_CONFIGS: TeamConfig[] = [
-  {
-    teamCode: 'HIKEMIKE',
-    teamName: 'HIKEMIKE',
-    tokenId: 'a0f5fb73-85e2-4284-9882-bef264e4a907',
-    tokenValue: ''
-  },
-  {
-    teamCode: 'LIKEHIKE',
-    teamName: 'LIKEHIKE', 
-    tokenId: 'fa879af0-7821-42e6-81cc-a1e4aa1a15e8',
-    tokenValue: ''
-  }
-]
+// Team configurations - simplified without tokens
+const VALID_TEAM_CODES = ['HIKEMIKE', 'LIKEHIKE']
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     isAuthenticated: false,
     teamName: null,
     teamCode: null,
-    encryptedToken: null,
     sessionExpiresAt: null,
     isLoading: false,
     error: null
@@ -47,13 +24,21 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     isSessionValid: (state) => {
-      if (!state.encryptedToken || !state.sessionExpiresAt) return false
+      if (!state.sessionExpiresAt) return false
       return Date.now() < state.sessionExpiresAt
     },
     
     timeUntilExpiry: (state) => {
       if (!state.sessionExpiresAt) return 0
       return Math.max(0, state.sessionExpiresAt - Date.now())
+    },
+    
+    currentTeam: (state) => {
+      if (!state.isAuthenticated || !state.teamCode) return null
+      return {
+        id: state.teamCode,
+        name: state.teamName || state.teamCode
+      }
     }
   },
 
@@ -71,48 +56,29 @@ export const useAuthStore = defineStore('auth', {
           throw new Error('Team code must be exactly 8 characters')
         }
 
-        // Find team configuration
-        const teamConfig = TEAM_CONFIGS.find(
-          t => t.teamCode.toUpperCase() === teamCode.toUpperCase()
-        )
-
-        if (!teamConfig) {
+        // Check if team code is valid
+        const normalizedCode = teamCode.toUpperCase()
+        if (!VALID_TEAM_CODES.includes(normalizedCode)) {
           throw new Error('Invalid team code')
         }
 
-        // Call Supabase Edge Function to validate and get token
-        const { $supabase } = useNuxtApp()
-        if (!$supabase) {
-          throw new Error('Supabase client not initialized')
-        }
-        
-        const { data, error } = await $supabase.functions.invoke('auth-validate', {
-          body: { teamCode: teamCode.toUpperCase() }
-        })
-        
-        if (error) {
-          throw new Error('Authentication failed: ' + error.message)
-        }
-        
-        if (!data || !data.token) {
-          throw new Error('Invalid response from authentication server')
-        }
-        
-        const token = data.token
-
-        // Encrypt the token
-        const encryptedToken = await tokenSecurity.encryptToken(token, teamCode.toUpperCase())
-        
         // Store session
         const sessionExpiresAt = Date.now() + (48 * 60 * 60 * 1000) // 48 hours
-        tokenSecurity.storeSession(encryptedToken, teamConfig.teamName)
         
         // Update state
         this.isAuthenticated = true
-        this.teamName = teamConfig.teamName
-        this.teamCode = teamCode.toUpperCase()
-        this.encryptedToken = encryptedToken
+        this.teamName = normalizedCode
+        this.teamCode = normalizedCode
         this.sessionExpiresAt = sessionExpiresAt
+        
+        // Store in sessionStorage for persistence
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('auth_session', JSON.stringify({
+            teamName: normalizedCode,
+            teamCode: normalizedCode,
+            sessionExpiresAt
+          }))
+        }
         
         // Set up auto-refresh
         this.setupAutoRefresh()
@@ -131,11 +97,13 @@ export const useAuthStore = defineStore('auth', {
      * Logs out the current team
      */
     logout() {
-      tokenSecurity.clearSession()
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('auth_session')
+      }
+      
       this.isAuthenticated = false
       this.teamName = null
       this.teamCode = null
-      this.encryptedToken = null
       this.sessionExpiresAt = null
       this.error = null
       
@@ -149,22 +117,22 @@ export const useAuthStore = defineStore('auth', {
      */
     async restoreSession(): Promise<boolean> {
       try {
-        const session = tokenSecurity.getStoredSession()
-        if (!session || !tokenSecurity.isSessionValid(session)) {
+        if (typeof window === 'undefined') return false
+        
+        const stored = sessionStorage.getItem('auth_session')
+        if (!stored) return false
+        
+        const session = JSON.parse(stored)
+        if (!session.sessionExpiresAt || Date.now() >= session.sessionExpiresAt) {
+          sessionStorage.removeItem('auth_session')
           return false
         }
-
+        
         // Restore state
         this.isAuthenticated = true
         this.teamName = session.teamName
-        this.teamCode = sessionStorage.getItem('team-code') || null
-        this.encryptedToken = {
-          ciphertext: session.ciphertext,
-          salt: session.salt,
-          iv: session.iv,
-          timestamp: session.timestamp
-        }
-        this.sessionExpiresAt = session.expiresAt
+        this.teamCode = session.teamCode
+        this.sessionExpiresAt = session.sessionExpiresAt
         
         // Set up auto-refresh
         this.setupAutoRefresh()
@@ -173,23 +141,6 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         console.error('Failed to restore session:', error)
         return false
-      }
-    },
-
-    /**
-     * Gets the decrypted token for API calls
-     */
-    async getToken(): Promise<string | null> {
-      if (!this.encryptedToken || !this.teamCode) {
-        return null
-      }
-
-      try {
-        return await tokenSecurity.decryptToken(this.encryptedToken, this.teamCode)
-      } catch (error) {
-        console.error('Failed to decrypt token:', error)
-        this.logout()
-        return null
       }
     },
 
@@ -213,16 +164,23 @@ export const useAuthStore = defineStore('auth', {
     /**
      * Refreshes the session
      */
-    async refreshSession() {
+    refreshSession() {
       if (!this.teamCode) return
       
-      try {
-        // Re-authenticate with the same team code
-        await this.login(this.teamCode)
-      } catch (error) {
-        console.error('Failed to refresh session:', error)
-        this.logout()
+      // Simply extend the session
+      this.sessionExpiresAt = Date.now() + (48 * 60 * 60 * 1000)
+      
+      // Update sessionStorage
+      if (typeof window !== 'undefined' && this.teamName) {
+        sessionStorage.setItem('auth_session', JSON.stringify({
+          teamName: this.teamName,
+          teamCode: this.teamCode,
+          sessionExpiresAt: this.sessionExpiresAt
+        }))
       }
+      
+      // Set up next refresh
+      this.setupAutoRefresh()
     },
 
     /**
@@ -230,7 +188,6 @@ export const useAuthStore = defineStore('auth', {
      */
     isAdmin(): boolean {
       // For now, both teams have admin access
-      // This can be modified based on requirements
       return this.isAuthenticated
     }
   },

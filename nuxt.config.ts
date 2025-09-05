@@ -20,7 +20,26 @@ export default defineNuxtConfig({
         { 'http-equiv': 'Referrer-Policy', content: 'strict-origin-when-cross-origin' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/hikeathon-2025/favicon.ico' }
+        { rel: 'icon', type: 'image/x-icon', href: '/hikeathon-2025/favicon.ico' },
+        { rel: 'manifest', href: '/hikeathon-2025/manifest.json' }
+      ],
+      script: [
+        {
+          innerHTML: `
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/hikeathon-2025/sw.js')
+                  .then(function(registration) {
+                    console.log('SW registered: ', registration);
+                  })
+                  .catch(function(registrationError) {
+                    console.log('SW registration failed: ', registrationError);
+                  });
+              });
+            }
+          `,
+          type: 'text/javascript'
+        }
       ]
     }
   },
@@ -34,8 +53,25 @@ export default defineNuxtConfig({
     strict: true
   },
   nitro: {
+    preset: 'static',
     output: {
       publicDir: '.output/public'
+    }
+  },
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['vue', 'pinia', '@vueuse/core'],
+            supabase: ['@supabase/supabase-js'],
+            crypto: ['bcryptjs', 'jsonwebtoken'],
+            ui: ['chart.js', 'vue-chartjs'],
+            markdown: ['marked', 'highlight.js']
+          }
+        }
+      },
+      chunkSizeWarningLimit: 1000
     }
   },
   runtimeConfig: {

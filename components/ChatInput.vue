@@ -1,5 +1,10 @@
 <template>
   <div class="space-y-2">
+    <!-- Processing indicator -->
+    <div v-if="isProcessingFile && fileProgress" class="text-sm text-gray-600 dark:text-gray-400" data-testid="pdf-progress">
+      {{ fileProgress }}
+    </div>
+    
     <!-- File attachments -->
     <div v-if="attachments.length > 0" class="flex flex-wrap gap-2">
       <div 
@@ -33,7 +38,8 @@
           <input
             type="file"
             @change="handleFileUpload"
-            accept=".txt,.pdf,.png,.jpg,.jpeg"
+            accept=".txt,.pdf,.png,.jpg,.jpeg,.webp"
+            multiple
             class="hidden"
             data-testid="file-input"
           />
@@ -82,9 +88,13 @@ const emit = defineEmits<{
 
 const settingsStore = useSettingsStore()
 const t = computed(() => settingsStore.t)
+const { processPDF } = usePDF()
+const { processImage } = useImageProcessor()
 
 const message = ref('')
 const attachments = ref<Attachment[]>([])
+const isProcessingFile = ref(false)
+const fileProgress = ref<string | null>(null)
 
 const handleSend = () => {
   if (!message.value.trim() || props.isGenerating) return
@@ -98,30 +108,61 @@ const handleFileUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement
   if (!input.files?.length) return
   
-  const file = input.files[0]
-  const maxSize = 5 * 1024 * 1024 // 5MB
+  isProcessingFile.value = true
   
-  if (file.size > maxSize) {
-    alert('File size must be less than 5MB')
-    return
+  try {
+    for (const file of Array.from(input.files)) {
+      const maxSize = file.type === 'application/pdf' ? 50 * 1024 * 1024 : 10 * 1024 * 1024
+      
+      if (file.size > maxSize) {
+        alert(`File ${file.name} exceeds size limit (${maxSize / (1024 * 1024)}MB)`)
+        continue
+      }
+      
+      let content: string | undefined
+      let processedData: any = undefined
+      
+      // Process based on file type
+      if (file.type === 'application/pdf') {
+        fileProgress.value = `Processing PDF: ${file.name}...`
+        const result = await processPDF(file)
+        content = result.text
+        processedData = {
+          pageCount: result.pageCount,
+          metadata: result.metadata
+        }
+      } else if (file.type.startsWith('image/')) {
+        fileProgress.value = `Processing image: ${file.name}...`
+        const result = await processImage(file)
+        content = result.base64
+        processedData = {
+          width: result.width,
+          height: result.height,
+          compressionRatio: result.compressionRatio
+        }
+      } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+        content = await file.text()
+      }
+      
+      const attachment: Attachment = {
+        id: crypto.randomUUID(),
+        name: file.name,
+        type: file.type.startsWith('image/') ? 'image' : file.type === 'application/pdf' ? 'pdf' : 'text',
+        size: file.size,
+        content,
+        processedData
+      }
+      
+      attachments.value.push(attachment)
+    }
+  } catch (error) {
+    console.error('Error processing file:', error)
+    alert(`Error processing file: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  } finally {
+    isProcessingFile.value = false
+    fileProgress.value = null
+    input.value = '' // Reset input
   }
-  
-  // Read file content for text files
-  let content: string | undefined
-  if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
-    content = await file.text()
-  }
-  
-  const attachment: Attachment = {
-    id: crypto.randomUUID(),
-    name: file.name,
-    type: file.type.startsWith('image/') ? 'image' : file.type === 'application/pdf' ? 'pdf' : 'text',
-    size: file.size,
-    content
-  }
-  
-  attachments.value.push(attachment)
-  input.value = '' // Reset input
 }
 
 const removeAttachment = (id: string) => {

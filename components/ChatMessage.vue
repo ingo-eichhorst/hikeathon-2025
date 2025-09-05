@@ -18,7 +18,7 @@
       <div 
         v-if="!isEditing"
         class="prose prose-sm dark:prose-invert max-w-none"
-        v-html="renderMarkdown(message.content)"
+        v-html="renderMarkdown(message.content || '')"
       ></div>
       
       <!-- Edit mode -->
@@ -76,7 +76,7 @@ const editContent = ref('')
 
 // Configure marked
 marked.setOptions({
-  highlight: function(code, lang) {
+  highlight: function(code: string, lang: string) {
     if (lang && hljs.getLanguage(lang)) {
       return hljs.highlight(code, { language: lang }).value
     }
@@ -88,7 +88,12 @@ marked.setOptions({
 
 const renderMarkdown = (content: string): string => {
   try {
-    return marked(content)
+    if (!content) {
+      console.log('Empty content for message:', props.message.id, props.message.role)
+      return ''
+    }
+    const result = marked(content)
+    return typeof result === 'string' ? result : content
   } catch (error) {
     console.error('Markdown render error:', error)
     return content
