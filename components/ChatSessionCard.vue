@@ -18,13 +18,8 @@
       <h4
         class="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate"
       >
-        {{ sessionName }}
+        {{ truncatedName }}
       </h4>
-
-      <!-- Message Preview & Time -->
-      <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-        {{ messagePreview || 'No messages' }}
-      </p>
     </div>
 
     <!-- Delete Button -->
@@ -61,13 +56,12 @@ const gptIcon = computed(() => {
 
 const sessionName = computed(() => props.session.name)
 
-const messagePreview = computed(() => {
-  if (props.session.messages.length === 0) return ''
-  // Find first user message
-  const userMessage = props.session.messages.find(m => m.role === 'user')
-  if (!userMessage) return ''
-  // Get first 50 characters
-  return userMessage.content.slice(0, 50) + (userMessage.content.length > 50 ? '...' : '')
+const truncatedName = computed(() => {
+  const name = props.session.name
+  if (name.length > 20) {
+    return name.slice(0, 20) + '...'
+  }
+  return name
 })
 </script>
 
