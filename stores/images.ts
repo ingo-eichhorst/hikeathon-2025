@@ -53,6 +53,23 @@ interface ImagesState {
   maxHistory: number
 }
 
+interface ImagesGetters {
+  currentModelInfo: (state: ImagesState) => ImageModel | undefined
+  availableSizes: (state: ImagesState) => string[]
+  sortedHistory: (state: ImagesState) => GeneratedImage[]
+}
+
+interface ImagesActions {
+  setModel(modelId: string): void
+  setSize(size: string): void
+  setPrompt(prompt: string): void
+  generateImage(prompt: string): Promise<void>
+  deleteImage(imageId: string): void
+  clearHistory(): void
+  setGalleryView(view: 'grid' | 'list'): void
+  stopGenerating(): void
+}
+
 export const useImagesStore = defineStore('images', {
   state: (): ImagesState => ({
     history: [],

@@ -9,6 +9,21 @@ interface AuthState {
   error: string | null
 }
 
+interface AuthGetters {
+  isSessionValid: (state: AuthState) => boolean
+  timeUntilExpiry: (state: AuthState) => number
+  currentTeam: (state: AuthState) => { id: string; name: string } | null
+}
+
+interface AuthActions {
+  login(teamCode: string): Promise<boolean>
+  logout(): void
+  restoreSession(): Promise<boolean>
+  setupAutoRefresh(): void
+  refreshSession(): void
+  isAdmin(): boolean
+}
+
 // Team configurations - simplified without tokens
 const VALID_TEAM_CODES = ['HIKEMIKE', 'LIKEHIKE']
 

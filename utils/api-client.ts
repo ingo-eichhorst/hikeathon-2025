@@ -256,3 +256,34 @@ export class AuthenticatedAPIClient {
 
 // Export singleton instance
 export const apiClient = new AuthenticatedAPIClient()
+
+/**
+ * Calls a Supabase Edge Function
+ */
+export async function callSupabaseFunction<T = any>(functionName: string, body?: any): Promise<T> {
+  const { $supabase } = useNuxtApp()
+
+  if (!$supabase) {
+    throw new Error('Supabase client not available')
+  }
+
+  const response = await fetch(
+    `${$supabase.functions.url}/${functionName}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${$supabase.supabaseKey}`,
+        'apikey': $supabase.supabaseKey
+      },
+      body: body ? JSON.stringify(body) : undefined
+    }
+  )
+
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`Function call failed: ${error}`)
+  }
+
+  return response.json() as Promise<T>
+}

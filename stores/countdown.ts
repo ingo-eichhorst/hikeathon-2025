@@ -15,6 +15,24 @@ interface CountdownState {
   error: string | null
 }
 
+interface CountdownGetters {
+  isVisible: (state: CountdownState) => boolean
+  timeRemaining: (state: CountdownState) => {
+    days: number
+    hours: number
+    minutes: number
+    seconds: number
+    total: number
+    isPast: boolean
+  }
+}
+
+interface CountdownActions {
+  fetchActiveCountdown(): Promise<void>
+  setCountdown(countdown: Countdown | null): void
+  clearCountdown(): void
+}
+
 export const useCountdownStore = defineStore('countdown', {
   state: (): CountdownState => ({
     currentCountdown: null,

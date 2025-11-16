@@ -12,6 +12,22 @@ interface NotificationsState {
   unreadCount: number
 }
 
+interface NotificationsGetters {
+  sortedNotifications: (state: NotificationsState) => NotificationWithReadStatus[]
+  unreadNotifications: (state: NotificationsState) => NotificationWithReadStatus[]
+  readNotifications: (state: NotificationsState) => NotificationWithReadStatus[]
+  notificationsByType: (state: NotificationsState) => (type: string) => NotificationWithReadStatus[]
+}
+
+interface NotificationsActions {
+  fetchNotifications(page?: number): Promise<void>
+  markAsRead(notificationId: string): Promise<void>
+  markAllAsRead(): Promise<void>
+  deleteNotification(notificationId: string): Promise<void>
+  clearNotifications(): void
+  loadMore(): Promise<void>
+}
+
 export const useNotificationsStore = defineStore('notifications', {
   state: (): NotificationsState => ({
     notifications: [],

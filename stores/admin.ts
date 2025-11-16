@@ -39,6 +39,20 @@ export interface AuditLog {
   userAgent?: string
 }
 
+interface AdminGetters {
+  hasPermission: (state: AdminState) => (permission: string) => boolean
+  isSessionValid: (state: AdminState) => boolean
+  sessionTimeRemaining: (state: AdminState) => number
+}
+
+interface AdminActions {
+  restoreSession(): Promise<boolean>
+  logout(silent?: boolean): Promise<void>
+  login(email: string, password: string): Promise<boolean>
+  verifyMFA(code: string): Promise<boolean>
+  logAction(action: string, resource: string, details?: Record<string, any>): Promise<void>
+}
+
 // Default admin credentials (in production, these would be in a secure database)
 const DEFAULT_ADMINS = [
   {
