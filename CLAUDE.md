@@ -12,7 +12,7 @@ HIKEathon 2025 is a hackathon web application built as a Nuxt 3 SPA with Supabas
 # Install dependencies
 pnpm install
 
-# Run development server (default port 3000)
+# Run development server (port 4000)
 pnpm dev
 
 # Build for production (GitHub Pages deployment)
@@ -26,6 +26,21 @@ pnpm typecheck
 
 # Linting
 pnpm lint
+
+# Run unit tests
+pnpm test:unit
+
+# Run unit tests in watch mode
+pnpm test:watch
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Run E2E tests
+pnpm test:e2e
+
+# Run E2E tests with UI
+pnpm test:e2e:ui
 
 # Test IONOS API connection
 ./test.sh
@@ -55,6 +70,27 @@ pnpm lint
 - `chat.ts`: Chat messages and streaming state
 - `settings.ts`: App preferences and system prompts
 - `images.ts`: Generated images management
+- `broadcasts.ts`: Real-time broadcast messages
+- `admin.ts`: Admin panel state
+
+### Services Layer
+- `telemetry.ts`: Usage tracking and metrics aggregation
+- `todos.ts`: Todo list management
+- `broadcast.ts`: Real-time messaging service
+- `pdf.ts`: PDF processing and text extraction
+- `image.ts`: Image generation client
+- `rag.ts`: RAG (Retrieval-Augmented Generation) implementation
+- `monitoring.ts`: System health and performance monitoring
+
+### Utilities
+- `crypto.ts`: AES-256-GCM encryption/decryption for team tokens
+- `api-client.ts`: HTTP client wrapper for API calls
+- `sanitize.ts`: Input sanitization and validation
+
+### Middleware
+- `auth.global.ts`: Global authentication guard
+- `auth.ts`: Route-specific authentication
+- `admin.ts`: Admin-only route protection
 
 ## Security Architecture
 
@@ -90,14 +126,47 @@ Configured for GitHub Pages with:
 
 ## Testing Approach
 
-- Component testing with Vitest
-- E2E testing with Playwright
-- Manual API testing via `test.sh` script
+- **Unit Tests**: Vitest with Vue Test Utils (`test/unit/`)
+  - Component tests (e.g., `AppHeader.test.ts`)
+  - Store tests (e.g., `auth.test.ts`)
+  - Service tests (e.g., `telemetry.test.ts`)
+- **E2E Tests**: Playwright (`test/e2e/`)
+  - User journey tests
+  - Performance tests
+  - Security tests
+  - Page objects in `test/e2e/pages/`
+- **Manual API Tests**: `test.sh` script for IONOS API validation
+- **Test Setup**: Global setup/teardown in `test/e2e/` for E2E, mocks in `test/mocks/`
 
 ## API Integration
 
 IONOS Model Hub integration:
-- Base URL: `https://openai.inference.de-txl.ionos.com`
-- Streaming support for chat completions
+- Base URL: `https://openai.inference.de-txl.ionos.com/v1`
+- Streaming support for chat completions via SSE
 - Image generation endpoints
 - Rate limiting and retry logic handled in Edge Functions
+- Default chat model: `gpt-oss-120b`
+- Default image model: `flux-1-schnell`
+
+## Important Implementation Notes
+
+### Request Flow
+1. Team authenticates with 8-character code → `auth-validate` Edge Function
+2. Encrypted IONOS token retrieved from database
+3. Requests proxied through Edge Functions to avoid CORS and protect tokens
+4. Telemetry aggregated per team per hour (not raw logs)
+
+### Key Features
+- **Streaming Chat**: Stop button support, message editing, re-send
+- **File Uploads**: PDF & TXT support (max 5MB) with text extraction
+- **Real-time Updates**: Supabase Realtime for broadcasts, todos, countdown
+- **Admin Features**: Telemetry dashboard, broadcast management, todo creation
+- **PWA Support**: Service worker registration in `nuxt.config.ts`
+
+### Chunk Strategy
+Manual code splitting in Vite config:
+- `vendor`: Vue core, Pinia, VueUse
+- `supabase`: Supabase client
+- `crypto`: bcryptjs, jsonwebtoken
+- `ui`: Chart.js components
+- `markdown`: Marked, Highlight.js

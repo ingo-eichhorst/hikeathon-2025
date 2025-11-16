@@ -169,6 +169,27 @@ export const translations = {
   }
 }
 
+interface SettingsGetters {
+  t: (state: SettingsState) => (key: keyof typeof translations.en) => string
+  currentSystemPrompt: (state: SettingsState) => string
+  timeUntilEvent: (state: SettingsState) => number
+  timeRemaining: (state: SettingsState) => number
+  eventStatus: (state: SettingsState) => 'before' | 'during' | 'after'
+}
+
+interface SettingsActions {
+  setTheme(theme: Theme): void
+  setLanguage(language: Language): void
+  setSystemPrompt(key: string, prompt: string): void
+  selectSystemPrompt(key: string): void
+  setBroadcast(message: string | null): void
+  dismissBroadcast(): void
+  exportSettings(): void
+  importSettings(file: File): Promise<boolean>
+  applyTheme(): void
+  playSound(type: 'message' | 'success' | 'error'): void
+}
+
 export const useSettingsStore = defineStore('settings', {
   state: (): SettingsState => ({
     theme: 'system',

@@ -52,16 +52,6 @@
             </span>
           </button>
         </form>
-
-        <div class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
-          <div class="text-sm text-gray-600 dark:text-gray-400">
-            <p class="font-semibold mb-2">Available Team Codes (for testing):</p>
-            <ul class="space-y-1">
-              <li>• HIKEMIKE - Team HIKEathon Mike</li>
-              <li>• LIKEHIKE - Team Like to Hike</li>
-            </ul>
-          </div>
-        </div>
       </div>
 
       <div class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">

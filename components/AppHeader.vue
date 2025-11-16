@@ -61,9 +61,8 @@ const authStore = useAuthStore()
 
 const navigation = [
   { name: 'home', path: '/', label: 'Home' },
-  { name: 'map', path: '/map', label: 'Map' },
-  { name: 'todos', path: '/todos', label: 'Todos' },
   { name: 'chat', path: '/chat', label: 'Chat' },
+  { name: 'images', path: '/images', label: 'Images' },
   { name: 'admin', path: '/admin', label: 'Admin' }
 ]
 </script>

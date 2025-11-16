@@ -62,6 +62,30 @@ interface ChatState {
   modelsError: string | null
 }
 
+interface ChatGetters {
+  currentModelInfo: (state: ChatState) => ChatModel | undefined
+  contextUsagePercent: (state: ChatState) => number
+  conversationHistory: (state: ChatState) => Message[]
+}
+
+interface ChatActions {
+  fetchAvailableModels(): Promise<void>
+  sendMessage(content: string, attachments?: Attachment[]): Promise<void>
+  stopGenerating(): void
+  clearMessages(): void
+  setModel(modelId: string): void
+  setSystemPrompt(prompt: string): void
+  addMessage(message: Message): void
+  updateStreamingMessage(content: string): void
+  finalizeStreamingMessage(tokens?: number): void
+  editMessage(messageId: string, content: string): Promise<void>
+  resendMessage(messageId: string): Promise<void>
+  deleteMessage(messageId: string): void
+  setTemperature(temperature: number): void
+  setMaxTokens(maxTokens: number): void
+  setTopP(topP: number): void
+}
+
 export const useChatStore = defineStore('chat', {
   state: (): ChatState => ({
     messages: [],

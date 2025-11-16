@@ -281,3 +281,215 @@ export const useBroadcastService = () => {
   const { $supabase } = useNuxtApp()
   return new BroadcastService($supabase)
 }
+
+// Notification interfaces and service
+export interface Notification {
+  id: string
+  message: string
+  type: 'info' | 'success' | 'warning' | 'error'
+  sender?: string
+  metadata?: Record<string, any>
+  created_at: string
+  is_read?: boolean
+}
+
+export interface NotificationWithReadStatus extends Notification {
+  is_read: boolean
+}
+
+export class NotificationService {
+  private supabase: any
+
+  constructor(supabase: any) {
+    this.supabase = supabase
+  }
+
+  /**
+   * Create a new notification in the database
+   */
+  async createNotification(data: {
+    message: string
+    type: 'info' | 'success' | 'warning' | 'error'
+    sender?: string
+    metadata?: Record<string, any>
+  }): Promise<Notification> {
+    const { data: result, error } = await this.supabase
+      .from('notifications')
+      .insert({
+        message: data.message,
+        type: data.type,
+        sender: data.sender || 'System',
+        metadata: data.metadata || {}
+      })
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(`Failed to create notification: ${error.message}`)
+    }
+
+    return result
+  }
+
+  /**
+   * Get notifications with pagination
+   */
+  async getNotifications(limit: number = 25, offset: number = 0): Promise<Notification[]> {
+    const { data, error } = await this.supabase
+      .from('notifications')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+
+    if (error) {
+      throw new Error(`Failed to fetch notifications: ${error.message}`)
+    }
+
+    return data || []
+  }
+
+  /**
+   * Get notifications with read status for a specific team
+   */
+  async getNotificationsForTeam(
+    teamCode: string,
+    limit: number = 25,
+    offset: number = 0
+  ): Promise<NotificationWithReadStatus[]> {
+    const { data, error } = await this.supabase
+      .rpc('get_notifications_for_team', {
+        p_team_code: teamCode,
+        p_limit: limit,
+        p_offset: offset
+      })
+
+    if (error) {
+      throw new Error(`Failed to fetch notifications for team: ${error.message}`)
+    }
+
+    return data || []
+  }
+
+  /**
+   * Mark a notification as read for a specific team
+   */
+  async markAsRead(notificationId: string, teamCode: string): Promise<void> {
+    const { error } = await this.supabase
+      .from('notification_reads')
+      .upsert({
+        notification_id: notificationId,
+        team_code: teamCode
+      }, {
+        onConflict: 'notification_id,team_code'
+      })
+
+    if (error) {
+      throw new Error(`Failed to mark notification as read: ${error.message}`)
+    }
+  }
+
+  /**
+   * Mark all notifications as read for a specific team
+   */
+  async markAllAsRead(teamCode: string): Promise<void> {
+    // Get all notification IDs
+    const { data: notifications, error: fetchError } = await this.supabase
+      .from('notifications')
+      .select('id')
+
+    if (fetchError) {
+      throw new Error(`Failed to fetch notifications: ${fetchError.message}`)
+    }
+
+    if (!notifications || notifications.length === 0) {
+      return
+    }
+
+    // Insert read records for all notifications
+    const readRecords = notifications.map(n => ({
+      notification_id: n.id,
+      team_code: teamCode
+    }))
+
+    const { error: insertError } = await this.supabase
+      .from('notification_reads')
+      .upsert(readRecords, {
+        onConflict: 'notification_id,team_code'
+      })
+
+    if (insertError) {
+      throw new Error(`Failed to mark all as read: ${insertError.message}`)
+    }
+  }
+
+  /**
+   * Get unread notification count for a team
+   */
+  async getUnreadCount(teamCode: string): Promise<number> {
+    const { data, error } = await this.supabase
+      .rpc('get_unread_notification_count', {
+        p_team_code: teamCode
+      })
+
+    if (error) {
+      throw new Error(`Failed to get unread count: ${error.message}`)
+    }
+
+    return data || 0
+  }
+
+  /**
+   * Send a notification both via realtime and persist to DB
+   */
+  async sendNotification(data: {
+    message: string
+    type: 'info' | 'success' | 'warning' | 'error'
+    sender?: string
+    metadata?: Record<string, any>
+  }): Promise<Notification> {
+    // First, persist to database
+    const notification = await this.createNotification(data)
+
+    // Then send via realtime
+    const channel = this.supabase.channel('broadcasts')
+    await channel.send({
+      type: 'broadcast',
+      event: 'message',
+      payload: {
+        id: notification.id,
+        message: notification.message,
+        type: notification.type,
+        timestamp: notification.created_at,
+        from: notification.sender
+      }
+    })
+
+    return notification
+  }
+
+  /**
+   * Delete old notifications (cleanup)
+   */
+  async deleteOldNotifications(daysOld: number = 30): Promise<number> {
+    const cutoffDate = new Date()
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld)
+
+    const { data, error } = await this.supabase
+      .from('notifications')
+      .delete()
+      .lt('created_at', cutoffDate.toISOString())
+      .select()
+
+    if (error) {
+      console.error('Failed to delete old notifications:', error)
+      return 0
+    }
+
+    return data?.length || 0
+  }
+}
+
+export const useNotificationService = () => {
+  const { $supabase } = useNuxtApp()
+  return new NotificationService($supabase)
+}
