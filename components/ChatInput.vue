@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-2">
     <!-- Processing indicator -->
-    <div v-if="isProcessingFile && fileProgress" class="text-sm text-dark dark:text-gray-400 font-medium" data-testid="pdf-progress">
+    <div v-if="isProcessingFile && fileProgress" class="text-sm text-dark-900 dark:text-gray-400 font-medium" data-testid="pdf-progress">
       {{ fileProgress }}
     </div>
     
@@ -10,7 +10,7 @@
       <div
         v-for="file in attachments"
         :key="file.id"
-        class="flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-sm text-dark dark:text-gray-300 font-medium"
+        class="flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-sm text-dark-900 dark:text-gray-300 font-medium"
       >
         <span>{{ file.name }}</span>
         <button @click="removeAttachment(file.id)" class="text-red-500 hover:text-red-700">
@@ -29,7 +29,7 @@
           :placeholder="t('typeMessage')"
           :disabled="isGenerating"
           rows="3"
-          class="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-dark dark:text-gray-100 resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+          class="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-dark-900 dark:text-gray-100 resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
           data-testid="chat-input"
         ></textarea>
         
@@ -54,7 +54,7 @@
         v-if="!isGenerating"
         @click="handleSend"
         :disabled="!message.trim() || isGenerating"
-        class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-dark rounded-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold uppercase"
+        class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-dark-900 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold uppercase"
         data-testid="send-button"
       >
         {{ t('send') }}

@@ -10,8 +10,8 @@
       :class="[
         'max-w-[80%] rounded-lg p-4',
         message.role === 'user'
-          ? 'bg-primary-500 text-dark'
-          : 'bg-gray-100 dark:bg-gray-800 text-dark dark:text-gray-100'
+          ? 'bg-primary-500 text-dark-900'
+          : 'bg-gray-100 dark:bg-gray-800 text-dark-900 dark:text-gray-100'
       ]"
     >
       <!-- Message content -->
@@ -55,7 +55,7 @@
           <button @click="saveEdit" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm font-semibold">
             Save
           </button>
-          <button @click="cancelEdit" class="px-2 py-1 bg-dark hover:bg-gray-900 text-white rounded text-sm font-semibold">
+          <button @click="cancelEdit" class="px-2 py-1 bg-dark-900 hover:bg-gray-900 text-white rounded text-sm font-semibold">
             Cancel
           </button>
         </div>
@@ -84,10 +84,10 @@
     >
       <div class="max-w-4xl max-h-[90vh] bg-white dark:bg-gray-900 rounded-lg overflow-auto">
         <div class="flex justify-between items-center p-4 border-b-2 border-gray-300 dark:border-gray-700">
-          <h3 class="text-lg font-semibold text-dark dark:text-white">{{ selectedImage.name }}</h3>
+          <h3 class="text-lg font-semibold text-dark-900 dark:text-white">{{ selectedImage.name }}</h3>
           <button
             @click="showImageModal = false"
-            class="text-dark dark:text-gray-400 hover:text-gray-600 dark:hover:text-white"
+            class="text-dark-900 dark:text-gray-400 hover:text-gray-600 dark:hover:text-white"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

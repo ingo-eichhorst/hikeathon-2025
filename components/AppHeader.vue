@@ -1,8 +1,8 @@
 <template>
-  <header class="bg-white dark:bg-gray-800 border-b-2 border-dark dark:border-gray-700">
+  <header class="bg-white dark:bg-gray-800 border-b-2 border-dark-900 dark:border-gray-700">
     <nav class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
-        <NuxtLink to="/" class="text-2xl font-bold text-dark dark:text-primary-500">
+        <NuxtLink to="/" class="text-2xl font-bold text-dark-900 dark:text-primary-500">
           HIKEathon 2025
         </NuxtLink>
 
@@ -12,20 +12,20 @@
             :key="item.path"
             :to="item.path"
             :data-testid="`nav-${item.name.toLowerCase()}`"
-            class="text-dark dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors font-medium"
+            class="text-dark-900 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors font-medium"
           >
             {{ item.label }}
           </NuxtLink>
 
-          <div class="flex items-center space-x-3 border-l-2 border-dark dark:border-gray-600 pl-3">
-            <span v-if="authStore.isAuthenticated" class="text-sm text-dark dark:text-gray-400 font-medium">
+          <div class="flex items-center space-x-3 border-l-2 border-dark-900 dark:border-gray-600 pl-3">
+            <span v-if="authStore.isAuthenticated" class="text-sm text-dark-900 dark:text-gray-400 font-medium">
               {{ authStore.teamName }}
             </span>
 
             <button
               @click="toggleDark()"
               data-testid="theme-toggle"
-              class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-dark dark:text-gray-300"
+              class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-dark-900 dark:text-gray-300"
               :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
             >
               <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -40,7 +40,7 @@
               v-if="authStore.isAuthenticated"
               @click="authStore.logout()"
               data-testid="logout-button"
-              class="p-2 rounded-lg bg-dark hover:bg-gray-800 dark:bg-primary-500 dark:hover:bg-primary-600 text-white transition-colors text-sm font-medium"
+              class="p-2 rounded-lg bg-dark-900 hover:bg-gray-800 dark:bg-primary-500 dark:hover:bg-primary-600 text-white transition-colors text-sm font-medium"
             >
               Logout
             </button>

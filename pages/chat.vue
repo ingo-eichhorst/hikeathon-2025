@@ -21,7 +21,7 @@
           <div class="flex items-center gap-2 min-w-0">
             <!-- Mobile Menu Toggle Button -->
             <button
-              class="lg:hidden p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-dark dark:text-gray-300"
+              class="lg:hidden p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-dark-900 dark:text-gray-300"
               @click="mobileMenuOpen = !mobileMenuOpen"
               aria-label="Toggle menu"
             >
@@ -33,7 +33,7 @@
             <select
               v-model="currentModel"
               @change="chatStore.setModel(currentModel)"
-              class="px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-dark dark:text-gray-100 font-medium"
+              class="px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-dark-900 dark:text-gray-100 font-medium"
               :disabled="chatStore.modelsLoading"
             >
               <option v-if="chatStore.modelsLoading" disabled>Loading models...</option>
@@ -43,7 +43,7 @@
               </option>
             </select>
 
-            <div class="text-xs text-dark dark:text-gray-400 whitespace-nowrap font-medium">
+            <div class="text-xs text-dark-900 dark:text-gray-400 whitespace-nowrap font-medium">
               {{ chatStore.contextTokens }} / {{ chatStore.currentModelInfo?.contextLength || 0 }}
             </div>
           </div>
@@ -64,7 +64,7 @@
         <!-- Typing indicators -->
         <div
           v-if="typingTeams.length > 0"
-          class="flex items-center gap-2 text-dark dark:text-gray-400 mb-2 font-medium"
+          class="flex items-center gap-2 text-dark-900 dark:text-gray-400 mb-2 font-medium"
         >
           <div class="flex gap-1">
             <div class="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
@@ -79,7 +79,7 @@
         <!-- Streaming indicator -->
         <div
           v-if="chatStore.isGenerating && !chatStore.currentStreamingMessage?.content"
-          class="flex items-center gap-2 text-dark dark:text-gray-400 font-medium"
+          class="flex items-center gap-2 text-dark-900 dark:text-gray-400 font-medium"
         >
           <div class="flex gap-1">
             <div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce"></div>
@@ -107,7 +107,7 @@
             placeholder="Type your message... (paste images with Ctrl+V)"
             :disabled="chatStore.isGenerating"
             rows="2"
-            class="flex-1 px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-dark dark:text-gray-100 resize-none font-medium"
+            class="flex-1 px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-dark-900 dark:text-gray-100 resize-none font-medium"
           ></textarea>
 
           <div class="flex flex-col gap-2">
@@ -120,7 +120,7 @@
               v-if="!chatStore.isGenerating"
               @click="sendMessage"
               :disabled="!inputMessage.trim() && uploadedImages.length === 0"
-              class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-dark rounded-lg disabled:opacity-50 font-semibold uppercase"
+              class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-dark-900 rounded-lg disabled:opacity-50 font-semibold uppercase"
             >
               Send
             </button>
@@ -150,10 +150,10 @@
       ]"
     >
       <div class="p-4 border-b-2 border-gray-300 dark:border-gray-700 flex items-center justify-between">
-        <h2 class="font-bold text-dark dark:text-white">Menu</h2>
+        <h2 class="font-bold text-dark-900 dark:text-white">Menu</h2>
         <button
           @click="mobileMenuOpen = false"
-          class="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-dark dark:text-gray-300"
+          class="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-dark-900 dark:text-gray-300"
           aria-label="Close menu"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
