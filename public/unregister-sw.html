@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Unregister Service Worker</title>
+</head>
+<body>
+  <h1>Unregistering Service Worker...</h1>
+  <div id="status">Processing...</div>
+
+  <script>
+    async function unregisterServiceWorkers() {
+      const statusEl = document.getElementById('status');
+
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+
+          if (registrations.length === 0) {
+            statusEl.innerHTML = '<p style="color: green;">No service workers found.</p>';
+            return;
+          }
+
+          statusEl.innerHTML = `<p>Found ${registrations.length} service worker(s). Unregistering...</p>`;
+
+          for (const registration of registrations) {
+            await registration.unregister();
+            console.log('Unregistered:', registration);
+          }
+
+          // Clear all caches
+          const cacheNames = await caches.keys();
+          for (const cacheName of cacheNames) {
+            await caches.delete(cacheName);
+            console.log('Deleted cache:', cacheName);
+          }
+
+          statusEl.innerHTML = `
+            <p style="color: green;">✓ Successfully unregistered all service workers and cleared caches!</p>
+            <p>You can now close this tab and refresh your app.</p>
+            <button onclick="window.close()">Close Tab</button>
+          `;
+        } catch (error) {
+          statusEl.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+          console.error('Error unregistering service workers:', error);
+        }
+      } else {
+        statusEl.innerHTML = '<p style="color: orange;">Service workers not supported in this browser.</p>';
+      }
+    }
+
+    unregisterServiceWorkers();
+  </script>
+</body>
+</html>

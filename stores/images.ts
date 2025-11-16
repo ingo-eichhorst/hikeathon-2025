@@ -24,45 +24,21 @@ export interface ImageModel {
 
 // Available IONOS image models
 export const IMAGE_MODELS: ImageModel[] = [
-  { 
-    id: 'flux-1-schnell', 
-    name: 'FLUX.1 Schnell', 
+  {
+    id: 'black-forest-labs/FLUX.1-schnell',
+    name: 'FLUX.1 Schnell',
     description: 'Fastest image generation, good quality',
     maxPromptLength: 1000,
-    sizes: ['512x512', '768x768', '1024x1024'],
+    sizes: ['1024x1024'],
     provider: 'Black Forest Labs'
   },
-  { 
-    id: 'flux-1-dev', 
-    name: 'FLUX.1 Dev', 
-    description: 'Balanced speed and quality',
-    maxPromptLength: 1000,
-    sizes: ['512x512', '768x768', '1024x1024', '1024x576', '576x1024'],
-    provider: 'Black Forest Labs'
-  },
-  { 
-    id: 'stable-diffusion-xl', 
-    name: 'Stable Diffusion XL', 
+  {
+    id: 'stabilityai/stable-diffusion-xl-base-1.0',
+    name: 'Stable Diffusion XL',
     description: 'High quality, versatile',
     maxPromptLength: 1000,
-    sizes: ['512x512', '768x768', '1024x1024', '1024x576', '576x1024'],
+    sizes: ['1024x1024'],
     provider: 'Stability AI'
-  },
-  { 
-    id: 'stable-diffusion-3', 
-    name: 'Stable Diffusion 3', 
-    description: 'Latest SD version, excellent quality',
-    maxPromptLength: 1000,
-    sizes: ['512x512', '768x768', '1024x1024', '1024x576', '576x1024'],
-    provider: 'Stability AI'
-  },
-  { 
-    id: 'dall-e-3', 
-    name: 'DALL-E 3', 
-    description: 'Advanced creativity and understanding',
-    maxPromptLength: 4000,
-    sizes: ['1024x1024', '1024x1792', '1792x1024'],
-    provider: 'OpenAI'
   }
 ]
 
@@ -80,7 +56,7 @@ interface ImagesState {
 export const useImagesStore = defineStore('images', {
   state: (): ImagesState => ({
     history: [],
-    currentModel: 'flux-1-schnell',
+    currentModel: 'black-forest-labs/FLUX.1-schnell',
     currentSize: '1024x1024',
     isGenerating: false,
     currentPrompt: '',
@@ -119,13 +95,6 @@ export const useImagesStore = defineStore('images', {
       this.currentPrompt = prompt
       
       try {
-        const authStore = useAuthStore()
-        const token = await authStore.getToken()
-        
-        if (!token) {
-          throw new Error('Not authenticated')
-        }
-        
         const { $supabase } = useNuxtApp()
         const response = await fetch(
           `${$supabase.functions.url}/proxy-images`,
@@ -133,15 +102,14 @@ export const useImagesStore = defineStore('images', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
+              'Authorization': `Bearer ${$supabase.supabaseKey}`,
+              'apikey': $supabase.supabaseKey
             },
             body: JSON.stringify({
               model: this.currentModel,
               prompt,
               size: this.currentSize,
-              n: 1,
-              quality: 'standard',
-              response_format: 'url'
+              n: 1
             })
           }
         )
@@ -152,13 +120,33 @@ export const useImagesStore = defineStore('images', {
         }
         
         const data = await response.json()
-        
-        // Extract image URL from response
-        const imageUrl = data.data?.[0]?.url || data.url
-        if (!imageUrl) {
-          throw new Error('No image URL in response')
+
+        // Extract image from response - IONOS returns base64-encoded images
+        const imageData = data.data?.[0]
+        if (!imageData) {
+          throw new Error('No image data in response')
         }
-        
+
+        // Convert base64 to blob URL
+        let imageUrl: string
+        if (imageData.b64_json) {
+          // Convert base64 to blob
+          const base64Data = imageData.b64_json
+          const byteCharacters = atob(base64Data)
+          const byteNumbers = new Array(byteCharacters.length)
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i)
+          }
+          const byteArray = new Uint8Array(byteNumbers)
+          const blob = new Blob([byteArray], { type: 'image/png' })
+          imageUrl = URL.createObjectURL(blob)
+        } else if (imageData.url) {
+          // Fallback to URL if provided
+          imageUrl = imageData.url
+        } else {
+          throw new Error('No image data (b64_json or url) in response')
+        }
+
         // Create image record
         const generatedImage: GeneratedImage = {
           id: crypto.randomUUID(),
@@ -167,7 +155,7 @@ export const useImagesStore = defineStore('images', {
           url: imageUrl,
           timestamp: new Date(),
           size: this.currentSize,
-          revised_prompt: data.data?.[0]?.revised_prompt
+          revised_prompt: imageData.revised_prompt
         }
         
         // Add to history

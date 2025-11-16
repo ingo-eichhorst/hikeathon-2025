@@ -1,5 +1,13 @@
 <template>
   <div class="h-full flex flex-col">
+    <!-- Offline Notice -->
+    <div
+      v-if="!realtimeConnection?.isSupabaseAvailable"
+      class="p-3 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-sm text-center"
+    >
+      ⚠️ Real-time features unavailable. Working in offline mode.
+    </div>
+
     <!-- Header with model selector -->
     <div class="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
       <div class="flex items-center justify-between">
@@ -114,7 +122,8 @@ const currentModel = ref(chatStore.currentModel)
 const inputMessage = ref('')
 
 // Realtime features
-const { typingUsers, sendTypingIndicator } = useRealtime()
+const realtimeConnection = useRealtime()
+const { typingUsers, sendTypingIndicator, isSupabaseAvailable } = realtimeConnection
 const typingTimeout = ref<NodeJS.Timeout | null>(null)
 
 // Compute typing teams
