@@ -1,10 +1,10 @@
 <template>
   <div
-    class="chat-session-card group flex items-center gap-3 rounded-lg p-3 cursor-pointer transition-all w-full"
+    class="chat-session-card group flex items-center gap-3 rounded-lg p-3 cursor-pointer transition-all w-full border-2"
     :class="[
       isActive
-        ? 'bg-blue-100 dark:bg-blue-900 border-2 border-blue-500'
-        : 'bg-gray-100 dark:bg-gray-700 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-gray-600'
+        ? 'border-blue-500'
+        : 'border-transparent'
     ]"
     @click="$emit('select')"
     :title="sessionName"
@@ -15,16 +15,14 @@
     <!-- Session Info -->
     <div class="flex-1 min-w-0">
       <!-- Session Name -->
-      <h4
-        class="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate"
-      >
+      <h4 class="font-semibold text-sm truncate">
         {{ truncatedName }}
       </h4>
     </div>
 
     <!-- Delete Button -->
     <button
-      class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity rounded p-1 hover:bg-red-100 dark:hover:bg-red-900 text-red-600 dark:text-red-400"
+      class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity rounded p-1 text-red-600 hover:bg-red-600 hover:bg-opacity-10"
       @click.stop="$emit('delete')"
       title="Delete this chat"
       aria-label="Delete chat session"
