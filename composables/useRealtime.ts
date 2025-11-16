@@ -1,4 +1,5 @@
 import type { RealtimeChannel, RealtimePresenceState } from '@supabase/supabase-js'
+import { useAuthStore } from '~/stores/auth'
 
 export interface BroadcastMessage {
   id: string
