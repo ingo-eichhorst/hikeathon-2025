@@ -132,14 +132,17 @@ const openImageModal = (attachment: Attachment) => {
 
 // Configure marked
 marked.setOptions({
-  highlight: function(code: string, lang: string) {
-    if (lang && hljs.getLanguage(lang)) {
-      return hljs.highlight(code, { language: lang }).value
-    }
-    return hljs.highlightAuto(code).value
-  },
   breaks: true,
   gfm: true
+})
+
+// Set up syntax highlighting
+marked.use({
+  renderer: {
+    codespan(token) {
+      return `<code>${token.text}</code>`
+    }
+  }
 })
 
 const renderMarkdown = (content: string): string => {
