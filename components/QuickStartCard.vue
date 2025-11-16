@@ -8,7 +8,7 @@
       <img
         :src="imageSrc"
         :alt="gpt.name"
-        class="h-32 w-full object-cover rounded"
+        class="h-48 w-full object-cover rounded"
       />
     </div>
 
