@@ -1,11 +1,9 @@
 <template>
-  <div class="chat-menu flex flex-col gap-6">
+  <div class="flex flex-col gap-4 p-4">
     <!-- GPTs Section -->
-    <div class="gpts-section">
-      <h2 class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2 px-2 uppercase tracking-wide">
-        GPTs
-      </h2>
-      <div class="flex flex-col gap-1 px-1">
+    <div>
+      <h2 class="text-sm font-semibold mb-2">GPTs</h2>
+      <div class="flex flex-col gap-1">
         <GPTCard
           v-for="(gpt, key) in allGPTs"
           :key="key"
@@ -17,28 +15,26 @@
     </div>
 
     <!-- Divider -->
-    <div class="h-px bg-gray-200 dark:bg-gray-600" />
+    <div class="h-px bg-gray-200 dark:bg-gray-700" />
 
     <!-- Chats Section -->
-    <div class="chats-section flex flex-col gap-3">
-      <div class="flex items-center justify-between px-2">
-        <h2 class="text-sm font-bold text-gray-700 dark:text-gray-300">
-          Chats
-        </h2>
+    <div class="flex flex-col gap-2 flex-1 min-h-0">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-semibold">Chats</h2>
         <button
-          class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          class="p-1 hover:opacity-70 transition-opacity"
           @click="startNewChat"
           title="Start a new chat"
           aria-label="Create new chat"
         >
-          <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
         </button>
       </div>
 
       <!-- Chat Sessions List -->
-      <div class="flex-1 overflow-y-auto px-2 space-y-2 max-h-96">
+      <div class="flex-1 overflow-y-auto space-y-1 min-h-0">
         <ChatSessionCard
           v-for="session in allSessions"
           :key="session.id"
@@ -49,15 +45,15 @@
         />
         <div
           v-if="allSessions.length === 0"
-          class="text-sm text-gray-500 dark:text-gray-400 text-center py-4"
+          class="text-xs text-gray-500 text-center py-4"
         >
-          No chats yet. Start one to begin!
+          No chats yet
         </div>
       </div>
 
-      <!-- New Chat Button (mobile-friendly) -->
+      <!-- New Chat Button -->
       <button
-        class="w-full mx-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 transition-colors"
+        class="btn btn-primary w-full"
         @click="startNewChat"
       >
         + New Chat

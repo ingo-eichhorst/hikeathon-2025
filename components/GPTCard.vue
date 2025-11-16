@@ -1,19 +1,19 @@
 <template>
   <button
-    class="gpt-card flex items-center gap-3 w-full rounded-lg p-2 px-3 transition-colors"
+    class="flex items-center gap-3 w-full text-left text-sm p-2 rounded transition-opacity"
     :class="[
       isActive
-        ? 'bg-blue-500 text-white'
-        : 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100'
+        ? 'opacity-100 font-semibold'
+        : 'opacity-70 hover:opacity-100'
     ]"
     @click="$emit('select')"
     :aria-label="`Select ${gpt.name} GPT`"
   >
     <!-- Icon -->
-    <div class="text-xl flex-shrink-0">{{ gpt.icon }}</div>
+    <span class="text-lg flex-shrink-0">{{ gpt.icon }}</span>
 
     <!-- Name -->
-    <span class="font-medium text-sm flex-1 text-left">{{ gpt.name }}</span>
+    <span class="flex-1">{{ gpt.name }}</span>
   </button>
 </template>
 
