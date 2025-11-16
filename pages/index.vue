@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-8">
     <!-- Hero Selection Section -->
-    <section class="py-12">
+    <section class="py-12 px-4">
       <div class="grid md:grid-cols-2 gap-8">
         <!-- Chat Card -->
         <div class="flex flex-col items-center p-8 border-2 border-dark-900 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow">
@@ -38,24 +38,6 @@
       <QuickStartCarousel />
     </section>
 
-    <section class="text-center py-12">
-      <h1 class="text-4xl md:text-6xl font-bold text-dark-900 dark:text-white mb-4">
-        Welcome to HIKEathon 2025
-      </h1>
-      <p class="text-xl text-dark-900 dark:text-gray-300 mb-8">
-        Track your team's progress in real-time
-      </p>
-
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <NuxtLink to="/chat" class="btn btn-primary">
-          Start Chatting
-        </NuxtLink>
-        <NuxtLink to="/images" class="btn btn-secondary">
-          Generate Images
-        </NuxtLink>
-      </div>
-    </section>
-
     <!-- Notifications Section -->
     <section v-if="authStore.isAuthenticated" class="card">
       <NotificationList
@@ -65,28 +47,6 @@
       />
     </section>
 
-    <section class="grid md:grid-cols-3 gap-6">
-      <div class="card">
-        <h2 class="text-xl font-semibold mb-2 text-dark-900 dark:text-white">AI Chat</h2>
-        <p class="text-dark-900 dark:text-gray-300">
-          Chat with advanced AI models powered by IONOS Model Hub with streaming support.
-        </p>
-      </div>
-
-      <div class="card">
-        <h2 class="text-xl font-semibold mb-2 text-dark-900 dark:text-white">Image Generation</h2>
-        <p class="text-dark-900 dark:text-gray-300">
-          Create stunning images with DALL-E 3, FLUX, and Stable Diffusion models.
-        </p>
-      </div>
-
-      <div class="card">
-        <h2 class="text-xl font-semibold mb-2 text-dark-900 dark:text-white">Live Updates</h2>
-        <p class="text-dark-900 dark:text-gray-300">
-          Receive instant broadcasts and announcements from event organizers.
-        </p>
-      </div>
-    </section>
   </div>
 </template>
 
