@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col lg:flex-row">
     <!-- Left Sidebar Menu (hidden on mobile, visible on lg+) -->
-    <div class="hidden lg:flex lg:w-64 lg:border-r lg:border-gray-200 dark:lg:border-gray-700 bg-gray-50 dark:bg-gray-850 overflow-y-auto">
+    <div class="hidden lg:flex lg:w-64 lg:border-r lg:border-gray-200 dark:lg:border-gray-700 bg-gray-50 dark:bg-gray-800 overflow-y-auto">
       <ChatMenu />
     </div>
 
@@ -152,7 +152,7 @@
     />
     <div
       :class="[
-        'lg:hidden fixed left-0 top-0 h-full w-64 bg-gray-50 dark:bg-gray-850 border-r border-gray-200 dark:border-gray-700 z-50 transition-transform duration-300',
+        'lg:hidden fixed left-0 top-0 h-full w-64 bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-50 transition-transform duration-300',
         mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
       ]"
     >
