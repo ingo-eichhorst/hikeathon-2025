@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { apiClient } from '~/utils/api-client'
 import { useAuthStore } from './auth'
+import { useChatHistoryStore } from './chatHistory'
+import { useSettingsStore } from './settings'
 import type { UploadedImage } from '~/types/image'
 
 export interface Message {
@@ -461,7 +463,6 @@ export const useChatStore = defineStore('chat', {
     saveCurrentSession() {
       if (!this.currentSessionId) return
 
-      const { useChatHistoryStore } = require('./chatHistory')
       const historyStore = useChatHistoryStore()
 
       historyStore.updateSessionMessages(this.messages)
@@ -474,7 +475,6 @@ export const useChatStore = defineStore('chat', {
     },
 
     loadSession(sessionId: string) {
-      const { useChatHistoryStore } = require('./chatHistory')
       const historyStore = useChatHistoryStore()
 
       const session = historyStore.sessions.find(s => s.id === sessionId)
@@ -487,7 +487,6 @@ export const useChatStore = defineStore('chat', {
       this.maxTokens = session.maxTokens
       this.topP = session.topP
 
-      const { useSettingsStore } = require('./settings')
       const settingsStore = useSettingsStore()
       settingsStore.selectSystemPrompt(session.selectedGPT)
 
