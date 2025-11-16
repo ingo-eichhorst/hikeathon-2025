@@ -1,29 +1,29 @@
 <template>
-  <div class="w-full">
+  <div class="w-full px-4">
     <!-- Title -->
     <h2 class="text-2xl md:text-3xl font-bold mb-8 text-dark-900 dark:text-white uppercase text-center">
       Quick Actions
     </h2>
 
     <!-- Carousel Container -->
-    <div class="relative">
-      <!-- Left Arrow -->
+    <div class="relative flex items-center justify-center gap-4">
+      <!-- Left Arrow Button -->
       <button
         @click="scrollLeft"
-        class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 md:-translate-x-16 z-10 p-2 rounded-full hover:bg-primary-500 transition-colors duration-200 group"
+        class="hidden md:flex flex-shrink-0 items-center justify-center h-12 w-12 rounded-full bg-dark-900 dark:bg-gray-700 hover:bg-primary-500 transition-colors duration-200"
         aria-label="Previous"
       >
         <img
           src="/arrow-left.png"
           alt="Previous"
-          class="h-8 w-8 md:h-10 md:w-10 object-contain group-hover:scale-110 transition-transform duration-200"
+          class="h-6 w-6 object-contain"
         />
       </button>
 
       <!-- Cards Container -->
       <div
         ref="carouselContainer"
-        class="flex gap-6 overflow-x-auto scroll-smooth"
+        class="flex gap-4 overflow-x-auto scroll-smooth flex-1"
         :style="{ scrollBehavior: 'smooth' }"
       >
         <QuickStartCard
@@ -31,20 +31,20 @@
           :key="gpt.key"
           :gpt="gpt"
           :image-src="`/quick-start/${gpt.key}.png`"
-          class="flex-shrink-0 w-full md:w-1/4"
+          class="flex-shrink-0 w-full md:w-1/3"
         />
       </div>
 
-      <!-- Right Arrow -->
+      <!-- Right Arrow Button -->
       <button
         @click="scrollRight"
-        class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 md:translate-x-16 z-10 p-2 rounded-full hover:bg-primary-500 transition-colors duration-200 group"
+        class="hidden md:flex flex-shrink-0 items-center justify-center h-12 w-12 rounded-full bg-dark-900 dark:bg-gray-700 hover:bg-primary-500 transition-colors duration-200"
         aria-label="Next"
       >
         <img
           src="/arrow-right.png"
           alt="Next"
-          class="h-8 w-8 md:h-10 md:w-10 object-contain group-hover:scale-110 transition-transform duration-200"
+          class="h-6 w-6 object-contain"
         />
       </button>
     </div>
@@ -88,7 +88,7 @@ const quickStartGPTs = computed((): GPT[] => {
 const scrollLeft = () => {
   if (carouselContainer.value) {
     const cardWidth = carouselContainer.value.children[0]?.clientWidth || 0
-    const gap = 24 // gap-6 = 1.5rem = 24px
+    const gap = 16 // gap-4 = 1rem = 16px
     carouselContainer.value.scrollLeft -= cardWidth + gap
   }
 }
@@ -96,7 +96,7 @@ const scrollLeft = () => {
 const scrollRight = () => {
   if (carouselContainer.value) {
     const cardWidth = carouselContainer.value.children[0]?.clientWidth || 0
-    const gap = 24 // gap-6 = 1.5rem = 24px
+    const gap = 16 // gap-4 = 1rem = 16px
     carouselContainer.value.scrollLeft += cardWidth + gap
   }
 }
@@ -104,7 +104,7 @@ const scrollRight = () => {
 const scrollToIndex = (index: number) => {
   if (carouselContainer.value) {
     const cardWidth = carouselContainer.value.children[0]?.clientWidth || 0
-    const gap = 24
+    const gap = 16
     carouselContainer.value.scrollLeft = index * (cardWidth + gap)
     currentIndex.value = index
   }
@@ -116,7 +116,7 @@ onMounted(() => {
     carouselContainer.value.addEventListener('scroll', () => {
       if (carouselContainer.value) {
         const cardWidth = carouselContainer.value.children[0]?.clientWidth || 0
-        const gap = 24
+        const gap = 16
         const scrollPosition = carouselContainer.value.scrollLeft
         currentIndex.value = Math.round(scrollPosition / (cardWidth + gap))
       }

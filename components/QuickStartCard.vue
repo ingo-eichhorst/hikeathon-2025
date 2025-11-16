@@ -1,35 +1,30 @@
 <template>
   <div
     @click="startChat"
-    class="flex flex-col items-center p-6 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer group"
+    class="flex flex-col items-center p-6 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200 cursor-pointer"
   >
     <!-- Image Container -->
-    <div class="w-full flex justify-center mb-4 overflow-hidden rounded-lg">
+    <div class="w-full flex justify-center mb-4 rounded">
       <img
         :src="imageSrc"
         :alt="gpt.name"
-        class="h-40 object-cover group-hover:scale-110 transition-transform duration-200"
+        class="h-32 w-full object-cover rounded"
       />
     </div>
 
     <!-- Title -->
-    <h3 class="text-lg md:text-xl font-bold text-dark-900 dark:text-white mb-2 text-center uppercase">
+    <h3 class="text-base font-bold text-dark-900 dark:text-white mb-2 text-center uppercase">
       {{ gpt.name }}
     </h3>
 
     <!-- Description -->
-    <p class="text-sm md:text-base text-dark-900 dark:text-gray-300 text-center mb-4">
+    <p class="text-sm text-dark-900 dark:text-gray-300 text-center mb-3 flex-grow">
       {{ gpt.description }}
     </p>
 
     <!-- Icon Badge -->
-    <div class="text-3xl mb-2">
+    <div class="text-2xl">
       {{ gpt.icon }}
-    </div>
-
-    <!-- Hover CTA -->
-    <div class="text-primary-500 font-semibold text-sm uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-      Start Chat
     </div>
   </div>
 </template>
