@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { apiClient } from '~/utils/api-client'
 import { useAuthStore } from './auth'
+import type { UploadedImage } from '~/types/image'
 
 export interface Message {
   id: string
@@ -70,7 +71,7 @@ interface ChatGetters {
 
 interface ChatActions {
   fetchAvailableModels(): Promise<void>
-  sendMessage(content: string, attachments?: Attachment[]): Promise<void>
+  sendMessage(content: string, images?: UploadedImage[]): Promise<void>
   stopGenerating(): void
   clearMessages(): void
   setModel(modelId: string): void
@@ -190,9 +191,18 @@ export const useChatStore = defineStore('chat', {
       }
     },
     
-    async sendMessage(content: string, attachments?: Attachment[]) {
+    async sendMessage(content: string, images?: UploadedImage[]) {
       if (this.isGenerating) return
-      
+
+      // Convert UploadedImage[] to Attachment[]
+      const attachments: Attachment[] | undefined = images?.map(img => ({
+        id: img.id,
+        name: img.name,
+        type: 'image' as const,
+        size: img.size,
+        content: `data:${img.type};base64,${img.base64}`
+      }))
+
       const userMessage: Message = {
         id: crypto.randomUUID(),
         role: 'user',
@@ -223,10 +233,37 @@ export const useChatStore = defineStore('chat', {
         // Prepare messages for API (exclude the empty assistant message we just created)
         const apiMessages = [
           { role: 'system', content: this.systemPrompt },
-          ...this.messages.slice(-21, -1).map(m => ({
-            role: m.role,
-            content: m.content
-          }))
+          ...this.messages.slice(-21, -1).map(m => {
+            const msg: any = {
+              role: m.role
+            }
+
+            // Handle multimodal messages with images
+            if (m.attachments && m.attachments.length > 0) {
+              const images = m.attachments.filter(a => a.type === 'image')
+              if (images.length > 0) {
+                // For multimodal requests, content must be an array
+                msg.content = [
+                  { type: 'text', text: m.content || '' },
+                  ...images.map(img => ({
+                    type: 'image_url',
+                    image_url: {
+                      url: img.content, // Already in data:image/...;base64,... format
+                      detail: 'auto'
+                    }
+                  }))
+                ]
+              } else {
+                // Text-only message
+                msg.content = m.content
+              }
+            } else {
+              // Text-only message
+              msg.content = m.content
+            }
+
+            return msg
+          })
         ]
         
         // Create abort controller

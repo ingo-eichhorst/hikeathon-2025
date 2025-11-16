@@ -32,6 +32,7 @@ export { computedAsync, asyncComputed, computedEager, eagerComputed, computedInj
 export { definePageMeta } from '../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/pages/runtime/composables';
 export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
 export { useImageProcessor } from '../composables/useImageProcessor';
+export { useImageUpload } from '../composables/useImageUpload';
 export { usePDF } from '../composables/usePDF';
 export { useRAG } from '../composables/useRAG';
 export { useRealtime, BroadcastMessage, PresenceUser, TypingIndicator } from '../composables/useRealtime';
@@ -48,3 +49,4 @@ export { IMAGE_MODELS, useImagesStore, GeneratedImage, ImageModel } from '../sto
 export { useNotificationsStore } from '../stores/notifications';
 export { translations, useSettingsStore, Language, Theme } from '../stores/settings';
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/.pnpm/@pinia+nuxt@0.7.0_magicast@0.3.5_typescript@5.9.3_vue@3.5.22_typescript@5.9.3_/node_modules/@pinia/nuxt/dist/runtime/composables';
+export { useNuxtDevTools } from '../node_modules/.pnpm/@nuxt+devtools@2.6.5_vite@7.1.9_@types+node@22.18.8_jiti@2.6.1_terser@5.44.0_yaml@2.8.1__vue@3.5.22_typescript@5.9.3_/node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools';

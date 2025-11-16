@@ -1,12 +1,12 @@
 {
-  "date": "2025-09-05T22:37:20.838Z",
+  "date": "2025-11-16T16:14:59.918Z",
   "preset": "static",
   "framework": {
     "name": "nuxt",
-    "version": "3.19.0"
+    "version": "3.19.2"
   },
   "versions": {
-    "nitro": "2.12.5"
+    "nitro": "2.12.6"
   },
   "commands": {
     "preview": "npx serve public"

@@ -20,6 +20,8 @@ interface _GlobalComponents {
     'ChatInput': typeof import("../../components/ChatInput.vue")['default']
     'ChatMessage': typeof import("../../components/ChatMessage.vue")['default']
     'Countdown': typeof import("../../components/Countdown.vue")['default']
+    'ImagePreview': typeof import("../../components/ImagePreview.vue")['default']
+    'ImageUploadButton': typeof import("../../components/ImageUploadButton.vue")['default']
     'NotificationList': typeof import("../../components/NotificationList.vue")['default']
     'NuxtWelcome': typeof import("../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/components/welcome.vue")['default']
     'NuxtLayout': typeof import("../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/components/nuxt-layout")['default']
@@ -51,6 +53,8 @@ interface _GlobalComponents {
     'LazyChatInput': LazyComponent<typeof import("../../components/ChatInput.vue")['default']>
     'LazyChatMessage': LazyComponent<typeof import("../../components/ChatMessage.vue")['default']>
     'LazyCountdown': LazyComponent<typeof import("../../components/Countdown.vue")['default']>
+    'LazyImagePreview': LazyComponent<typeof import("../../components/ImagePreview.vue")['default']>
+    'LazyImageUploadButton': LazyComponent<typeof import("../../components/ImageUploadButton.vue")['default']>
     'LazyNotificationList': LazyComponent<typeof import("../../components/NotificationList.vue")['default']>
     'LazyNuxtWelcome': LazyComponent<typeof import("../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/components/welcome.vue")['default']>
     'LazyNuxtLayout': LazyComponent<typeof import("../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/components/nuxt-layout")['default']>

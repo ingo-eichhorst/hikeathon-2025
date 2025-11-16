@@ -1,0 +1,1 @@
+import{f as i,a as o,n as r}from"#entry";import"./lyzmDKnL.js";import"./wtOtceyD.js";const l=i((e,a)=>{if(e.path==="/login")return;const t=o();if(!t.isAuthenticated&&!t.restoreSession())return r({path:"/login",query:{redirect:e.fullPath}});if(!t.isSessionValid)return t.logout(),r({path:"/login",query:{redirect:e.fullPath}})});export{l as default};
