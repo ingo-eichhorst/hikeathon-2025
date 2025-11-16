@@ -29,7 +29,6 @@
   "homepage": "https://github.com/ingo-eichhorst/hikeathon-2025#readme",
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.12.2",
-    "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
     "@pinia/nuxt": "^0.7.0",
     "@supabase/supabase-js": "^2.50.0",
     "@types/dompurify": "^3.2.0",
@@ -46,6 +45,7 @@
     "nuxt": "^3.14.1",
     "pdfjs-dist": "^5.4.149",
     "pinia": "^2.2.8",
+    "pinia-plugin-persistedstate": "^4.7.1",
     "vue-chartjs": "^5.3.2"
   },
   "devDependencies": {

@@ -41,8 +41,6 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxtjs/tailwindcss',
-    '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt',
     '@vueuse/nuxt'
   ],
   css: ['~/assets/css/main.css'],
@@ -70,12 +68,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
-      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      persistedState: {
-        cookieOptions: {
-          maxAge: 60 * 60 * 24 * 365 // 1 year
-        }
-      }
+      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || ''
     }
   },
   devtools: { enabled: true }
