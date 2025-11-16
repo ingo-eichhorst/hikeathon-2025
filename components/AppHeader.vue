@@ -3,7 +3,7 @@
     <nav class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
         <NuxtLink to="/" class="text-2xl font-bold text-dark-900 dark:text-primary-500">
-          HIKEathon 2025
+          HIKEathon X Citizen
         </NuxtLink>
 
         <div class="flex items-center space-x-6">
