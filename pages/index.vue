@@ -8,11 +8,13 @@
       <div class="grid md:grid-cols-2 gap-8">
         <!-- Chat Card -->
         <div class="flex flex-col items-center p-8 border-2 border-dark-900 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow">
-          <img
-            src="/text_gen.png"
-            alt="Start Chat"
-            class="w-full h-auto max-h-96 object-cover rounded-lg mb-6"
-          />
+          <div class="w-full flex justify-center mb-6">
+            <img
+              src="/text_gen.png"
+              alt="Start Chat"
+              class="h-80 object-contain rounded-lg"
+            />
+          </div>
           <NuxtLink to="/chat" class="btn btn-primary w-full">
             Start Chat
           </NuxtLink>
@@ -20,11 +22,13 @@
 
         <!-- Images Card -->
         <div class="flex flex-col items-center p-8 border-2 border-dark-900 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow">
-          <img
-            src="/image_gen.png"
-            alt="Generate Images"
-            class="w-full h-auto max-h-96 object-cover rounded-lg mb-6"
-          />
+          <div class="w-full flex justify-center mb-6">
+            <img
+              src="/image_gen.png"
+              alt="Generate Images"
+              class="h-80 object-contain rounded-lg"
+            />
+          </div>
           <NuxtLink to="/images" class="btn btn-primary w-full">
             Generate Images
           </NuxtLink>
