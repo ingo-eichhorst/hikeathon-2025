@@ -15,11 +15,34 @@
       ]"
     >
       <!-- Message content -->
-      <div 
+      <div
         v-if="!isEditing"
-        class="prose prose-sm dark:prose-invert max-w-none"
-        v-html="renderMarkdown(message.content || '')"
-      ></div>
+        class="space-y-3"
+      >
+        <!-- Text content -->
+        <div
+          class="prose prose-sm dark:prose-invert max-w-none"
+          v-html="renderMarkdown(message.content || '')"
+        ></div>
+
+        <!-- Image attachments -->
+        <div v-if="message.attachments && message.attachments.length > 0">
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <div
+              v-for="attachment in message.attachments.filter(a => a.type === 'image')"
+              :key="attachment.id"
+              class="rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700"
+            >
+              <img
+                :src="attachment.content"
+                :alt="attachment.name"
+                class="w-full h-auto max-h-48 object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                @click="() => openImageModal(attachment)"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       
       <!-- Edit mode -->
       <div v-else class="space-y-2">
@@ -52,6 +75,32 @@
         </button>
       </div>
     </div>
+
+    <!-- Image Modal -->
+    <div
+      v-if="showImageModal && selectedImage"
+      class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+      @click="showImageModal = false"
+    >
+      <div class="max-w-4xl max-h-[90vh] bg-white dark:bg-gray-900 rounded-lg overflow-auto">
+        <div class="flex justify-between items-center p-4 border-b border-gray-300 dark:border-gray-700">
+          <h3 class="text-lg font-semibold">{{ selectedImage.name }}</h3>
+          <button
+            @click="showImageModal = false"
+            class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+          >
+            <Icon icon="mdi:close" class="w-6 h-6" />
+          </button>
+        </div>
+        <div class="p-4">
+          <img
+            :src="selectedImage.content"
+            :alt="selectedImage.name"
+            class="w-full h-auto"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -59,7 +108,7 @@
 import { ref } from 'vue'
 import { marked } from 'marked'
 import hljs from 'highlight.js'
-import type { Message } from '~/stores/chat'
+import type { Message, Attachment } from '~/stores/chat'
 
 const props = defineProps<{
   message: Message
@@ -73,6 +122,13 @@ const emit = defineEmits<{
 
 const isEditing = ref(false)
 const editContent = ref('')
+const showImageModal = ref(false)
+const selectedImage = ref<Attachment | null>(null)
+
+const openImageModal = (attachment: Attachment) => {
+  selectedImage.value = attachment
+  showImageModal.value = true
+}
 
 // Configure marked
 marked.setOptions({

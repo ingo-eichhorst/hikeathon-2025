@@ -1,9 +1,9 @@
 {
-  "_hash": "-ugq6iLDW2O-MaMAeM54S3r_nT8B9aaVGbS9LoUxbrA",
+  "_hash": "r-7w0JlSFYjnp629obCVicJbsVGsHVrSDqyvPuwYJT4",
   "project": {
     "rootDir": "/Users/ingo/projects/hikeathon-2025"
   },
   "versions": {
-    "nuxt": "3.19.0"
+    "nuxt": "3.19.2"
   }
 }

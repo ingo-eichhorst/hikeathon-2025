@@ -61,12 +61,21 @@ serve(async (req) => {
 
     // Return the models list
     const data = await response.json()
-    
+
+    // Enhance models with vision capability metadata
+    if (data.data && Array.isArray(data.data)) {
+      data.data = data.data.map((model: any) => ({
+        ...model,
+        // Mark Mistral Small 24B as vision-capable
+        supports_vision: model.id === 'mistralai/Mistral-Small-24B-Instruct'
+      }))
+    }
+
     console.log(`Models API called: count=${data.data?.length || 0}, timestamp=${new Date().toISOString()}`)
 
     return new Response(
       JSON.stringify(data),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200
       }

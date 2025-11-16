@@ -81,33 +81,47 @@
     
     <!-- Input -->
     <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <!-- Image Preview -->
+      <ImagePreview
+        :images="uploadedImages"
+        @remove="removeImage"
+      />
+
       <div class="flex gap-2">
         <textarea
           v-model="inputMessage"
           @keydown.enter.exact="sendMessage"
           @input="handleTyping"
-          placeholder="Type your message..."
+          @paste="handlePaste"
+          placeholder="Type your message... (paste images with Ctrl+V)"
           :disabled="chatStore.isGenerating"
           rows="2"
           class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 resize-none"
         ></textarea>
-        
-        <button
-          v-if="!chatStore.isGenerating"
-          @click="sendMessage"
-          :disabled="!inputMessage.trim()"
-          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
-        >
-          Send
-        </button>
-        
-        <button
-          v-else
-          @click="chatStore.stopGeneration()"
-          class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
-        >
-          Stop
-        </button>
+
+        <div class="flex flex-col gap-2">
+          <ImageUploadButton
+            @imageAdded="handleImageAdded"
+            @error="handleImageError"
+          />
+
+          <button
+            v-if="!chatStore.isGenerating"
+            @click="sendMessage"
+            :disabled="!inputMessage.trim() && uploadedImages.length === 0"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
+          >
+            Send
+          </button>
+
+          <button
+            v-else
+            @click="chatStore.stopGeneration()"
+            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+          >
+            Stop
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -116,10 +130,13 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useChatStore } from '~/stores/chat'
+import { useImageUpload } from '~/composables/useImageUpload'
+import { IMAGE_CONFIG, type UploadedImage } from '~/types/image'
 
 const chatStore = useChatStore()
 const currentModel = ref(chatStore.currentModel)
 const inputMessage = ref('')
+const { images: uploadedImages, addImage, removeImage, handlePaste } = useImageUpload()
 
 // Realtime features
 const realtimeConnection = useRealtime()
@@ -158,17 +175,31 @@ const handleTyping = () => {
 }
 
 const sendMessage = async () => {
-  if (!inputMessage.value.trim() || chatStore.isGenerating) return
-  
+  if ((!inputMessage.value.trim() && uploadedImages.value.length === 0) || chatStore.isGenerating) return
+
   // Clear typing indicator
   if (typingTimeout.value) {
     clearTimeout(typingTimeout.value)
   }
   sendTypingIndicator(false)
-  
+
   const message = inputMessage.value
+  const images = uploadedImages.value.length > 0 ? [...uploadedImages.value] : []
+
   inputMessage.value = ''
-  await chatStore.sendMessage(message)
+
+  // Auto-switch to Mistral Small 24B if images are attached
+  if (images.length > 0 && chatStore.currentModel !== IMAGE_CONFIG.VISION_MODEL) {
+    chatStore.setModel(IMAGE_CONFIG.VISION_MODEL)
+  }
+
+  // Send message with images
+  if (images.length > 0) {
+    await chatStore.sendMessage(message, images)
+    uploadedImages.value = []
+  } else {
+    await chatStore.sendMessage(message)
+  }
 }
 
 const handleEditMessage = async (id: string, newContent: string) => {
@@ -189,6 +220,16 @@ const handleRegenerate = async () => {
     }
     await chatStore.sendMessage(lastUserMessage.content, lastUserMessage.attachments)
   }
+}
+
+const handleImageAdded = (file: File) => {
+  // Image has been added via composable, it will be shown in the preview
+  console.log('Image added:', file.name)
+}
+
+const handleImageError = (error: string) => {
+  console.error('Image upload error:', error)
+  // You could show a notification here
 }
 
 useHead({
