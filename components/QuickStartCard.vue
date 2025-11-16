@@ -18,14 +18,9 @@
     </h3>
 
     <!-- Description -->
-    <p class="text-sm text-dark-900 dark:text-gray-300 text-center mb-3 flex-grow">
+    <p class="text-sm text-dark-900 dark:text-gray-300 text-center flex-grow">
       {{ gpt.description }}
     </p>
-
-    <!-- Icon Badge -->
-    <div class="text-2xl">
-      {{ gpt.icon }}
-    </div>
   </div>
 </template>
 
