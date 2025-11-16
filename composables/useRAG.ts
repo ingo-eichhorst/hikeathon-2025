@@ -1,3 +1,4 @@
+import { onMounted, onUnmounted } from 'vue'
 import { RAGService } from '~/services/rag'
 
 export const useRAG = () => {

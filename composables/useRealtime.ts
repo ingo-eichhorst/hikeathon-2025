@@ -1,4 +1,5 @@
 import type { RealtimeChannel, RealtimePresenceState } from '@supabase/supabase-js'
+import { ref, readonly, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 
 export interface BroadcastMessage {

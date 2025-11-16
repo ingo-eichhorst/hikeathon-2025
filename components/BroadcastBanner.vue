@@ -29,7 +29,10 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { sanitizeHTML } from '~/utils/sanitize'
+import { useBroadcastStore } from '~/stores/broadcasts'
+import { useRealtime } from '~/composables/useRealtime'
 
 const broadcastStore = useBroadcastStore()
 const { broadcasts } = useRealtime()

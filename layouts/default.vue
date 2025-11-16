@@ -10,6 +10,9 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useRealtime } from '~/composables/useRealtime'
+
 const { initializeRealtime } = useRealtime()
 
 onMounted(() => {

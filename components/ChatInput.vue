@@ -75,6 +75,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useSettingsStore } from '~/stores/settings'
+import { usePDF } from '~/composables/usePDF'
+import { useImageProcessor } from '~/composables/useImageProcessor'
 import type { Attachment } from '~/stores/chat'
 
 const props = defineProps<{

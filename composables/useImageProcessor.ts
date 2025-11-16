@@ -1,3 +1,4 @@
+import { computed } from 'vue'
 import { ImageProcessor, type ImageProcessingResult, type ImageProcessingOptions } from '~/services/image'
 
 export const useImageProcessor = () => {

@@ -254,6 +254,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
+import { useRealtime } from '~/composables/useRealtime'
 
 const { $supabase } = useNuxtApp()
 const { sendBroadcast, broadcasts, presence, connectionState, isSupabaseAvailable } = useRealtime()

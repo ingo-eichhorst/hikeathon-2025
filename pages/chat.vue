@@ -181,6 +181,7 @@ import { useChatStore } from '~/stores/chat'
 import { useChatHistoryStore } from '~/stores/chatHistory'
 import { useSettingsStore } from '~/stores/settings'
 import { useImageUpload } from '~/composables/useImageUpload'
+import { useRealtime } from '~/composables/useRealtime'
 import { IMAGE_CONFIG, type UploadedImage } from '~/types/image'
 import ChatMenu from '~/components/ChatMenu.vue'
 

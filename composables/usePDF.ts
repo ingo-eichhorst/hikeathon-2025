@@ -1,3 +1,4 @@
+import { readonly } from 'vue'
 import { PDFProcessor, type PDFProcessingResult, type PDFProcessingProgress } from '~/services/pdf'
 
 export const usePDF = () => {
