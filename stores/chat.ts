@@ -480,7 +480,10 @@ export const useChatStore = defineStore('chat', {
       const session = historyStore.sessions.find(s => s.id === sessionId)
       if (!session) return
 
+      // Update both chat store and history store to track current session
       this.currentSessionId = sessionId
+      historyStore.currentSessionId = sessionId
+
       this.messages = [...session.messages]
       this.currentModel = session.model
       this.temperature = session.temperature
