@@ -110,7 +110,7 @@
             v-model="inputMessage"
             @keydown.enter.exact="sendMessage"
             @input="handleTyping"
-            @paste="handleTextareaaPaste"
+            @paste="handleTextareaPaste"
             placeholder="Type your message... (paste images with Ctrl+V)"
             :disabled="chatStore.isGenerating"
             rows="2"
@@ -244,7 +244,7 @@ const handleTyping = () => {
 }
 
 // Custom paste handler that properly handles async image processing
-const handleTextareaaPaste = async (event: ClipboardEvent) => {
+const handleTextareaPaste = async (event: ClipboardEvent) => {
   const items = event.clipboardData?.items
 
   if (!items) return
