@@ -129,14 +129,21 @@ export const useChatHistoryStore = defineStore('chatHistory', {
     },
 
     /**
-     * Rename a session
+     * Update a session's name
      */
-    renameSession(sessionId: string, newName: string) {
+    updateSessionName(sessionId: string, newName: string) {
       const session = this.sessions.find(s => s.id === sessionId)
       if (!session) return
 
       session.name = newName
       session.updatedAt = new Date()
+    },
+
+    /**
+     * Rename a session (alias for updateSessionName)
+     */
+    renameSession(sessionId: string, newName: string) {
+      this.updateSessionName(sessionId, newName)
     },
 
     /**

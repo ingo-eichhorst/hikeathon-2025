@@ -293,7 +293,7 @@ const sendMessage = async () => {
 
   inputMessage.value = ''
 
-  // Update initial prompt in history if first message
+  // Update initial prompt and session name if first message
   const currentSession = historyStore.currentSession
   if (currentSession && !currentSession.initialPrompt) {
     // Update the session with the initial prompt (from the first user message)
@@ -302,6 +302,12 @@ const sendMessage = async () => {
       initialPrompt: message
     }
     Object.assign(currentSession, updatedSession)
+
+    // Update session name to first 20 characters of the message
+    if (chatStore.currentSessionId) {
+      const sessionName = message.slice(0, 20)
+      historyStore.updateSessionName(chatStore.currentSessionId, sessionName)
+    }
   }
 
   // Auto-switch to Mistral Small 24B if images are attached
