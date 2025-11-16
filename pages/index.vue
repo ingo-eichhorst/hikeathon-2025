@@ -33,6 +33,11 @@
       </div>
     </section>
 
+    <!-- Quick Start Section -->
+    <section class="py-12">
+      <QuickStartCarousel />
+    </section>
+
     <section class="text-center py-12">
       <h1 class="text-4xl md:text-6xl font-bold text-dark-900 dark:text-white mb-4">
         Welcome to HIKEathon 2025
