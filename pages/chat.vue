@@ -47,13 +47,6 @@
               {{ chatStore.contextTokens }} / {{ chatStore.currentModelInfo?.contextLength || 0 }}
             </div>
           </div>
-
-          <button
-            @click="chatStore.clearMessages()"
-            class="px-3 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg whitespace-nowrap"
-          >
-            Clear
-          </button>
         </div>
       </div>
 
