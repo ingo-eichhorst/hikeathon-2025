@@ -1,1 +1,0 @@
-import{e as r,t as a,h as s}from"#entry";import{h as o,i as u}from"./lyzmDKnL.js";function i(e){const t=e||a();return t?.ssrContext?.head||t?.runWithContext(()=>{if(o())return u(s)})}function x(e,t={}){const n=i(t.nuxt);if(n)return r(e,{head:n,...t})}export{x as u};
