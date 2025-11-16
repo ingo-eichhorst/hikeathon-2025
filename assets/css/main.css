@@ -10,27 +10,32 @@
   }
 
   body {
-    @apply bg-white dark:bg-gray-900 text-dark-900 dark:text-gray-100;
+    @apply bg-white dark:bg-gray-900 dark:text-gray-100;
     font-family: 'Source Sans Pro', sans-serif;
+    color: #1a1a1a;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold;
     font-family: 'Source Sans Pro', sans-serif;
+    color: #1a1a1a;
   }
 }
 
 @layer components {
   .btn {
-    @apply px-6 py-3 rounded-lg font-semibold transition-colors duration-200 uppercase text-dark-900;
+    @apply px-6 py-3 rounded-lg font-semibold transition-colors duration-200 uppercase;
+    color: #1a1a1a;
   }
 
   .btn-primary {
-    @apply bg-primary-500 hover:bg-primary-600 text-dark-900;
+    @apply bg-primary-500 hover:bg-primary-600;
+    color: #1a1a1a;
   }
 
   .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-dark-900;
+    @apply bg-gray-200 hover:bg-gray-300;
+    color: #1a1a1a;
   }
 
   .card {
