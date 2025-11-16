@@ -209,6 +209,10 @@ onMounted(async () => {
   await chatStore.fetchAvailableModels()
   currentModel.value = chatStore.currentModel
 
+  // Small delay to ensure Pinia persistence hydration is complete
+  // (in SSR=false mode, localStorage is loaded synchronously but we need to let the event loop cycle)
+  await new Promise(resolve => setTimeout(resolve, 50))
+
   // Initialize chat session on mount
   if (historyStore.allSessions.length === 0) {
     // No sessions exist, create a new one
