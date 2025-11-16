@@ -1,6 +1,6 @@
 <template>
   <div
-    class="chat-session-card group flex items-center gap-3 rounded-lg p-3 cursor-pointer transition-all"
+    class="chat-session-card group flex items-center gap-3 rounded-lg p-3 cursor-pointer transition-all w-full"
     :class="[
       isActive
         ? 'bg-blue-100 dark:bg-blue-900 border-2 border-blue-500'

@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-col gap-4 p-4">
+  <div class="flex flex-col gap-4 p-4 w-full">
     <!-- GPTs Section -->
-    <div>
+    <div class="w-full">
       <h2 class="text-sm font-semibold mb-2">GPTs</h2>
-      <div class="flex flex-col gap-1">
+      <div class="flex flex-col gap-1 w-full">
         <GPTCard
           v-for="(gpt, key) in allGPTs"
           :key="key"
@@ -18,7 +18,7 @@
     <div class="h-px bg-gray-200 dark:bg-gray-700" />
 
     <!-- Chats Section -->
-    <div class="flex flex-col gap-2 flex-1 min-h-0">
+    <div class="flex flex-col gap-2 flex-1 min-h-0 w-full">
       <div class="flex items-center justify-between">
         <h2 class="text-sm font-semibold">Chats</h2>
         <button
@@ -34,7 +34,7 @@
       </div>
 
       <!-- Chat Sessions List -->
-      <div class="flex-1 overflow-y-auto space-y-1 min-h-0">
+      <div class="flex-1 overflow-y-auto space-y-1 min-h-0 w-full">
         <ChatSessionCard
           v-for="session in allSessions"
           :key="session.id"
