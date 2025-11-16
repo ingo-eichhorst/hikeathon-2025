@@ -18,8 +18,11 @@ export const AppFooter: typeof import("../components/AppFooter.vue")['default']
 export const AppHeader: typeof import("../components/AppHeader.vue")['default']
 export const BroadcastBanner: typeof import("../components/BroadcastBanner.vue")['default']
 export const ChatInput: typeof import("../components/ChatInput.vue")['default']
+export const ChatMenu: typeof import("../components/ChatMenu.vue")['default']
 export const ChatMessage: typeof import("../components/ChatMessage.vue")['default']
+export const ChatSessionCard: typeof import("../components/ChatSessionCard.vue")['default']
 export const Countdown: typeof import("../components/Countdown.vue")['default']
+export const GPTCard: typeof import("../components/GPTCard.vue")['default']
 export const ImagePreview: typeof import("../components/ImagePreview.vue")['default']
 export const ImageUploadButton: typeof import("../components/ImageUploadButton.vue")['default']
 export const NotificationList: typeof import("../components/NotificationList.vue")['default']
@@ -51,8 +54,11 @@ export const LazyAppFooter: LazyComponent<typeof import("../components/AppFooter
 export const LazyAppHeader: LazyComponent<typeof import("../components/AppHeader.vue")['default']>
 export const LazyBroadcastBanner: LazyComponent<typeof import("../components/BroadcastBanner.vue")['default']>
 export const LazyChatInput: LazyComponent<typeof import("../components/ChatInput.vue")['default']>
+export const LazyChatMenu: LazyComponent<typeof import("../components/ChatMenu.vue")['default']>
 export const LazyChatMessage: LazyComponent<typeof import("../components/ChatMessage.vue")['default']>
+export const LazyChatSessionCard: LazyComponent<typeof import("../components/ChatSessionCard.vue")['default']>
 export const LazyCountdown: LazyComponent<typeof import("../components/Countdown.vue")['default']>
+export const LazyGPTCard: LazyComponent<typeof import("../components/GPTCard.vue")['default']>
 export const LazyImagePreview: LazyComponent<typeof import("../components/ImagePreview.vue")['default']>
 export const LazyImageUploadButton: LazyComponent<typeof import("../components/ImageUploadButton.vue")['default']>
 export const LazyNotificationList: LazyComponent<typeof import("../components/NotificationList.vue")['default']>

@@ -3,6 +3,7 @@ export {}
 declare global {
   const AuthenticatedAPIClient: typeof import('../../utils/api-client')['AuthenticatedAPIClient']
   const CSRFProtection: typeof import('../../utils/sanitize')['CSRFProtection']
+  const DEFAULT_GPTS: typeof import('../../stores/settings')['DEFAULT_GPTS']
   const IMAGE_MODELS: typeof import('../../stores/images')['IMAGE_MODELS']
   const TokenSecurityService: typeof import('../../utils/crypto')['TokenSecurityService']
   const abortNavigation: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/router')['abortNavigation']
@@ -194,6 +195,7 @@ declare global {
   const useBroadcastStore: typeof import('../../stores/broadcasts')['useBroadcastStore']
   const useBrowserLocation: typeof import('@vueuse/core')['useBrowserLocation']
   const useCached: typeof import('@vueuse/core')['useCached']
+  const useChatHistoryStore: typeof import('../../stores/chatHistory')['useChatHistoryStore']
   const useChatStore: typeof import('../../stores/chat')['useChatStore']
   const useClipboard: typeof import('@vueuse/core')['useClipboard']
   const useClipboardItems: typeof import('@vueuse/core')['useClipboardItems']
@@ -451,13 +453,16 @@ declare global {
   export type { Message, Attachment, ChatModel } from '../../stores/chat'
   import('../../stores/chat')
   // @ts-ignore
+  export type { ChatSession } from '../../stores/chatHistory'
+  import('../../stores/chatHistory')
+  // @ts-ignore
   export type { Countdown } from '../../stores/countdown'
   import('../../stores/countdown')
   // @ts-ignore
   export type { GeneratedImage, ImageModel } from '../../stores/images'
   import('../../stores/images')
   // @ts-ignore
-  export type { Language, Theme } from '../../stores/settings'
+  export type { Language, Theme, GPT } from '../../stores/settings'
   import('../../stores/settings')
 }
 // for vue template auto import
@@ -466,6 +471,7 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly AuthenticatedAPIClient: UnwrapRef<typeof import('../../utils/api-client')['AuthenticatedAPIClient']>
     readonly CSRFProtection: UnwrapRef<typeof import('../../utils/sanitize')['CSRFProtection']>
+    readonly DEFAULT_GPTS: UnwrapRef<typeof import('../../stores/settings')['DEFAULT_GPTS']>
     readonly IMAGE_MODELS: UnwrapRef<typeof import('../../stores/images')['IMAGE_MODELS']>
     readonly TokenSecurityService: UnwrapRef<typeof import('../../utils/crypto')['TokenSecurityService']>
     readonly abortNavigation: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/router')['abortNavigation']>
@@ -657,6 +663,7 @@ declare module 'vue' {
     readonly useBroadcastStore: UnwrapRef<typeof import('../../stores/broadcasts')['useBroadcastStore']>
     readonly useBrowserLocation: UnwrapRef<typeof import('@vueuse/core')['useBrowserLocation']>
     readonly useCached: UnwrapRef<typeof import('@vueuse/core')['useCached']>
+    readonly useChatHistoryStore: UnwrapRef<typeof import('../../stores/chatHistory')['useChatHistoryStore']>
     readonly useChatStore: UnwrapRef<typeof import('../../stores/chat')['useChatStore']>
     readonly useClipboard: UnwrapRef<typeof import('@vueuse/core')['useClipboard']>
     readonly useClipboardItems: UnwrapRef<typeof import('@vueuse/core')['useClipboardItems']>

@@ -1,7 +1,17 @@
 import { defineStore } from 'pinia'
+import { useChatStore } from './chat'
 
 export type Language = 'en' | 'de'
 export type Theme = 'light' | 'dark' | 'system'
+
+export interface GPT {
+  key: string
+  name: string
+  description: string
+  icon: string
+  systemPrompt: string
+  defaultModel?: string
+}
 
 interface SettingsState {
   theme: Theme
@@ -17,12 +27,44 @@ interface SettingsState {
   soundEnabled: boolean
 }
 
-// Default system prompts
+// Default system prompts (for backward compatibility)
 const DEFAULT_PROMPTS = {
   general: 'You are a helpful AI assistant supporting teams at HIKEathon 2025. Be concise, accurate, and friendly.',
   coding: 'You are an expert programming assistant at HIKEathon 2025. Help with code, debugging, and technical questions. Provide clear explanations and working code examples.',
   creative: 'You are a creative assistant helping with brainstorming and ideation at HIKEathon 2025. Be imaginative, encouraging, and help teams think outside the box.',
   research: 'You are a research assistant at HIKEathon 2025. Help teams find information, analyze data, and provide well-sourced answers with citations when possible.'
+}
+
+// GPTs with metadata
+export const DEFAULT_GPTS: Record<string, GPT> = {
+  general: {
+    key: 'general',
+    name: 'General',
+    description: 'A helpful AI assistant for general questions and tasks',
+    icon: '💬',
+    systemPrompt: DEFAULT_PROMPTS.general
+  },
+  coding: {
+    key: 'coding',
+    name: 'Coding',
+    description: 'Expert programming assistance and code debugging',
+    icon: '💻',
+    systemPrompt: DEFAULT_PROMPTS.coding
+  },
+  creative: {
+    key: 'creative',
+    name: 'Creative',
+    description: 'Brainstorming and creative ideation partner',
+    icon: '✨',
+    systemPrompt: DEFAULT_PROMPTS.creative
+  },
+  research: {
+    key: 'research',
+    name: 'Research',
+    description: 'Information gathering and data analysis assistant',
+    icon: '🔍',
+    systemPrompt: DEFAULT_PROMPTS.research
+  }
 }
 
 // Translations
@@ -175,6 +217,8 @@ interface SettingsGetters {
   timeUntilEvent: (state: SettingsState) => number
   timeRemaining: (state: SettingsState) => number
   eventStatus: (state: SettingsState) => 'before' | 'during' | 'after'
+  allGPTs: () => Record<string, GPT>
+  currentGPT: () => GPT
 }
 
 interface SettingsActions {
@@ -211,31 +255,39 @@ export const useSettingsStore = defineStore('settings', {
         return translations[state.language][key] || key
       }
     },
-    
+
     currentSystemPrompt: (state): string => {
       return state.systemPrompts[state.currentSystemPromptKey] || DEFAULT_PROMPTS.general
     },
-    
+
     timeUntilEvent: (state): number => {
       const start = new Date(state.eventStartDate).getTime()
       const now = Date.now()
       return Math.max(0, start - now)
     },
-    
+
     timeRemaining: (state): number => {
       const end = new Date(state.eventEndDate).getTime()
       const now = Date.now()
       return Math.max(0, end - now)
     },
-    
+
     eventStatus: (state): 'before' | 'during' | 'after' => {
       const now = Date.now()
       const start = new Date(state.eventStartDate).getTime()
       const end = new Date(state.eventEndDate).getTime()
-      
+
       if (now < start) return 'before'
       if (now > end) return 'after'
       return 'during'
+    },
+
+    allGPTs: (): Record<string, GPT> => {
+      return DEFAULT_GPTS
+    },
+
+    currentGPT: (state): GPT => {
+      return DEFAULT_GPTS[state.currentSystemPromptKey] || DEFAULT_GPTS.general
     }
   },
 

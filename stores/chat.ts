@@ -61,6 +61,7 @@ interface ChatState {
   availableModels: ChatModel[]
   modelsLoading: boolean
   modelsError: string | null
+  currentSessionId: string | null
 }
 
 interface ChatGetters {
@@ -85,6 +86,9 @@ interface ChatActions {
   setTemperature(temperature: number): void
   setMaxTokens(maxTokens: number): void
   setTopP(topP: number): void
+  setCurrentSessionId(sessionId: string | null): void
+  saveCurrentSession(): void
+  loadSession(sessionId: string): void
 }
 
 export const useChatStore = defineStore('chat', {
@@ -102,7 +106,8 @@ export const useChatStore = defineStore('chat', {
     abortController: null,
     availableModels: [],
     modelsLoading: false,
-    modelsError: null
+    modelsError: null,
+    currentSessionId: null
   }),
 
   getters: {
@@ -436,7 +441,7 @@ export const useChatStore = defineStore('chat', {
     updateTokenCounts() {
       let total = 0
       let context = this.estimateTokens(this.systemPrompt)
-      
+
       for (const msg of this.messages) {
         const tokens = msg.tokens || this.estimateTokens(msg.content)
         total += tokens
@@ -444,9 +449,49 @@ export const useChatStore = defineStore('chat', {
           context += tokens
         }
       }
-      
+
       this.totalTokens = total
       this.contextTokens = context
+    },
+
+    setCurrentSessionId(sessionId: string | null) {
+      this.currentSessionId = sessionId
+    },
+
+    saveCurrentSession() {
+      if (!this.currentSessionId) return
+
+      const { useChatHistoryStore } = require('./chatHistory')
+      const historyStore = useChatHistoryStore()
+
+      historyStore.updateSessionMessages(this.messages)
+      historyStore.updateSessionSettings(
+        this.currentModel,
+        this.temperature,
+        this.maxTokens,
+        this.topP
+      )
+    },
+
+    loadSession(sessionId: string) {
+      const { useChatHistoryStore } = require('./chatHistory')
+      const historyStore = useChatHistoryStore()
+
+      const session = historyStore.sessions.find(s => s.id === sessionId)
+      if (!session) return
+
+      this.currentSessionId = sessionId
+      this.messages = [...session.messages]
+      this.currentModel = session.model
+      this.temperature = session.temperature
+      this.maxTokens = session.maxTokens
+      this.topP = session.topP
+
+      const { useSettingsStore } = require('./settings')
+      const settingsStore = useSettingsStore()
+      settingsStore.selectSystemPrompt(session.selectedGPT)
+
+      this.updateTokenCounts()
     }
   },
 

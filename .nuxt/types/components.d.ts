@@ -18,8 +18,11 @@ interface _GlobalComponents {
     'AppHeader': typeof import("../../components/AppHeader.vue")['default']
     'BroadcastBanner': typeof import("../../components/BroadcastBanner.vue")['default']
     'ChatInput': typeof import("../../components/ChatInput.vue")['default']
+    'ChatMenu': typeof import("../../components/ChatMenu.vue")['default']
     'ChatMessage': typeof import("../../components/ChatMessage.vue")['default']
+    'ChatSessionCard': typeof import("../../components/ChatSessionCard.vue")['default']
     'Countdown': typeof import("../../components/Countdown.vue")['default']
+    'GPTCard': typeof import("../../components/GPTCard.vue")['default']
     'ImagePreview': typeof import("../../components/ImagePreview.vue")['default']
     'ImageUploadButton': typeof import("../../components/ImageUploadButton.vue")['default']
     'NotificationList': typeof import("../../components/NotificationList.vue")['default']
@@ -51,8 +54,11 @@ interface _GlobalComponents {
     'LazyAppHeader': LazyComponent<typeof import("../../components/AppHeader.vue")['default']>
     'LazyBroadcastBanner': LazyComponent<typeof import("../../components/BroadcastBanner.vue")['default']>
     'LazyChatInput': LazyComponent<typeof import("../../components/ChatInput.vue")['default']>
+    'LazyChatMenu': LazyComponent<typeof import("../../components/ChatMenu.vue")['default']>
     'LazyChatMessage': LazyComponent<typeof import("../../components/ChatMessage.vue")['default']>
+    'LazyChatSessionCard': LazyComponent<typeof import("../../components/ChatSessionCard.vue")['default']>
     'LazyCountdown': LazyComponent<typeof import("../../components/Countdown.vue")['default']>
+    'LazyGPTCard': LazyComponent<typeof import("../../components/GPTCard.vue")['default']>
     'LazyImagePreview': LazyComponent<typeof import("../../components/ImagePreview.vue")['default']>
     'LazyImageUploadButton': LazyComponent<typeof import("../../components/ImageUploadButton.vue")['default']>
     'LazyNotificationList': LazyComponent<typeof import("../../components/NotificationList.vue")['default']>
