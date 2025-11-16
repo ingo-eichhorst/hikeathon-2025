@@ -151,7 +151,7 @@
         <button
           @click="generateImage"
           :disabled="!promptInput.trim() || imagesStore.isGenerating"
-          class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-dark-900 rounded-lg disabled:opacity-50 font-semibold uppercase"
         >
           {{ imagesStore.isGenerating ? 'Generating...' : 'Generate' }}
         </button>
