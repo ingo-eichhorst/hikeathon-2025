@@ -31,3 +31,4 @@ logs/
 # Build output
 dist/
 build/
+.nuxt/
