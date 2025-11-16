@@ -2,10 +2,10 @@
   <div class="chat-menu flex flex-col gap-6">
     <!-- GPTs Section -->
     <div class="gpts-section">
-      <h2 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 px-2">
+      <h2 class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2 px-2 uppercase tracking-wide">
         GPTs
       </h2>
-      <div class="grid grid-cols-2 gap-2 px-2">
+      <div class="flex flex-col gap-1 px-1">
         <GPTCard
           v-for="(gpt, key) in allGPTs"
           :key="key"
