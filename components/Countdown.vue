@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="countdownStore.isVisible"
-    class="card bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+    class="card bg-gradient-to-r from-primary-500 to-primary-600 text-dark"
   >
     <div class="text-center">
       <h2 class="text-2xl md:text-3xl font-bold mb-4">

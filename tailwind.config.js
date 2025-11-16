@@ -10,20 +10,25 @@ export default {
   ],
   darkMode: 'class',
   theme: {
+    fontFamily: {
+      sans: ['"Source Sans Pro"', 'sans-serif'],
+      heading: ['"Source Sans Pro"', 'sans-serif'],
+    },
     extend: {
       colors: {
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-        }
+          50: '#fffef0',
+          100: '#fffce1',
+          200: '#fffa99',
+          300: '#fff851',
+          400: '#f0f50a',
+          500: '#dcff18',
+          600: '#d4e812',
+          700: '#b8c00d',
+          800: '#9ca008',
+          900: '#6e7006',
+        },
+        dark: '#1a1a1a',
       }
     },
   },

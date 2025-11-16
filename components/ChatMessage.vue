@@ -6,12 +6,12 @@
     ]"
     :data-testid="`${message.role}-message`"
   >
-    <div 
+    <div
       :class="[
         'max-w-[80%] rounded-lg p-4',
-        message.role === 'user' 
-          ? 'bg-blue-600 text-white' 
-          : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+        message.role === 'user'
+          ? 'bg-primary-500 text-dark'
+          : 'bg-gray-100 dark:bg-gray-800 text-dark dark:text-gray-100'
       ]"
     >
       <!-- Message content -->
@@ -52,10 +52,10 @@
           rows="3"
         ></textarea>
         <div class="flex gap-2">
-          <button @click="saveEdit" class="px-2 py-1 bg-green-600 text-white rounded text-sm">
+          <button @click="saveEdit" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm font-semibold">
             Save
           </button>
-          <button @click="cancelEdit" class="px-2 py-1 bg-gray-600 text-white rounded text-sm">
+          <button @click="cancelEdit" class="px-2 py-1 bg-dark hover:bg-gray-900 text-white rounded text-sm font-semibold">
             Cancel
           </button>
         </div>
@@ -83,11 +83,11 @@
       @click="showImageModal = false"
     >
       <div class="max-w-4xl max-h-[90vh] bg-white dark:bg-gray-900 rounded-lg overflow-auto">
-        <div class="flex justify-between items-center p-4 border-b border-gray-300 dark:border-gray-700">
-          <h3 class="text-lg font-semibold">{{ selectedImage.name }}</h3>
+        <div class="flex justify-between items-center p-4 border-b-2 border-gray-300 dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-dark dark:text-white">{{ selectedImage.name }}</h3>
           <button
             @click="showImageModal = false"
-            class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            class="text-dark dark:text-gray-400 hover:text-gray-600 dark:hover:text-white"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
