@@ -307,7 +307,7 @@ const sendMessage = async () => {
 
   // Update initial prompt and session name if first message
   const currentSession = historyStore.currentSession
-  if (currentSession && !currentSession.initialPrompt) {
+  if (currentSession && (!currentSession.initialPrompt || currentSession.initialPrompt === '')) {
     // Update the session with the initial prompt (from the first user message)
     const updatedSession = {
       ...currentSession,
