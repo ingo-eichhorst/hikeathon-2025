@@ -3,6 +3,35 @@
     <!-- Countdown Section -->
     <Countdown />
 
+    <!-- Hero Selection Section -->
+    <section class="py-12">
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Chat Card -->
+        <div class="flex flex-col items-center p-8 border-2 border-dark-900 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow">
+          <img
+            src="/text_gen.png"
+            alt="Start Chat"
+            class="w-full h-auto max-h-96 object-cover rounded-lg mb-6"
+          />
+          <NuxtLink to="/chat" class="btn btn-primary w-full">
+            Start Chat
+          </NuxtLink>
+        </div>
+
+        <!-- Images Card -->
+        <div class="flex flex-col items-center p-8 border-2 border-dark-900 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow">
+          <img
+            src="/image_gen.png"
+            alt="Generate Images"
+            class="w-full h-auto max-h-96 object-cover rounded-lg mb-6"
+          />
+          <NuxtLink to="/images" class="btn btn-primary w-full">
+            Generate Images
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
     <section class="text-center py-12">
       <h1 class="text-4xl md:text-6xl font-bold text-dark-900 dark:text-white mb-4">
         Welcome to HIKEathon 2025
