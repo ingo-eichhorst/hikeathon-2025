@@ -1,10 +1,10 @@
 <template>
   <div
     v-if="countdownStore.isVisible"
-    class="card bg-gradient-to-r from-primary-500 to-primary-600 text-dark-900"
+    class="w-full bg-dark-900 text-center py-6 md:py-8"
   >
-    <div class="text-center">
-      <h2 class="text-2xl md:text-3xl font-bold mb-4">
+    <div class="container mx-auto px-4">
+      <h2 class="text-xl md:text-2xl font-bold mb-4 text-primary-500 uppercase">
         {{ countdownStore.currentCountdown?.title }}
       </h2>
 
@@ -13,43 +13,43 @@
         class="flex justify-center gap-4 md:gap-8"
       >
         <div class="flex flex-col items-center">
-          <div class="text-4xl md:text-5xl font-bold">
+          <div class="text-4xl md:text-5xl font-bold text-primary-500">
             {{ String(timeRemaining.days).padStart(2, '0') }}
           </div>
-          <div class="text-sm md:text-base opacity-90 mt-1">
+          <div class="text-sm md:text-base opacity-90 mt-1 text-gray-300">
             {{ settingsStore.t('days') }}
           </div>
         </div>
 
         <div class="flex flex-col items-center">
-          <div class="text-4xl md:text-5xl font-bold">
+          <div class="text-4xl md:text-5xl font-bold text-primary-500">
             {{ String(timeRemaining.hours).padStart(2, '0') }}
           </div>
-          <div class="text-sm md:text-base opacity-90 mt-1">
+          <div class="text-sm md:text-base opacity-90 mt-1 text-gray-300">
             {{ settingsStore.t('hours') }}
           </div>
         </div>
 
         <div class="flex flex-col items-center">
-          <div class="text-4xl md:text-5xl font-bold">
+          <div class="text-4xl md:text-5xl font-bold text-primary-500">
             {{ String(timeRemaining.minutes).padStart(2, '0') }}
           </div>
-          <div class="text-sm md:text-base opacity-90 mt-1">
+          <div class="text-sm md:text-base opacity-90 mt-1 text-gray-300">
             {{ settingsStore.t('minutes') }}
           </div>
         </div>
 
         <div class="flex flex-col items-center">
-          <div class="text-4xl md:text-5xl font-bold">
+          <div class="text-4xl md:text-5xl font-bold text-primary-500">
             {{ String(timeRemaining.seconds).padStart(2, '0') }}
           </div>
-          <div class="text-sm md:text-base opacity-90 mt-1">
+          <div class="text-sm md:text-base opacity-90 mt-1 text-gray-300">
             {{ settingsStore.t('seconds') }}
           </div>
         </div>
       </div>
 
-      <div v-else class="text-2xl md:text-3xl font-bold animate-pulse">
+      <div v-else class="text-2xl md:text-3xl font-bold animate-pulse text-primary-500">
         🎉 Deadline Reached! 🎉
       </div>
     </div>

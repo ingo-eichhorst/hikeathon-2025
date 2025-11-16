@@ -1,8 +1,5 @@
 <template>
   <div class="space-y-8">
-    <!-- Countdown Section -->
-    <Countdown />
-
     <!-- Hero Selection Section -->
     <section class="py-12">
       <div class="grid md:grid-cols-2 gap-8">

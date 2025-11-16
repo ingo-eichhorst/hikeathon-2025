@@ -5,6 +5,8 @@
     <main class="flex-1 flex flex-col container mx-auto px-4 py-4 overflow-hidden">
       <slot />
     </main>
+    <!-- Global Countdown Bar -->
+    <Countdown />
     <AppFooter />
   </div>
 </template>
