@@ -316,9 +316,9 @@ const sendMessage = async () => {
     Object.assign(currentSession, updatedSession)
 
     // Update session name to first 20 characters of the message
-    if (chatStore.currentSessionId) {
+    if (historyStore.currentSessionId) {
       const sessionName = message.slice(0, 20)
-      historyStore.updateSessionName(chatStore.currentSessionId, sessionName)
+      historyStore.updateSessionName(historyStore.currentSessionId, sessionName)
     }
   }
 
