@@ -92,7 +92,7 @@
           v-model="inputMessage"
           @keydown.enter.exact="sendMessage"
           @input="handleTyping"
-          @paste="handlePaste"
+          @paste="handleTextareaaPaste"
           placeholder="Type your message... (paste images with Ctrl+V)"
           :disabled="chatStore.isGenerating"
           rows="2"
@@ -166,12 +166,48 @@ const handleTyping = () => {
   if (typingTimeout.value) {
     clearTimeout(typingTimeout.value)
   }
-  
+
   sendTypingIndicator(true)
-  
+
   typingTimeout.value = setTimeout(() => {
     sendTypingIndicator(false)
   }, 1500)
+}
+
+// Custom paste handler that properly handles async image processing
+const handleTextareaaPaste = async (event: ClipboardEvent) => {
+  const items = event.clipboardData?.items
+
+  if (!items) return
+
+  // Check if there are any image items
+  let hasImages = false
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i]
+    if (item.kind === 'file' && item.type.startsWith('image/')) {
+      hasImages = true
+      break
+    }
+  }
+
+  // If images are being pasted, prevent default and process them
+  if (hasImages) {
+    event.preventDefault()
+
+    // Process images asynchronously
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
+      if (item.kind === 'file' && item.type.startsWith('image/')) {
+        const file = item.getAsFile()
+        if (file) {
+          await addImage(file)
+        }
+      }
+    }
+  } else {
+    // Let the default paste behavior handle text
+    await handlePaste(event)
+  }
 }
 
 const sendMessage = async () => {

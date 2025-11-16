@@ -29,5 +29,5 @@ export interface VisionMessage {
 export const IMAGE_CONFIG = {
   MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
   ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
-  VISION_MODEL: 'mistral-small-24b', // Only model supporting images
+  VISION_MODEL: 'mistralai/Mistral-Small-24B-Instruct', // Only model supporting images
 }

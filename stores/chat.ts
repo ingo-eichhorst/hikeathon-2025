@@ -235,21 +235,31 @@ export const useChatStore = defineStore('chat', {
           { role: 'system', content: this.systemPrompt },
           ...this.messages.slice(-21, -1).map(m => {
             const msg: any = {
-              role: m.role,
-              content: m.content
+              role: m.role
             }
 
-            // Add images for multimodal requests
+            // Handle multimodal messages with images
             if (m.attachments && m.attachments.length > 0) {
               const images = m.attachments.filter(a => a.type === 'image')
               if (images.length > 0) {
-                msg.images = images.map(img => ({
-                  type: 'image_url',
-                  image_url: {
-                    url: img.content // Already in data:image/...;base64,... format
-                  }
-                }))
+                // For multimodal requests, content must be an array
+                msg.content = [
+                  { type: 'text', text: m.content || '' },
+                  ...images.map(img => ({
+                    type: 'image_url',
+                    image_url: {
+                      url: img.content, // Already in data:image/...;base64,... format
+                      detail: 'auto'
+                    }
+                  }))
+                ]
+              } else {
+                // Text-only message
+                msg.content = m.content
               }
+            } else {
+              // Text-only message
+              msg.content = m.content
             }
 
             return msg
