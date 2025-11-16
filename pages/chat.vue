@@ -209,8 +209,9 @@ onMounted(async () => {
   await chatStore.fetchAvailableModels()
   currentModel.value = chatStore.currentModel
 
-  // Initialize first chat session if none exists
-  if (historyStore.allSessions.length === 0 && !historyStore.currentSessionId) {
+  // Initialize chat session on mount
+  if (historyStore.allSessions.length === 0) {
+    // No sessions exist, create a new one
     historyStore.createSession(
       '',
       settingsStore.currentSystemPromptKey,
@@ -219,9 +220,15 @@ onMounted(async () => {
       chatStore.maxTokens,
       chatStore.topP
     )
+  } else if (chatStore.currentSessionId && historyStore.allSessions.some(s => s.id === chatStore.currentSessionId)) {
+    // Restore from persisted sessionId if it still exists
+    chatStore.loadSession(chatStore.currentSessionId)
   } else if (historyStore.currentSessionId) {
-    // Load the current session
+    // Fall back to history store's current session
     chatStore.loadSession(historyStore.currentSessionId)
+  } else if (historyStore.allSessions.length > 0) {
+    // Load the first available session
+    chatStore.loadSession(historyStore.allSessions[0].id)
   }
 })
 

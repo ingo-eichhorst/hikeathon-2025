@@ -498,6 +498,6 @@ export const useChatStore = defineStore('chat', {
   },
 
   persist: {
-    paths: ['messages', 'currentModel', 'systemPrompt', 'temperature', 'maxTokens', 'topP']
+    paths: ['messages', 'currentModel', 'systemPrompt', 'temperature', 'maxTokens', 'topP', 'currentSessionId']
   }
 })
