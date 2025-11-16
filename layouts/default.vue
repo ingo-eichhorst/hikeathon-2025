@@ -2,7 +2,7 @@
   <div class="min-h-screen flex flex-col">
     <AppHeader />
     <BroadcastBanner />
-    <main class="flex-1 flex flex-col container mx-auto px-4 py-4 overflow-hidden">
+    <main class="flex-1 flex flex-col container mx-auto overflow-hidden">
       <slot />
     </main>
     <!-- Global Countdown Bar -->
