@@ -22,7 +22,7 @@ export interface Message {
 export interface Attachment {
   id: string
   name: string
-  type: 'image' | 'pdf' | 'text' | 'url'
+  type: 'image' | 'pdf' | 'docx' | 'text' | 'url'
   size: number
   content?: string
   url?: string
@@ -429,6 +429,7 @@ export const useChatStore = defineStore('chat', {
     
     estimateTokens(text: string): number {
       // Rough estimation: ~4 characters per token
+      if (!text) return 0
       return Math.ceil(text.length / 4)
     },
     

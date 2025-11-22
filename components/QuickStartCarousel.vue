@@ -78,13 +78,14 @@ const currentIndex = ref(0)
 
 const quickStartGPTs = computed((): GPT[] => {
   return [
+    settingsStore.allGPTs['hikeathon-coach'],
     settingsStore.allGPTs['phase1-understanding-coach'],
     settingsStore.allGPTs['phase2-observation-coach'],
     settingsStore.allGPTs['phase3-synthesis-architect'],
     settingsStore.allGPTs['phase4-ideation-coach'],
     settingsStore.allGPTs['phase5-prototyping-maker'],
     settingsStore.allGPTs['phase6-testing-navigator'],
-    settingsStore.allGPTs['phase7-prompt-companion']
+    settingsStore.allGPTs['prompt-companion']
   ]
 })
 

@@ -55,13 +55,14 @@ if (typeof import.meta !== 'undefined') {
     console.error('Failed to load prompts:', error)
     // Fallback to minimal defaults if loading fails
     DEFAULT_PROMPTS = {
+      'hikeathon-coach': 'You are the HIKEathon Coach for the "HIKEathon X Citizens – AI Edition".',
       'phase1-understanding-coach': 'You are the Phase 1 – Understanding Coach for the HIKEathon x Citizens hackathon.',
       'phase2-observation-coach': 'You are the Phase 2 – Observation Coach for the HIKEathon x Citizens hackathon.',
       'phase3-synthesis-architect': 'You are the Phase 3 – Synthesis Architect for the HIKEathon x Citizens hackathon.',
       'phase4-ideation-coach': 'You are the Phase 4 – Ideation Coach for the HIKEathon x Citizens hackathon.',
       'phase5-prototyping-maker': 'You are the Phase 5 – Prototyping Maker for the HIKEathon x Citizens hackathon.',
       'phase6-testing-navigator': 'You are the Phase 6 – Testing Navigator for the HIKEathon x Citizens hackathon.',
-      'phase7-prompt-companion': 'You are the Phase 7 – Prompt Companion for the HIKEathon x Citizens hackathon.'
+      'prompt-companion': 'You are the Prompt Companion for the "HIKEathon X Citizens – AI Edition".'
     }
   })
 }
@@ -69,6 +70,13 @@ if (typeof import.meta !== 'undefined') {
 // Function to create GPTs with loaded prompts
 function createDefaultGPTs(prompts: Record<string, string>): Record<string, GPT> {
   return {
+    'hikeathon-coach': {
+      key: 'hikeathon-coach',
+      name: 'HIKEathon Coach',
+      description: 'Haupt-Coach für beide Tage – führt Teams durch alle Phasen',
+      icon: '🎯',
+      systemPrompt: prompts['hikeathon-coach'] || DEFAULT_PROMPTS['hikeathon-coach']
+    },
     'phase1-understanding-coach': {
       key: 'phase1-understanding-coach',
       name: 'Phase 1 - Understanding Coach',
@@ -111,12 +119,12 @@ function createDefaultGPTs(prompts: Record<string, string>): Record<string, GPT>
       icon: '✅',
       systemPrompt: prompts['phase6-testing-navigator'] || DEFAULT_PROMPTS['phase6-testing-navigator']
     },
-    'phase7-prompt-companion': {
-      key: 'phase7-prompt-companion',
-      name: 'Phase 7 - Prompt Companion',
-      description: 'KI-Prompting: Optimiert KI-Prompts iterativ für bessere Ergebnisse',
+    'prompt-companion': {
+      key: 'prompt-companion',
+      name: 'Prompt Companion',
+      description: 'Iteratively co-create excellent prompts for generative AI systems',
       icon: '🤖',
-      systemPrompt: prompts['phase7-prompt-companion'] || DEFAULT_PROMPTS['phase7-prompt-companion']
+      systemPrompt: prompts['prompt-companion'] || DEFAULT_PROMPTS['prompt-companion']
     }
   }
 }
@@ -307,7 +315,7 @@ export const useSettingsStore = defineStore('settings', {
     theme: 'system',
     language: 'en',
     systemPrompts: DEFAULT_PROMPTS,
-    currentSystemPromptKey: 'general',
+    currentSystemPromptKey: 'hikeathon-coach',
     eventStartDate: '2025-02-01T09:00:00',
     eventEndDate: '2025-02-02T18:00:00',
     broadcastMessage: null,
@@ -325,7 +333,7 @@ export const useSettingsStore = defineStore('settings', {
     },
 
     currentSystemPrompt: (state): string => {
-      return state.systemPrompts[state.currentSystemPromptKey] || DEFAULT_PROMPTS.general
+      return state.systemPrompts[state.currentSystemPromptKey] || DEFAULT_PROMPTS['hikeathon-coach']
     },
 
     timeUntilEvent: (state): number => {
@@ -355,7 +363,7 @@ export const useSettingsStore = defineStore('settings', {
     },
 
     currentGPT: (state): GPT => {
-      return DEFAULT_GPTS[state.currentSystemPromptKey] || DEFAULT_GPTS.general
+      return DEFAULT_GPTS[state.currentSystemPromptKey] || DEFAULT_GPTS['hikeathon-coach']
     }
   },
 
@@ -374,7 +382,7 @@ export const useSettingsStore = defineStore('settings', {
       if (key === this.currentSystemPromptKey) {
         // Update chat store (lazy import to avoid circular dependency)
         const { useChatStore } = await import('./chat')
-        const chatStore = useChatStore()
+        const chatStore = useChatStore() as any
         chatStore.setSystemPrompt(prompt)
       }
     },
@@ -383,8 +391,17 @@ export const useSettingsStore = defineStore('settings', {
       this.currentSystemPromptKey = key
       // Lazy import to avoid circular dependency
       const { useChatStore } = await import('./chat')
-      const chatStore = useChatStore()
-      chatStore.setSystemPrompt(this.systemPrompts[key])
+      const chatStore = useChatStore() as any
+      const gpt = DEFAULT_GPTS[key]
+      if (gpt && gpt.systemPrompt) {
+        chatStore.setSystemPrompt(gpt.systemPrompt)
+      } else {
+        // Fallback to hikeathon-coach if GPT not found
+        const fallbackGpt = DEFAULT_GPTS['hikeathon-coach']
+        if (fallbackGpt?.systemPrompt) {
+          chatStore.setSystemPrompt(fallbackGpt.systemPrompt)
+        }
+      }
     },
     
     setBroadcast(message: string | null) {
