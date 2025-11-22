@@ -11,16 +11,17 @@ export interface PDFExtractionResult {
  * @returns PDFExtractionResult with text, page count, and optional error
  */
 export async function extractPDFText(file: File): Promise<PDFExtractionResult> {
-  console.log('[PDF] Starting extraction for file:', file.name, 'Size:', file.size, 'bytes')
+  // Log immediately to verify function is being called
+  console.log('[PDF] extractPDFText called with file:', file.name)
 
   try {
     // Dynamically import pdfjs-dist to allow Nuxt to handle worker setup correctly
     const pdfjsLib = await import('pdfjs-dist')
     console.log('[PDF] pdfjs-dist library loaded')
 
-    // Set up the worker using dynamic import path
-    // This allows Nuxt's bundler to resolve the worker file correctly
-    const workerURL = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url)
+    // Set up the worker using dynamic import path with .js extension
+    // .mjs doesn't work in some bundler contexts, .js is the standard extension
+    const workerURL = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url)
     pdfjsLib.GlobalWorkerOptions.workerSrc = workerURL.href
     console.log('[PDF] Worker configured from:', workerURL.href)
 
