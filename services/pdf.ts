@@ -53,18 +53,13 @@ export class PDFProcessor {
       this.updateProgress(0, 0, 'loading')
       console.log('[pdf.ts] Starting PDF processing with unpdf:', file.name)
 
-      // Convert file to buffer (copy the data to avoid ArrayBuffer detachment)
-      const arrayBuffer = await file.arrayBuffer()
-      const uint8Array = new Uint8Array(new ArrayBuffer(arrayBuffer.byteLength))
-      uint8Array.set(new Uint8Array(arrayBuffer))
-
-      // Extract text using unpdf
+      // Pass File object directly to unpdf (avoids ArrayBuffer detachment issues)
       console.log('[pdf.ts] Extracting text...')
-      const textResult = await extractText(uint8Array)
+      const textResult = await extractText(file)
 
       // Get metadata
       console.log('[pdf.ts] Extracting metadata...')
-      const metaResult = await getMeta(uint8Array)
+      const metaResult = await getMeta(file)
       const metadata = this.formatMetadata(metaResult)
 
       // Calculate page count from metadata
@@ -109,24 +104,21 @@ export class PDFProcessor {
       this.updateProgress(0, 0, 'loading')
       console.log('[pdf.ts] Fetching PDF from URL:', url)
 
-      // Fetch the PDF
+      // Fetch the PDF as Blob
       const response = await fetch(url)
       if (!response.ok) {
         throw new Error(`Failed to fetch PDF: ${response.statusText}`)
       }
 
-      const arrayBuffer = await response.arrayBuffer()
-      // Copy the data to avoid ArrayBuffer detachment
-      const uint8Array = new Uint8Array(new ArrayBuffer(arrayBuffer.byteLength))
-      uint8Array.set(new Uint8Array(arrayBuffer))
+      const blob = await response.blob()
 
-      // Extract text
+      // Extract text (pass Blob directly to avoid ArrayBuffer detachment)
       console.log('[pdf.ts] Extracting text from URL PDF...')
-      const textResult = await extractText(uint8Array)
+      const textResult = await extractText(blob)
 
       // Get metadata
       console.log('[pdf.ts] Extracting metadata from URL PDF...')
-      const metaResult = await getMeta(uint8Array)
+      const metaResult = await getMeta(blob)
       const metadata = this.formatMetadata(metaResult)
 
       const pageCount = metaResult.pages || 1
