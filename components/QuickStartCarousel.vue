@@ -78,6 +78,7 @@ const currentIndex = ref(0)
 
 const quickStartGPTs = computed((): GPT[] => {
   return [
+    settingsStore.allGPTs['problem-explorer'],
     settingsStore.allGPTs['interview'],
     settingsStore.allGPTs['bmc'],
     settingsStore.allGPTs['reframer'],
