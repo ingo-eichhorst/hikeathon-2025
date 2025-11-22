@@ -192,6 +192,7 @@ import { useImageUpload } from '~/composables/useImageUpload'
 import { useRealtime } from '~/composables/useRealtime'
 import { fetchMultipleURLs } from '~/composables/useURLFetching'
 import { extractURLs } from '~/utils/urlExtractor'
+import { extractPDFText } from '~/services/pdf'
 import { IMAGE_CONFIG, type UploadedImage } from '~/types/image'
 import type { Attachment } from '~/stores/chat'
 import ChatMenu from '~/components/ChatMenu.vue'
@@ -438,7 +439,7 @@ const handleFileUpload = async (file: File) => {
   try {
     let content: string | undefined
     let processedData: any = undefined
-    let attachmentType: 'text' = 'text'
+    let attachmentType: 'text' | 'pdf' = 'text'
 
     console.log('[chat] Processing file:', file.name, 'Type:', file.type, 'Size:', file.size)
 
@@ -459,6 +460,33 @@ const handleFileUpload = async (file: File) => {
       } catch (err) {
         console.error('[chat] Text file reading failed:', file.name, err)
         alert(`Failed to read text file: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        return
+      }
+    } else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+      try {
+        console.log('[chat] Extracting PDF:', file.name)
+        const result = await extractPDFText(file)
+
+        if (result.error) {
+          console.warn('[chat] PDF extraction warning:', file.name, result.error)
+          alert(`PDF extraction warning: ${result.error}`)
+        }
+
+        if (!result.text) {
+          console.warn('[chat] PDF has no extractable text:', file.name)
+          return
+        }
+
+        content = result.text
+        processedData = {
+          pageCount: result.pageCount,
+          extractionError: result.error
+        }
+        attachmentType = 'pdf'
+        console.log('[chat] PDF processed successfully:', file.name, 'Pages:', result.pageCount)
+      } catch (err) {
+        console.error('[chat] PDF processing failed:', file.name, err)
+        alert(`Failed to process PDF: ${err instanceof Error ? err.message : 'Unknown error'}`)
         return
       }
     } else {

@@ -22,7 +22,7 @@ export interface Message {
 export interface Attachment {
   id: string
   name: string
-  type: 'image' | 'text' | 'url'
+  type: 'image' | 'text' | 'pdf' | 'url'
   size: number
   content?: string
   url?: string
@@ -233,13 +233,14 @@ export const useChatStore = defineStore('chat', {
               role: m.role
             }
 
-            // Handle multimodal messages with images, URLs, and text files
+            // Handle multimodal messages with images, URLs, text files, and PDFs
             if (m.attachments && m.attachments.length > 0) {
               const images = m.attachments.filter(a => a.type === 'image')
               const urls = m.attachments.filter(a => a.type === 'url')
               const textFiles = m.attachments.filter(a => a.type === 'text')
+              const pdfFiles = m.attachments.filter(a => a.type === 'pdf')
 
-              // Build combined content from URLs and text files
+              // Build combined content from URLs, text files, and PDFs
               const urlContent = urls
                 .map(url => `[Web Content from ${url.name}]:\n${url.content}`)
                 .join('\n\n')
@@ -248,7 +249,11 @@ export const useChatStore = defineStore('chat', {
                 .map(file => `[File Content from ${file.name}]:\n${file.content}`)
                 .join('\n\n')
 
-              const combinedContent = [urlContent, textFileContent].filter(c => c).join('\n\n')
+              const pdfContent = pdfFiles
+                .map(file => `[PDF Content from ${file.name}]:\n${file.content}`)
+                .join('\n\n')
+
+              const combinedContent = [urlContent, textFileContent, pdfContent].filter(c => c).join('\n\n')
 
               if (images.length > 0) {
                 // For multimodal requests with images, content must be an array
@@ -270,8 +275,8 @@ export const useChatStore = defineStore('chat', {
                     }
                   }))
                 ]
-              } else if (urls.length > 0 || textFiles.length > 0) {
-                // Text-only message with URL and/or text file content
+              } else if (urls.length > 0 || textFiles.length > 0 || pdfFiles.length > 0) {
+                // Text-only message with URL, text file, and/or PDF content
                 const fullText = combinedContent
                   ? `${m.content}\n\n${combinedContent}`
                   : m.content

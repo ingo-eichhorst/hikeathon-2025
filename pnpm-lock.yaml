@@ -59,6 +59,9 @@ importers:
       pinia-plugin-persistedstate:
         specifier: ^4.7.1
         version: 4.7.1(@nuxt/kit@3.19.2(magicast@0.3.5))(@pinia/nuxt@0.7.0(magicast@0.3.5)(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(pinia@2.3.1(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))
+      unpdf:
+        specifier: ^1.4.0
+        version: 1.4.0
       vue-chartjs:
         specifier: ^5.3.2
         version: 5.3.2(chart.js@4.5.0)(vue@3.5.22(typescript@5.9.3))
@@ -5278,6 +5281,14 @@ packages:
   universalify@2.0.1:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
+
+  unpdf@1.4.0:
+    resolution: {integrity: sha512-TahIk0xdH/4jh/MxfclzU79g40OyxtP00VnEUZdEkJoYtXAHWLiir6t3FC6z3vDqQTzc2ZHcla6uEiVTNjejuA==}
+    peerDependencies:
+      '@napi-rs/canvas': ^0.1.69
+    peerDependenciesMeta:
+      '@napi-rs/canvas':
+        optional: true
 
   unplugin-utils@0.2.5:
     resolution: {integrity: sha512-gwXJnPRewT4rT7sBi/IvxKTjsms7jX7QIDLOClApuZwR49SXbrB1z2NLUZ+vDHyqCj/n58OzRRqaW+B8OZi8vg==}
@@ -11615,6 +11626,8 @@ snapshots:
       unplugin-utils: 0.3.0
 
   universalify@2.0.1: {}
+
+  unpdf@1.4.0: {}
 
   unplugin-utils@0.2.5:
     dependencies:

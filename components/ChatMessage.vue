@@ -60,6 +60,15 @@
             :attachment="attachment"
           />
         </div>
+
+        <!-- PDF attachments -->
+        <div v-if="message.attachments && message.attachments.length > 0" class="space-y-2">
+          <FileAttachmentCard
+            v-for="attachment in message.attachments.filter(a => a.type === 'pdf')"
+            :key="attachment.id"
+            :attachment="attachment"
+          />
+        </div>
       </div>
       
       <!-- Edit mode -->

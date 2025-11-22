@@ -45,6 +45,7 @@
     "nuxt": "^3.14.1",
     "pinia": "^2.2.8",
     "pinia-plugin-persistedstate": "^4.7.1",
+    "unpdf": "^1.4.0",
     "vue-chartjs": "^5.3.2"
   },
   "devDependencies": {

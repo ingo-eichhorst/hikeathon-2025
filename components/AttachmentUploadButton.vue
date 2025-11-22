@@ -27,12 +27,12 @@
       </svg>
     </button>
 
-    <!-- Hidden File Input (images and text files) -->
+    <!-- Hidden File Input (images, text files, and PDFs) -->
     <input
       ref="fileInput"
       type="file"
       multiple
-      accept="image/*,.txt"
+      accept="image/*,.txt,.pdf"
       class="hidden"
       @change="handleFileSelect"
     />
