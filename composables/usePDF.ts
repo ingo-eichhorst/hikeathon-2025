@@ -1,56 +1,71 @@
-import { readonly } from 'vue'
+import { readonly, ref } from 'vue'
 import { PDFProcessor, type PDFProcessingResult, type PDFProcessingProgress } from '~/services/pdf'
 
 export const usePDF = () => {
-  const processor = useState<PDFProcessor>('pdfProcessor', () => new PDFProcessor())
-  const isProcessing = useState<boolean>('pdfProcessing', () => false)
-  const progress = useState<PDFProcessingProgress | null>('pdfProgress', () => null)
-  const lastResult = useState<PDFProcessingResult | null>('pdfResult', () => null)
-  const error = useState<string | null>('pdfError', () => null)
-  
+  // Use ref instead of useState for client-side only composable
+  // useState is for SSR state management, causing initialization issues
+  const processor = ref<PDFProcessor>(new PDFProcessor())
+  const isProcessing = ref<boolean>(false)
+  const progress = ref<PDFProcessingProgress | null>(null)
+  const lastResult = ref<PDFProcessingResult | null>(null)
+  const error = ref<string | null>(null)
+
   // Store processed PDFs for reuse
-  const processedPDFs = useState<Map<string, PDFProcessingResult>>('processedPDFs', () => new Map())
+  const processedPDFs = ref<Map<string, PDFProcessingResult>>(new Map())
   
   /**
-   * Processes a PDF file
+   * Processes a PDF file with timeout protection
    */
   const processPDF = async (file: File): Promise<PDFProcessingResult> => {
     isProcessing.value = true
     error.value = null
     progress.value = null
-    
+
     try {
       // Check if already processed
       const cacheKey = `${file.name}-${file.size}-${file.lastModified}`
       const cached = processedPDFs.value.get(cacheKey)
       if (cached) {
-        console.log('Returning cached PDF processing result')
+        console.log('[usePDF] Returning cached PDF processing result:', file.name)
         lastResult.value = cached
         return cached
       }
-      
+
       // Set up progress callback
       processor.value.onProgress((p) => {
         progress.value = p
       })
-      
-      // Process the PDF
-      const result = await processor.value.processPDF(file)
-      
+
+      console.log('[usePDF] Starting PDF processing with timeout protection:', file.name)
+
+      // Add timeout protection to prevent hanging
+      const processingPromise = processor.value.processPDF(file)
+      const timeoutPromise = new Promise<PDFProcessingResult>((_, reject) =>
+        setTimeout(
+          () => reject(new Error('PDF processing timeout (15s) - worker may not have loaded or PDF is corrupted')),
+          15000
+        )
+      )
+
+      const result = await Promise.race([processingPromise, timeoutPromise])
+
+      console.log('[usePDF] PDF processed successfully:', file.name)
+
       // Cache the result
       processedPDFs.value.set(cacheKey, result)
-      
+
       // Limit cache size
       if (processedPDFs.value.size > 10) {
         const firstKey = processedPDFs.value.keys().next().value
         processedPDFs.value.delete(firstKey)
       }
-      
+
       lastResult.value = result
       return result
     } catch (err) {
-      console.error('Error processing PDF:', err)
-      error.value = err instanceof Error ? err.message : 'Failed to process PDF'
+      const errorMsg = err instanceof Error ? err.message : 'Failed to process PDF'
+      console.error('[usePDF] Error processing PDF:', file.name, errorMsg)
+      error.value = errorMsg
       throw err
     } finally {
       isProcessing.value = false
@@ -58,44 +73,57 @@ export const usePDF = () => {
   }
   
   /**
-   * Processes a PDF from URL
+   * Processes a PDF from URL with timeout protection
    */
   const processPDFFromURL = async (url: string): Promise<PDFProcessingResult> => {
     isProcessing.value = true
     error.value = null
     progress.value = null
-    
+
     try {
       // Check if already processed
       const cached = processedPDFs.value.get(url)
       if (cached) {
-        console.log('Returning cached PDF processing result')
+        console.log('[usePDF] Returning cached PDF processing result from URL:', url)
         lastResult.value = cached
         return cached
       }
-      
+
       // Set up progress callback
       processor.value.onProgress((p) => {
         progress.value = p
       })
-      
-      // Process the PDF
-      const result = await processor.value.processPDFFromURL(url)
-      
+
+      console.log('[usePDF] Starting PDF processing from URL with timeout protection:', url)
+
+      // Add timeout protection to prevent hanging
+      const processingPromise = processor.value.processPDFFromURL(url)
+      const timeoutPromise = new Promise<PDFProcessingResult>((_, reject) =>
+        setTimeout(
+          () => reject(new Error('PDF processing timeout (30s) - worker may not have loaded or PDF is corrupted')),
+          30000
+        )
+      )
+
+      const result = await Promise.race([processingPromise, timeoutPromise])
+
+      console.log('[usePDF] PDF from URL processed successfully:', url)
+
       // Cache the result
       processedPDFs.value.set(url, result)
-      
+
       // Limit cache size
       if (processedPDFs.value.size > 10) {
         const firstKey = processedPDFs.value.keys().next().value
         processedPDFs.value.delete(firstKey)
       }
-      
+
       lastResult.value = result
       return result
     } catch (err) {
-      console.error('Error processing PDF from URL:', err)
-      error.value = err instanceof Error ? err.message : 'Failed to process PDF from URL'
+      const errorMsg = err instanceof Error ? err.message : 'Failed to process PDF from URL'
+      console.error('[usePDF] Error processing PDF from URL:', url, errorMsg)
+      error.value = errorMsg
       throw err
     } finally {
       isProcessing.value = false
