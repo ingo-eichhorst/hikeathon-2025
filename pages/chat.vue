@@ -106,7 +106,7 @@
             <span v-else-if="file.type === 'docx'">📝</span>
             <span v-else>📋</span>
             <span>{{ file.name }}</span>
-            <button @click="attachments.splice(attachments.indexOf(file), 1)" class="text-red-600 hover:text-red-800 dark:text-red-400 ml-1">
+            <button @click="removeAttachment(file.id)" class="text-red-600 hover:text-red-800 dark:text-red-400 ml-1" title="Remove file">
               ×
             </button>
           </div>
@@ -437,6 +437,11 @@ const handleImageAdded = (file: File) => {
 const handleImageError = (error: string) => {
   console.error('Image upload error:', error)
   // You could show a notification here
+}
+
+const removeAttachment = (id: string) => {
+  attachments.value = attachments.value.filter(a => a.id !== id)
+  console.log('[chat] Attachment removed:', id)
 }
 
 const handleFileUpload = async (event: Event) => {
