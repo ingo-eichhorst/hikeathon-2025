@@ -26,6 +26,9 @@ export const GPTCard: typeof import("../components/GPTCard.vue")['default']
 export const ImagePreview: typeof import("../components/ImagePreview.vue")['default']
 export const ImageUploadButton: typeof import("../components/ImageUploadButton.vue")['default']
 export const NotificationList: typeof import("../components/NotificationList.vue")['default']
+export const QuickStartCard: typeof import("../components/QuickStartCard.vue")['default']
+export const QuickStartCarousel: typeof import("../components/QuickStartCarousel.vue")['default']
+export const URLAttachmentCard: typeof import("../components/URLAttachmentCard.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/components/welcome.vue")['default']
 export const NuxtLayout: typeof import("../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/components/nuxt-layout")['default']
 export const NuxtErrorBoundary: typeof import("../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']
@@ -62,6 +65,9 @@ export const LazyGPTCard: LazyComponent<typeof import("../components/GPTCard.vue
 export const LazyImagePreview: LazyComponent<typeof import("../components/ImagePreview.vue")['default']>
 export const LazyImageUploadButton: LazyComponent<typeof import("../components/ImageUploadButton.vue")['default']>
 export const LazyNotificationList: LazyComponent<typeof import("../components/NotificationList.vue")['default']>
+export const LazyQuickStartCard: LazyComponent<typeof import("../components/QuickStartCard.vue")['default']>
+export const LazyQuickStartCarousel: LazyComponent<typeof import("../components/QuickStartCarousel.vue")['default']>
+export const LazyURLAttachmentCard: LazyComponent<typeof import("../components/URLAttachmentCard.vue")['default']>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/components/welcome.vue")['default']>
 export const LazyNuxtLayout: LazyComponent<typeof import("../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
 export const LazyNuxtErrorBoundary: LazyComponent<typeof import("../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']>

@@ -34,10 +34,7 @@
               v-model="currentModel"
               @change="chatStore.setModel(currentModel)"
               class="px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-dark-900 dark:text-gray-100 font-medium"
-              :disabled="chatStore.modelsLoading"
             >
-              <option v-if="chatStore.modelsLoading" disabled>Loading models...</option>
-              <option v-else-if="chatStore.availableModels.length === 0" disabled>No models available</option>
               <option v-for="model in chatStore.availableModels" :key="model.id" :value="model.id">
                 {{ model.name }}
               </option>
@@ -175,6 +172,8 @@ import { useChatHistoryStore } from '~/stores/chatHistory'
 import { useSettingsStore } from '~/stores/settings'
 import { useImageUpload } from '~/composables/useImageUpload'
 import { useRealtime } from '~/composables/useRealtime'
+import { fetchMultipleURLs } from '~/composables/useURLFetching'
+import { extractURLs } from '~/utils/urlExtractor'
 import { IMAGE_CONFIG, type UploadedImage } from '~/types/image'
 import ChatMenu from '~/components/ChatMenu.vue'
 
@@ -198,9 +197,8 @@ const typingTeams = computed(() => {
     .map(user => user.teamName)
 })
 
-// Fetch available models on mount
+// Initialize on mount
 onMounted(async () => {
-  await chatStore.fetchAvailableModels()
   currentModel.value = chatStore.currentModel
 
   // Small delay to ensure Pinia persistence hydration is complete
@@ -320,12 +318,34 @@ const sendMessage = async () => {
     chatStore.setModel(IMAGE_CONFIG.VISION_MODEL)
   }
 
-  // Send message with images
+  // Extract and fetch URLs from the message
+  const detectedURLs = extractURLs(message)
+  let urlAttachments = []
+
+  if (detectedURLs.length > 0) {
+    try {
+      urlAttachments = await fetchMultipleURLs(detectedURLs.map(u => u.url))
+
+      // Filter out any failed fetches (those with errors)
+      const failedUrls = urlAttachments.filter(u => u.error)
+      if (failedUrls.length > 0) {
+        console.warn('Failed to fetch some URLs:', failedUrls)
+        // Remove failed URLs from the list
+        urlAttachments = urlAttachments.filter(u => !u.error)
+      }
+    } catch (error) {
+      console.error('Error fetching URLs:', error)
+      // Continue sending message without URL content
+      urlAttachments = []
+    }
+  }
+
+  // Send message with images and URL attachments
   if (images.length > 0) {
-    await chatStore.sendMessage(message, images)
+    await chatStore.sendMessage(message, images, urlAttachments.length > 0 ? urlAttachments : undefined)
     uploadedImages.value = []
   } else {
-    await chatStore.sendMessage(message)
+    await chatStore.sendMessage(message, undefined, urlAttachments.length > 0 ? urlAttachments : undefined)
   }
 
   // Save the session after sending

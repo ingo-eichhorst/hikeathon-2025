@@ -42,6 +42,15 @@
             </div>
           </div>
         </div>
+
+        <!-- URL attachments -->
+        <div v-if="message.attachments && message.attachments.length > 0" class="space-y-2">
+          <URLAttachmentCard
+            v-for="attachment in message.attachments.filter(a => a.type === 'url')"
+            :key="attachment.id"
+            :attachment="convertURLAttachment(attachment)"
+          />
+        </div>
       </div>
       
       <!-- Edit mode -->
@@ -111,6 +120,7 @@ import { ref } from 'vue'
 import { marked } from 'marked'
 import hljs from 'highlight.js'
 import type { Message, Attachment } from '~/stores/chat'
+import URLAttachmentCard from './URLAttachmentCard.vue'
 
 const props = defineProps<{
   message: Message
@@ -169,6 +179,19 @@ const saveEdit = () => {
 const cancelEdit = () => {
   isEditing.value = false
   editContent.value = ''
+}
+
+const convertURLAttachment = (attachment: Attachment) => {
+  return {
+    id: attachment.id,
+    url: attachment.url || '',
+    fetchedAt: attachment.processedData?.fetchedAt || new Date(),
+    contentType: attachment.processedData?.contentType || 'text/html',
+    content: attachment.content || '',
+    summary: attachment.processedData?.summary || '',
+    error: attachment.processedData?.error || undefined,
+    isLoading: false
+  }
 }
 </script>
 
