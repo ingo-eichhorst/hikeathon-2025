@@ -19,10 +19,9 @@ export async function extractPDFText(file: File): Promise<PDFExtractionResult> {
     const pdfjsLib = await import('pdfjs-dist')
     console.log('[PDF] pdfjs-dist library loaded')
 
-    // Set up the worker using local file from public directory
-    // This is served from the project and respects the BASE_URL for GitHub Pages
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      `${import.meta.env.BASE_URL}pdf.worker.min.mjs`
+    // Set up the worker using absolute path from public directory
+    // Absolute path works in both development and production (GitHub Pages)
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
     console.log('[PDF] Worker configured from local file:', pdfjsLib.GlobalWorkerOptions.workerSrc)
 
     // Convert File to ArrayBuffer
@@ -30,9 +29,23 @@ export async function extractPDFText(file: File): Promise<PDFExtractionResult> {
     const buffer = await file.arrayBuffer()
     console.log('[PDF] ArrayBuffer created, size:', buffer.byteLength, 'bytes')
 
-    // Load the PDF document
+    // Create a safe copy of the buffer to prevent detachment issues
+    // When buffer is passed to worker, it might be detached if library uses structuredClone
+    console.log('[PDF] Creating buffer copy for safe worker communication...')
+    const bufferCopy = new Uint8Array(buffer).slice()
+    console.log('[PDF] Buffer copy created, size:', bufferCopy.byteLength, 'bytes')
+
+    // Load the PDF document with timeout protection
+    // If worker doesn't respond within 15 seconds, throw error instead of hanging
     console.log('[PDF] Loading PDF document...')
-    const pdf = await pdfjsLib.getDocument(buffer).promise
+    const processingPromise = pdfjsLib.getDocument(bufferCopy).promise
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error('PDF processing timeout (15s) - worker may not have loaded or PDF is corrupted')),
+        15000
+      )
+    )
+    const pdf = await Promise.race([processingPromise, timeoutPromise])
     console.log('[PDF] Document loaded successfully, pages:', pdf.numPages)
 
     // Extract text from all pages
