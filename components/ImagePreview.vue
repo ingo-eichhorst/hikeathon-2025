@@ -47,15 +47,21 @@
 </template>
 
 <script setup lang="ts">
+import { watch } from 'vue'
 import type { UploadedImage } from '~/types/image'
 
-defineProps<{
+const props = defineProps<{
   images: UploadedImage[]
 }>()
 
 const emit = defineEmits<{
   remove: [id: string]
 }>()
+
+// Debug logging
+watch(() => props.images, (newImages) => {
+  console.log('[ImagePreview] Images updated:', newImages.length, newImages)
+}, { deep: true })
 
 const formatFileSize = (bytes: number) => {
   if (bytes === 0) return '0 Bytes'

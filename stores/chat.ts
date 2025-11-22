@@ -85,7 +85,7 @@ interface ChatGetters {
 }
 
 interface ChatActions {
-  sendMessage(content: string, images?: UploadedImage[]): Promise<void>
+  sendMessage(content: string, images?: UploadedImage[], urlAttachments?: URLAttachment[], fileAttachments?: Attachment[]): Promise<void>
   stopGenerating(): void
   clearMessages(): void
   setModel(modelId: string): void
@@ -156,7 +156,7 @@ export const useChatStore = defineStore('chat', {
       }
     },
 
-    async sendMessage(content: string, images?: UploadedImage[], urlAttachments?: URLAttachment[]) {
+    async sendMessage(content: string, images?: UploadedImage[], urlAttachments?: URLAttachment[], fileAttachments?: Attachment[]) {
       if (this.isGenerating) return
 
       // Sync system prompt from settings store to ensure the selected persona is used
@@ -194,7 +194,8 @@ export const useChatStore = defineStore('chat', {
       // Combine all attachments
       const attachments = [
         ...(imageAttachments || []),
-        ...(urlAttachmentsConverted || [])
+        ...(urlAttachmentsConverted || []),
+        ...(fileAttachments || [])
       ].filter(a => a) as Attachment[]
 
       const userMessage: Message = {

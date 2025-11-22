@@ -207,6 +207,7 @@ declare global {
   const useCssVars: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['useCssVars']
   const useCurrentElement: typeof import('@vueuse/core')['useCurrentElement']
   const useCycleList: typeof import('@vueuse/core')['useCycleList']
+  const useDOCX: typeof import('../../composables/useDOCX')['useDOCX']
   const useDark: typeof import('@vueuse/core')['useDark']
   const useDateFormat: typeof import('@vueuse/core')['useDateFormat']
   const useDebounce: typeof import('@vueuse/core')['useDebounce']
@@ -654,6 +655,7 @@ declare module 'vue' {
     readonly useCssVars: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['useCssVars']>
     readonly useCurrentElement: UnwrapRef<typeof import('@vueuse/core')['useCurrentElement']>
     readonly useCycleList: UnwrapRef<typeof import('@vueuse/core')['useCycleList']>
+    readonly useDOCX: UnwrapRef<typeof import('../../composables/useDOCX')['useDOCX']>
     readonly useDark: UnwrapRef<typeof import('@vueuse/core')['useDark']>
     readonly useDateFormat: UnwrapRef<typeof import('@vueuse/core')['useDateFormat']>
     readonly useDebounce: UnwrapRef<typeof import('@vueuse/core')['useDebounce']>

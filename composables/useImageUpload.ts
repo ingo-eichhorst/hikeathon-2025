@@ -72,12 +72,26 @@ export const useImageUpload = () => {
       // Get dimensions
       const { width, height } = await getImageDimensions(file)
 
+      // Determine MIME type, with fallback based on file extension
+      let mimeType = file.type
+      if (!mimeType) {
+        const ext = file.name.toLowerCase().split('.').pop()
+        const mimeTypes: Record<string, string> = {
+          jpg: 'image/jpeg',
+          jpeg: 'image/jpeg',
+          png: 'image/png',
+          webp: 'image/webp',
+          gif: 'image/gif'
+        }
+        mimeType = mimeTypes[ext || ''] || 'image/jpeg'
+      }
+
       // Create image object
       const image: UploadedImage = {
         id: crypto.randomUUID(),
         name: file.name,
         size: file.size,
-        type: file.type as any,
+        type: mimeType as any,
         base64,
         timestamp: Date.now(),
         width,
@@ -85,6 +99,7 @@ export const useImageUpload = () => {
       }
 
       images.value.push(image)
+      console.log('[useImageUpload] Image added:', image.name, 'Type:', image.type)
       return true
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to upload image'

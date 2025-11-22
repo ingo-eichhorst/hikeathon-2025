@@ -1,8 +1,8 @@
 import * as pdfjsLib from 'pdfjs-dist'
 
-// Configure the worker path
+// Configure the worker path - use unpkg as fallback for better reliability
 if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`
 }
 
 export interface PDFProcessingResult {
@@ -60,7 +60,7 @@ export class PDFProcessor {
       // Load the PDF document
       const loadingTask = pdfjsLib.getDocument({
         data: arrayBuffer,
-        standardFontDataUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/' + pdfjsLib.version + '/standard_fonts/'
+        standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/standard_fonts/`
       })
       
       const pdf = await loadingTask.promise

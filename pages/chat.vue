@@ -95,6 +95,23 @@
           @remove="removeImage"
         />
 
+        <!-- File Attachments Preview -->
+        <div v-if="attachments.length > 0" class="mb-3 flex flex-wrap gap-2">
+          <div
+            v-for="file in attachments"
+            :key="file.id"
+            class="flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900 rounded text-sm text-blue-900 dark:text-blue-100 font-medium"
+          >
+            <span v-if="file.type === 'pdf'">📄</span>
+            <span v-else-if="file.type === 'docx'">📝</span>
+            <span v-else>📋</span>
+            <span>{{ file.name }}</span>
+            <button @click="attachments.splice(attachments.indexOf(file), 1)" class="text-red-600 hover:text-red-800 dark:text-red-400 ml-1">
+              ×
+            </button>
+          </div>
+        </div>
+
         <div class="flex gap-2">
           <textarea
             v-model="inputMessage"
@@ -108,6 +125,22 @@
           ></textarea>
 
           <div class="flex flex-col gap-2">
+            <!-- File upload button (PDF, DOCX, TXT) -->
+            <label class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer transition-colors"
+              title="Upload PDF, Word, or text file">
+              <input
+                ref="fileInput"
+                type="file"
+                @change="handleFileUpload"
+                accept=".pdf,.txt,.docx,.doc"
+                multiple
+                class="hidden"
+              />
+              <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+              </svg>
+            </label>
+
             <ImageUploadButton
               @imageAdded="handleImageAdded"
               @error="handleImageError"
@@ -174,7 +207,10 @@ import { useImageUpload } from '~/composables/useImageUpload'
 import { useRealtime } from '~/composables/useRealtime'
 import { fetchMultipleURLs } from '~/composables/useURLFetching'
 import { extractURLs } from '~/utils/urlExtractor'
+import { usePDF } from '~/composables/usePDF'
+import { useDOCX } from '~/composables/useDOCX'
 import { IMAGE_CONFIG, type UploadedImage } from '~/types/image'
+import type { Attachment } from '~/stores/chat'
 import ChatMenu from '~/components/ChatMenu.vue'
 
 const chatStore = useChatStore()
@@ -183,7 +219,11 @@ const settingsStore = useSettingsStore()
 const currentModel = ref(chatStore.currentModel)
 const inputMessage = ref('')
 const mobileMenuOpen = ref(false)
+const fileInput = ref<HTMLInputElement>()
 const { images: uploadedImages, addImage, removeImage, handlePaste } = useImageUpload()
+const { processPDF } = usePDF()
+const { processDOCX } = useDOCX()
+const attachments = ref<Attachment[]>([])
 
 // Realtime features
 const realtimeConnection = useRealtime()
@@ -343,12 +383,23 @@ const sendMessage = async () => {
     }
   }
 
-  // Send message with images and URL attachments
-  if (images.length > 0) {
-    await chatStore.sendMessage(message, images, urlAttachments.length > 0 ? urlAttachments : undefined)
+  // Send message with images, file attachments and URL attachments
+  if (images.length > 0 || attachments.value.length > 0) {
+    await chatStore.sendMessage(
+      message,
+      images.length > 0 ? images : undefined,
+      urlAttachments.length > 0 ? urlAttachments : undefined,
+      attachments.value.length > 0 ? attachments.value : undefined
+    )
     uploadedImages.value = []
+    attachments.value = []
   } else {
-    await chatStore.sendMessage(message, undefined, urlAttachments.length > 0 ? urlAttachments : undefined)
+    await chatStore.sendMessage(
+      message,
+      undefined,
+      urlAttachments.length > 0 ? urlAttachments : undefined,
+      undefined
+    )
   }
 
   // Save the session after sending
@@ -386,6 +437,62 @@ const handleImageAdded = (file: File) => {
 const handleImageError = (error: string) => {
   console.error('Image upload error:', error)
   // You could show a notification here
+}
+
+const handleFileUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (!input.files?.length) return
+
+  try {
+    for (const file of Array.from(input.files)) {
+      let content: string | undefined
+      let processedData: any = undefined
+      let attachmentType: 'pdf' | 'docx' | 'text' = 'text'
+
+      // Process based on file type
+      if (file.type === 'application/pdf') {
+        const result = await processPDF(file)
+        content = result.text
+        processedData = {
+          pageCount: result.pageCount,
+          metadata: result.metadata
+        }
+        attachmentType = 'pdf'
+      } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/msword' || file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
+        const result = await processDOCX(file)
+        content = result.text
+        processedData = {
+          metadata: result.metadata
+        }
+        attachmentType = 'docx'
+      } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+        content = await file.text()
+        attachmentType = 'text'
+      }
+
+      if (content) {
+        const attachment: Attachment = {
+          id: crypto.randomUUID(),
+          name: file.name,
+          type: attachmentType,
+          size: file.size,
+          content,
+          processedData
+        }
+        attachments.value.push(attachment)
+        console.log('[chat] File attachment added:', attachment.name, 'Type:', attachment.type)
+      }
+    }
+  } catch (error) {
+    console.error('Error processing file:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    alert(`Error processing file: ${errorMessage}`)
+  } finally {
+    // Reset input
+    if (fileInput.value) {
+      fileInput.value.value = ''
+    }
+  }
 }
 
 useHead({
