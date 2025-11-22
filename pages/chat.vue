@@ -205,6 +205,9 @@ onMounted(async () => {
   // (in SSR=false mode, localStorage is loaded synchronously but we need to let the event loop cycle)
   await new Promise(resolve => setTimeout(resolve, 50))
 
+  // Initialize system prompt from persisted GPT key
+  chatStore.initializeSystemPrompt()
+
   // Initialize chat session on mount
   if (historyStore.allSessions.length === 0) {
     // No sessions exist, create a new one

@@ -65,6 +65,7 @@ interface ChatState {
   messages: Message[]
   currentModel: string
   systemPrompt: string
+  currentGPTKey: string
   isGenerating: boolean
   currentStreamingMessage: Message | null
   totalTokens: number
@@ -99,6 +100,8 @@ interface ChatActions {
   setMaxTokens(maxTokens: number): void
   setTopP(topP: number): void
   setCurrentSessionId(sessionId: string | null): void
+  setCurrentGPTKey(key: string): void
+  initializeSystemPrompt(): void
   saveCurrentSession(): void
   loadSession(sessionId: string): void
 }
@@ -108,6 +111,7 @@ export const useChatStore = defineStore('chat', {
     messages: [],
     currentModel: 'openai/gpt-oss-120b',
     systemPrompt: 'You are a helpful AI assistant supporting teams at HIKEathon 2025. Be concise, accurate, and friendly.',
+    currentGPTKey: 'hikeathon-coach',
     isGenerating: false,
     currentStreamingMessage: null,
     totalTokens: 0,
@@ -155,6 +159,13 @@ export const useChatStore = defineStore('chat', {
     async sendMessage(content: string, images?: UploadedImage[], urlAttachments?: URLAttachment[]) {
       if (this.isGenerating) return
 
+      // Sync system prompt from settings store to ensure the selected persona is used
+      const settingsStore = useSettingsStore()
+      const currentGPT = settingsStore.currentGPT
+      if (currentGPT && currentGPT.systemPrompt) {
+        this.systemPrompt = currentGPT.systemPrompt
+      }
+
       // Convert UploadedImage[] to Attachment[]
       const imageAttachments: Attachment[] | undefined = images?.map(img => ({
         id: img.id,
@@ -193,7 +204,7 @@ export const useChatStore = defineStore('chat', {
         timestamp: new Date(),
         attachments: attachments.length > 0 ? attachments : undefined
       }
-      
+
       this.messages.push(userMessage)
       this.isGenerating = true
       
@@ -453,6 +464,19 @@ export const useChatStore = defineStore('chat', {
       this.currentSessionId = sessionId
     },
 
+    setCurrentGPTKey(key: string) {
+      this.currentGPTKey = key
+    },
+
+    // Initialize system prompt from persisted GPT key (called on app startup)
+    initializeSystemPrompt() {
+      const settingsStore = useSettingsStore()
+      const gpt = settingsStore.allGPTs[this.currentGPTKey]
+      if (gpt && gpt.systemPrompt) {
+        this.systemPrompt = gpt.systemPrompt
+      }
+    },
+
     saveCurrentSession() {
       if (!this.currentSessionId) return
 
@@ -486,11 +510,14 @@ export const useChatStore = defineStore('chat', {
       const settingsStore = useSettingsStore()
       await settingsStore.selectSystemPrompt(session.selectedGPT)
 
+      // Also update currentGPTKey in chat store to match
+      this.currentGPTKey = session.selectedGPT
+
       this.updateTokenCounts()
     }
   },
 
   persist: {
-    paths: ['currentModel', 'systemPrompt', 'temperature', 'maxTokens', 'topP', 'currentSessionId']
+    paths: ['currentModel', 'currentGPTKey', 'temperature', 'maxTokens', 'topP', 'currentSessionId']
   }
 })

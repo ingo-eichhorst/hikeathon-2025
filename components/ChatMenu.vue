@@ -88,6 +88,9 @@ const selectGPT = async (gptKey: string) => {
   // Select the GPT system prompt
   await settingsStore.selectSystemPrompt(gptKey)
 
+  // Update chat store's current GPT key for persistence
+  chatStore.setCurrentGPTKey(gptKey)
+
   // Create new session with the selected GPT
   const sessionId = historyStore.createSession(
     '',
@@ -111,6 +114,9 @@ const startNewChat = () => {
   if (currentSessionId.value) {
     chatStore.saveCurrentSession()
   }
+
+  // Update chat store's current GPT key to match settings
+  chatStore.setCurrentGPTKey(settingsStore.currentSystemPromptKey)
 
   // Create new session with current GPT and settings
   const sessionId = historyStore.createSession(
