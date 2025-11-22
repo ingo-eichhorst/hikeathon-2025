@@ -2,9 +2,16 @@ import * as pdfjsLib from 'pdfjs-dist'
 
 // Configure the worker path - use local bundled worker for reliability
 if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
-  // Use relative path accounting for GitHub Pages base URL (/hikeathon-2025/)
-  const basePath = import.meta.env.BASE_URL || '/'
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `${basePath}pdf-worker/pdf.worker.min.mjs`
+  try {
+    // Use relative path accounting for GitHub Pages base URL (/hikeathon-2025/)
+    // Use .js extension for better compatibility (not .mjs)
+    const basePath = import.meta.env.BASE_URL || '/'
+    const workerPath = `${basePath}pdf-worker/pdf.worker.min.js`
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath
+    console.log('[pdf.ts] Configured PDF.js worker:', workerPath)
+  } catch (err) {
+    console.error('[pdf.ts] Failed to configure worker:', err)
+  }
 }
 
 export interface PDFProcessingResult {
