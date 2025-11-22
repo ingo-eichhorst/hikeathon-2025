@@ -16,6 +16,7 @@ type LazyComponent<T> = (T & DefineComponent<HydrationStrategies, {}, {}, {}, {}
 
 export const AppFooter: typeof import("../components/AppFooter.vue")['default']
 export const AppHeader: typeof import("../components/AppHeader.vue")['default']
+export const AttachmentUploadButton: typeof import("../components/AttachmentUploadButton.vue")['default']
 export const BroadcastBanner: typeof import("../components/BroadcastBanner.vue")['default']
 export const ChatInput: typeof import("../components/ChatInput.vue")['default']
 export const ChatMenu: typeof import("../components/ChatMenu.vue")['default']
@@ -55,6 +56,7 @@ export const NuxtIsland: typeof import("../node_modules/.pnpm/nuxt@3.19.2_@parce
 export const NuxtRouteAnnouncer: typeof import("../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/components/server-placeholder")['default']
 export const LazyAppFooter: LazyComponent<typeof import("../components/AppFooter.vue")['default']>
 export const LazyAppHeader: LazyComponent<typeof import("../components/AppHeader.vue")['default']>
+export const LazyAttachmentUploadButton: LazyComponent<typeof import("../components/AttachmentUploadButton.vue")['default']>
 export const LazyBroadcastBanner: LazyComponent<typeof import("../components/BroadcastBanner.vue")['default']>
 export const LazyChatInput: LazyComponent<typeof import("../components/ChatInput.vue")['default']>
 export const LazyChatMenu: LazyComponent<typeof import("../components/ChatMenu.vue")['default']>

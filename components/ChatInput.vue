@@ -76,7 +76,7 @@
           <input
             type="file"
             @change="handleFileUpload"
-            accept=".txt,.pdf,.png,.jpg,.jpeg,.webp,.docx,.doc"
+            accept=".txt,.png,.jpg,.jpeg,.webp"
             multiple
             class="hidden"
             data-testid="file-input"
@@ -113,8 +113,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useSettingsStore } from '~/stores/settings'
-import { usePDF } from '~/composables/usePDF'
-import { useDOCX } from '~/composables/useDOCX'
 import { useImageProcessor } from '~/composables/useImageProcessor'
 import { useURLFetching, fetchMultipleURLs } from '~/composables/useURLFetching'
 import { extractURLs } from '~/utils/urlExtractor'
@@ -131,8 +129,6 @@ const emit = defineEmits<{
 
 const settingsStore = useSettingsStore()
 const t = computed(() => settingsStore.t)
-const { processPDF } = usePDF()
-const { processDOCX } = useDOCX()
 const { processImage } = useImageProcessor()
 
 const message = ref('')
@@ -207,26 +203,18 @@ const handleFileUpload = async (event: Event) => {
   
   try {
     for (const file of Array.from(input.files)) {
-      const maxSize = file.type === 'application/pdf' ? 50 * 1024 * 1024 : 10 * 1024 * 1024
-      
+      const maxSize = 10 * 1024 * 1024
+
       if (file.size > maxSize) {
         alert(`File ${file.name} exceeds size limit (${maxSize / (1024 * 1024)}MB)`)
         continue
       }
-      
+
       let content: string | undefined
       let processedData: any = undefined
-      
+
       // Process based on file type
-      if (file.type === 'application/pdf') {
-        fileProgress.value = `Processing PDF: ${file.name}...`
-        const result = await processPDF(file)
-        content = result.text
-        processedData = {
-          pageCount: result.pageCount,
-          metadata: result.metadata
-        }
-      } else if (file.type.startsWith('image/')) {
+      if (file.type.startsWith('image/')) {
         fileProgress.value = `Processing image: ${file.name}...`
         const result = await processImage(file)
         content = result.base64
@@ -235,13 +223,6 @@ const handleFileUpload = async (event: Event) => {
           height: result.height,
           compressionRatio: result.compressionRatio
         }
-      } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/msword' || file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
-        fileProgress.value = `Processing Word document: ${file.name}...`
-        const result = await processDOCX(file)
-        content = result.text
-        processedData = {
-          metadata: result.metadata
-        }
       } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
         content = await file.text()
       }
@@ -249,12 +230,12 @@ const handleFileUpload = async (event: Event) => {
       const attachment: Attachment = {
         id: crypto.randomUUID(),
         name: file.name,
-        type: file.type.startsWith('image/') ? 'image' : file.type === 'application/pdf' ? 'pdf' : (file.name.endsWith('.docx') || file.name.endsWith('.doc')) ? 'docx' : 'text',
+        type: file.type.startsWith('image/') ? 'image' : 'text',
         size: file.size,
         content,
         processedData
       }
-      
+
       attachments.value.push(attachment)
     }
   } catch (error) {

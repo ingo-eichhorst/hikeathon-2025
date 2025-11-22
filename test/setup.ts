@@ -83,8 +83,5 @@ vi.mock('chart.js/auto', () => ({
   }))
 }))
 
-// Mock PDF.js worker
-vi.mock('pdfjs-dist/build/pdf.worker.entry', () => ({}))
-
 // Set test environment
 process.env.NODE_ENV = 'test'

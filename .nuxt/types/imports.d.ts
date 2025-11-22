@@ -207,7 +207,6 @@ declare global {
   const useCssVars: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['useCssVars']
   const useCurrentElement: typeof import('@vueuse/core')['useCurrentElement']
   const useCycleList: typeof import('@vueuse/core')['useCycleList']
-  const useDOCX: typeof import('../../composables/useDOCX')['useDOCX']
   const useDark: typeof import('@vueuse/core')['useDark']
   const useDateFormat: typeof import('@vueuse/core')['useDateFormat']
   const useDebounce: typeof import('@vueuse/core')['useDebounce']
@@ -276,11 +275,9 @@ declare global {
   const useNow: typeof import('@vueuse/core')['useNow']
   const useNuxtApp: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/nuxt')['useNuxtApp']
   const useNuxtData: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']
-  const useNuxtDevTools: typeof import('../../node_modules/.pnpm/@nuxt+devtools@2.6.5_vite@7.1.9_@types+node@22.18.8_jiti@2.6.1_terser@5.44.0_yaml@2.8.1__vue@3.5.22_typescript@5.9.3_/node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools')['useNuxtDevTools']
   const useObjectUrl: typeof import('@vueuse/core')['useObjectUrl']
   const useOffsetPagination: typeof import('@vueuse/core')['useOffsetPagination']
   const useOnline: typeof import('@vueuse/core')['useOnline']
-  const usePDF: typeof import('../../composables/usePDF')['usePDF']
   const usePageLeave: typeof import('@vueuse/core')['usePageLeave']
   const useParallax: typeof import('@vueuse/core')['useParallax']
   const useParentElement: typeof import('@vueuse/core')['useParentElement']
@@ -655,7 +652,6 @@ declare module 'vue' {
     readonly useCssVars: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['useCssVars']>
     readonly useCurrentElement: UnwrapRef<typeof import('@vueuse/core')['useCurrentElement']>
     readonly useCycleList: UnwrapRef<typeof import('@vueuse/core')['useCycleList']>
-    readonly useDOCX: UnwrapRef<typeof import('../../composables/useDOCX')['useDOCX']>
     readonly useDark: UnwrapRef<typeof import('@vueuse/core')['useDark']>
     readonly useDateFormat: UnwrapRef<typeof import('@vueuse/core')['useDateFormat']>
     readonly useDebounce: UnwrapRef<typeof import('@vueuse/core')['useDebounce']>
@@ -724,11 +720,9 @@ declare module 'vue' {
     readonly useNow: UnwrapRef<typeof import('@vueuse/core')['useNow']>
     readonly useNuxtApp: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/nuxt')['useNuxtApp']>
     readonly useNuxtData: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']>
-    readonly useNuxtDevTools: UnwrapRef<typeof import('../../node_modules/.pnpm/@nuxt+devtools@2.6.5_vite@7.1.9_@types+node@22.18.8_jiti@2.6.1_terser@5.44.0_yaml@2.8.1__vue@3.5.22_typescript@5.9.3_/node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools')['useNuxtDevTools']>
     readonly useObjectUrl: UnwrapRef<typeof import('@vueuse/core')['useObjectUrl']>
     readonly useOffsetPagination: UnwrapRef<typeof import('@vueuse/core')['useOffsetPagination']>
     readonly useOnline: UnwrapRef<typeof import('@vueuse/core')['useOnline']>
-    readonly usePDF: UnwrapRef<typeof import('../../composables/usePDF')['usePDF']>
     readonly usePageLeave: UnwrapRef<typeof import('@vueuse/core')['usePageLeave']>
     readonly useParallax: UnwrapRef<typeof import('@vueuse/core')['useParallax']>
     readonly useParentElement: UnwrapRef<typeof import('@vueuse/core')['useParentElement']>

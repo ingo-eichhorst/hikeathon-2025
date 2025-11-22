@@ -102,8 +102,7 @@
             :key="file.id"
             class="flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900 rounded text-sm text-blue-900 dark:text-blue-100 font-medium"
           >
-            <span v-if="file.type === 'pdf'">📄</span>
-            <span v-else-if="file.type === 'docx'">📝</span>
+            <span v-if="file.type === 'image'">🖼️</span>
             <span v-else>📋</span>
             <span>{{ file.name }}</span>
             <button @click="removeAttachment(file.id)" class="text-red-600 hover:text-red-800 dark:text-red-400 ml-1" title="Remove file">
@@ -125,24 +124,10 @@
           ></textarea>
 
           <div class="flex flex-col gap-2">
-            <!-- File upload button (PDF, DOCX, TXT) -->
-            <label class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer transition-colors"
-              title="Upload PDF, Word, or text file">
-              <input
-                ref="fileInput"
-                type="file"
-                @change="handleFileUpload"
-                accept=".pdf,.txt,.docx,.doc"
-                multiple
-                class="hidden"
-              />
-              <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-              </svg>
-            </label>
-
-            <ImageUploadButton
+            <!-- Unified attachment upload button (images, PDFs, documents) -->
+            <AttachmentUploadButton
               @imageAdded="handleImageAdded"
+              @fileAdded="handleFileUpload"
               @error="handleImageError"
             />
 
@@ -207,11 +192,10 @@ import { useImageUpload } from '~/composables/useImageUpload'
 import { useRealtime } from '~/composables/useRealtime'
 import { fetchMultipleURLs } from '~/composables/useURLFetching'
 import { extractURLs } from '~/utils/urlExtractor'
-import { usePDF } from '~/composables/usePDF'
-import { useDOCX } from '~/composables/useDOCX'
 import { IMAGE_CONFIG, type UploadedImage } from '~/types/image'
 import type { Attachment } from '~/stores/chat'
 import ChatMenu from '~/components/ChatMenu.vue'
+import AttachmentUploadButton from '~/components/AttachmentUploadButton.vue'
 
 const chatStore = useChatStore()
 const historyStore = useChatHistoryStore()
@@ -221,8 +205,6 @@ const inputMessage = ref('')
 const mobileMenuOpen = ref(false)
 const fileInput = ref<HTMLInputElement>()
 const { images: uploadedImages, addImage, removeImage, handlePaste } = useImageUpload()
-const { processPDF } = usePDF()
-const { processDOCX } = useDOCX()
 const attachments = ref<Attachment[]>([])
 
 // Realtime features
@@ -450,108 +432,60 @@ const removeAttachment = (id: string) => {
   console.log('[chat] Attachment removed:', id)
 }
 
-const handleFileUpload = async (event: Event) => {
-  const input = event.target as HTMLInputElement
-  if (!input.files?.length) return
+const handleFileUpload = async (file: File) => {
+  console.log('[chat] File upload started:', file.name)
 
-  console.log('[chat] File upload started:', input.files.length, 'files')
+  try {
+    let content: string | undefined
+    let processedData: any = undefined
+    let attachmentType: 'text' = 'text'
 
-  for (const file of Array.from(input.files)) {
-    try {
-      let content: string | undefined
-      let processedData: any = undefined
-      let attachmentType: 'pdf' | 'docx' | 'text' = 'text'
+    console.log('[chat] Processing file:', file.name, 'Type:', file.type, 'Size:', file.size)
 
-      console.log('[chat] Processing file:', file.name, 'Type:', file.type, 'Size:', file.size)
-
-      // Process based on file type
-      if (file.type === 'application/pdf') {
-        try {
-          const result = await processPDF(file)
-          if (!result.text) {
-            console.warn('[chat] PDF extraction returned empty text:', file.name)
-            continue
-          }
-          content = result.text
-          processedData = {
-            pageCount: result.pageCount,
-            metadata: result.metadata
-          }
-          attachmentType = 'pdf'
-          console.log('[chat] PDF processed successfully:', file.name, 'Pages:', result.pageCount)
-        } catch (err) {
-          console.error('[chat] PDF processing failed:', file.name, err)
-          alert(`Failed to process PDF: ${err instanceof Error ? err.message : 'Unknown error'}`)
-          continue
+    // Process based on file type
+    if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+      try {
+        const text = await file.text()
+        if (!text) {
+          console.warn('[chat] Text file is empty:', file.name)
+          return
         }
-      } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/msword' || file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
-        try {
-          const result = await processDOCX(file)
-          if (!result.text) {
-            console.warn('[chat] DOCX extraction returned empty text:', file.name)
-            continue
-          }
-          content = result.text
-          processedData = {
-            metadata: result.metadata
-          }
-          attachmentType = 'docx'
-          console.log('[chat] DOCX processed successfully:', file.name)
-        } catch (err) {
-          console.error('[chat] DOCX processing failed:', file.name, err)
-          alert(`Failed to process DOCX: ${err instanceof Error ? err.message : 'Unknown error'}`)
-          continue
+        content = text
+        processedData = {
+          size: text.length
         }
-      } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
-        try {
-          const text = await file.text()
-          if (!text) {
-            console.warn('[chat] Text file is empty:', file.name)
-            continue
-          }
-          content = text
-          processedData = {
-            size: text.length
-          }
-          attachmentType = 'text'
-          console.log('[chat] Text file processed successfully:', file.name)
-        } catch (err) {
-          console.error('[chat] Text file reading failed:', file.name, err)
-          alert(`Failed to read text file: ${err instanceof Error ? err.message : 'Unknown error'}`)
-          continue
-        }
-      } else {
-        console.warn('[chat] Unsupported file type:', file.name, 'Type:', file.type)
-        alert(`Unsupported file type: ${file.type || file.name.split('.').pop()}`)
-        continue
+        attachmentType = 'text'
+        console.log('[chat] Text file processed successfully:', file.name)
+      } catch (err) {
+        console.error('[chat] Text file reading failed:', file.name, err)
+        alert(`Failed to read text file: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        return
       }
-
-      // Only add attachment if content was successfully extracted
-      if (content && content.trim()) {
-        const attachment: Attachment = {
-          id: crypto.randomUUID(),
-          name: file.name,
-          type: attachmentType,
-          size: file.size,
-          content,
-          processedData
-        }
-        attachments.value.push(attachment)
-        console.log('[chat] File attachment added:', attachment.name, 'Type:', attachment.type, 'Content length:', content.length)
-      } else {
-        console.warn('[chat] Attachment not added - no content extracted:', file.name)
-        alert(`No content could be extracted from: ${file.name}`)
-      }
-    } catch (error) {
-      console.error('[chat] Unexpected error processing file:', error)
-      alert(`Unexpected error processing file: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } else {
+      console.warn('[chat] Unsupported file type:', file.name, 'Type:', file.type)
+      alert(`Unsupported file type: ${file.type || file.name.split('.').pop()}`)
+      return
     }
-  }
 
-  // Reset input
-  if (fileInput.value) {
-    fileInput.value.value = ''
-    console.log('[chat] File input reset')
+    // Only add attachment if content was successfully extracted
+    if (content && content.trim()) {
+      const attachment: Attachment = {
+        id: crypto.randomUUID(),
+        name: file.name,
+        type: attachmentType,
+        size: file.size,
+        content,
+        processedData
+      }
+      attachments.value.push(attachment)
+      console.log('[chat] File attachment added:', attachment.name, 'Type:', attachment.type, 'Content length:', content.length)
+    } else {
+      console.warn('[chat] Attachment not added - no content extracted:', file.name)
+      alert(`No content could be extracted from: ${file.name}`)
+    }
+  } catch (error) {
+    console.error('[chat] Unexpected error processing file:', error)
+    alert(`Unexpected error processing file: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
 

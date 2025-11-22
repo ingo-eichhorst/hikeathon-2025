@@ -22,7 +22,7 @@ export interface Message {
 export interface Attachment {
   id: string
   name: string
-  type: 'image' | 'pdf' | 'docx' | 'text' | 'url'
+  type: 'image' | 'text' | 'url'
   size: number
   content?: string
   url?: string
