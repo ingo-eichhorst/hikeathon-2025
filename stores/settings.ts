@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { useChatStore } from './chat'
 
 export type Language = 'en' | 'de'
 export type Theme = 'light' | 'dark' | 'system'
@@ -333,17 +332,20 @@ export const useSettingsStore = defineStore('settings', {
       this.language = language
     },
     
-    setSystemPrompt(key: string, prompt: string) {
+    async setSystemPrompt(key: string, prompt: string) {
       this.systemPrompts[key] = prompt
       if (key === this.currentSystemPromptKey) {
-        // Update chat store
+        // Update chat store (lazy import to avoid circular dependency)
+        const { useChatStore } = await import('./chat')
         const chatStore = useChatStore()
         chatStore.setSystemPrompt(prompt)
       }
     },
     
-    selectSystemPrompt(key: string) {
+    async selectSystemPrompt(key: string) {
       this.currentSystemPromptKey = key
+      // Lazy import to avoid circular dependency
+      const { useChatStore } = await import('./chat')
       const chatStore = useChatStore()
       chatStore.setSystemPrompt(this.systemPrompts[key])
     },

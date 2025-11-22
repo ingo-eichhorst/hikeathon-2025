@@ -218,13 +218,13 @@ onMounted(async () => {
     )
   } else if (chatStore.currentSessionId && historyStore.allSessions.some(s => s.id === chatStore.currentSessionId)) {
     // Restore from persisted sessionId if it still exists
-    chatStore.loadSession(chatStore.currentSessionId)
+    await chatStore.loadSession(chatStore.currentSessionId)
   } else if (historyStore.currentSessionId) {
     // Fall back to history store's current session
-    chatStore.loadSession(historyStore.currentSessionId)
+    await chatStore.loadSession(historyStore.currentSessionId)
   } else if (historyStore.allSessions.length > 0) {
     // Load the first available session
-    chatStore.loadSession(historyStore.allSessions[0].id)
+    await chatStore.loadSession(historyStore.allSessions[0].id)
   }
 })
 

@@ -44,7 +44,7 @@ const historyStore = useChatHistoryStore()
 
 const startChat = async () => {
   // Select the GPT/system prompt
-  settingsStore.selectSystemPrompt(props.gpt.key)
+  await settingsStore.selectSystemPrompt(props.gpt.key)
 
   // Create a new chat session with this GPT
   const sessionId = historyStore.createSession(

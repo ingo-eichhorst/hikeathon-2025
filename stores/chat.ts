@@ -466,7 +466,7 @@ export const useChatStore = defineStore('chat', {
       )
     },
 
-    loadSession(sessionId: string) {
+    async loadSession(sessionId: string) {
       const historyStore = useChatHistoryStore()
 
       const session = historyStore.sessions.find(s => s.id === sessionId)
@@ -483,7 +483,7 @@ export const useChatStore = defineStore('chat', {
       this.topP = session.topP
 
       const settingsStore = useSettingsStore()
-      settingsStore.selectSystemPrompt(session.selectedGPT)
+      await settingsStore.selectSystemPrompt(session.selectedGPT)
 
       this.updateTokenCounts()
     }
