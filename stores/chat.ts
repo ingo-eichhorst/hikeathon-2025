@@ -233,22 +233,34 @@ export const useChatStore = defineStore('chat', {
               role: m.role
             }
 
-            // Handle multimodal messages with images and URLs
+            // Handle multimodal messages with images, URLs, and text files
             if (m.attachments && m.attachments.length > 0) {
               const images = m.attachments.filter(a => a.type === 'image')
               const urls = m.attachments.filter(a => a.type === 'url')
+              const textFiles = m.attachments.filter(a => a.type === 'text')
+
+              // Build combined content from URLs and text files
+              const urlContent = urls
+                .map(url => `[Web Content from ${url.name}]:\n${url.content}`)
+                .join('\n\n')
+
+              const textFileContent = textFiles
+                .map(file => `[File Content from ${file.name}]:\n${file.content}`)
+                .join('\n\n')
+
+              const combinedContent = [urlContent, textFileContent].filter(c => c).join('\n\n')
 
               if (images.length > 0) {
                 // For multimodal requests with images, content must be an array
                 const textContent = m.content || ''
-                const urlContent = urls
-                  .map(url => `[Web Content from ${url.name}]:\n${url.content}`)
-                  .join('\n\n')
+                const fullText = combinedContent
+                  ? `${textContent}\n\n${combinedContent}`
+                  : textContent
 
                 msg.content = [
                   {
                     type: 'text',
-                    text: urlContent ? `${textContent}\n\n${urlContent}` : textContent
+                    text: fullText
                   },
                   ...images.map(img => ({
                     type: 'image_url',
@@ -258,12 +270,12 @@ export const useChatStore = defineStore('chat', {
                     }
                   }))
                 ]
-              } else if (urls.length > 0) {
-                // Text-only message with URL content
-                const urlContent = urls
-                  .map(url => `[Web Content from ${url.name}]:\n${url.content}`)
-                  .join('\n\n')
-                msg.content = `${m.content}\n\n${urlContent}`
+              } else if (urls.length > 0 || textFiles.length > 0) {
+                // Text-only message with URL and/or text file content
+                const fullText = combinedContent
+                  ? `${m.content}\n\n${combinedContent}`
+                  : m.content
+                msg.content = fullText
               } else {
                 // Text-only message
                 msg.content = m.content
