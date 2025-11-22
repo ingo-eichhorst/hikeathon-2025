@@ -80,11 +80,30 @@ const allSessions = computed(() => historyStore.allSessions)
 const currentSessionId = computed(() => historyStore.currentSessionId)
 
 const selectGPT = async (gptKey: string) => {
-  await settingsStore.selectSystemPrompt(gptKey)
-  // Update current session's GPT if there's an active session
+  // Save current session if one exists
   if (currentSessionId.value) {
-    historyStore.updateSessionGPT(gptKey)
+    chatStore.saveCurrentSession()
   }
+
+  // Select the GPT system prompt
+  await settingsStore.selectSystemPrompt(gptKey)
+
+  // Create new session with the selected GPT
+  const sessionId = historyStore.createSession(
+    '',
+    gptKey,
+    chatStore.currentModel,
+    chatStore.temperature,
+    chatStore.maxTokens,
+    chatStore.topP
+  )
+
+  // Set session as current and clear messages
+  chatStore.setCurrentSessionId(sessionId)
+  chatStore.clearMessages()
+
+  // Navigate to chat page
+  await navigateTo('/chat')
 }
 
 const startNewChat = () => {
