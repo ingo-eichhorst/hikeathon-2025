@@ -55,17 +55,13 @@ if (typeof import.meta !== 'undefined') {
     console.error('Failed to load prompts:', error)
     // Fallback to minimal defaults if loading fails
     DEFAULT_PROMPTS = {
-      general: 'You are a helpful AI assistant supporting teams at HIKEathon 2025. Be concise, accurate, and friendly.',
-      coding: 'You are an expert programming assistant at HIKEathon 2025. Help with code, debugging, and technical questions.',
-      creative: 'You are a creative assistant helping with brainstorming and ideation at HIKEathon 2025.',
-      research: 'You are a research assistant at HIKEathon 2025. Help teams find information and analyze data.',
-      interview: 'You are an expert interviewer at HIKEathon 2025. Help teams conduct user interviews and discovery.',
-      bmc: 'You are a Business Model Canvas expert at HIKEathon 2025.',
-      reframer: 'You are a challenge reframing specialist at HIKEathon 2025.',
-      ideation: 'You are a creative ideation facilitator at HIKEathon 2025.',
-      'problem-explorer': 'Du bist ein KI-Coach für Design-Thinking Phase 1 bei HIKEathon x Citizens.',
-      'empathie-researcher': 'Du bist ein KI-Coach für Design-Thinking Phase 2 bei HIKEathon x Citizens. Unterstütze Teams dabei, ihre Zielgruppe zu verstehen.',
-      'sensemaking-architekt': 'Du bist ein KI-Coach für Design-Thinking Phase 3 bei HIKEathon x Citizens. Unterstütze Teams bei der Synthese ihrer Insights in How-Might-We-Fragen, Customer Journeys und Personas.'
+      'phase1-understanding-coach': 'You are the Phase 1 – Understanding Coach for the HIKEathon x Citizens hackathon.',
+      'phase2-observation-coach': 'You are the Phase 2 – Observation Coach for the HIKEathon x Citizens hackathon.',
+      'phase3-synthesis-architect': 'You are the Phase 3 – Synthesis Architect for the HIKEathon x Citizens hackathon.',
+      'phase4-ideation-coach': 'You are the Phase 4 – Ideation Coach for the HIKEathon x Citizens hackathon.',
+      'phase5-prototyping-maker': 'You are the Phase 5 – Prototyping Maker for the HIKEathon x Citizens hackathon.',
+      'phase6-testing-navigator': 'You are the Phase 6 – Testing Navigator for the HIKEathon x Citizens hackathon.',
+      'phase7-prompt-companion': 'You are the Phase 7 – Prompt Companion for the HIKEathon x Citizens hackathon.'
     }
   })
 }
@@ -73,82 +69,54 @@ if (typeof import.meta !== 'undefined') {
 // Function to create GPTs with loaded prompts
 function createDefaultGPTs(prompts: Record<string, string>): Record<string, GPT> {
   return {
-    general: {
-      key: 'general',
-      name: 'General',
-      description: 'A helpful AI assistant for general questions and tasks',
-      icon: '💬',
-      systemPrompt: prompts.general || DEFAULT_PROMPTS.general
-    },
-    coding: {
-      key: 'coding',
-      name: 'Coding',
-      description: 'Expert programming assistance and code debugging',
-      icon: '💻',
-      systemPrompt: prompts.coding || DEFAULT_PROMPTS.coding
-    },
-    creative: {
-      key: 'creative',
-      name: 'Creative',
-      description: 'Brainstorming and creative ideation partner',
-      icon: '✨',
-      systemPrompt: prompts.creative || DEFAULT_PROMPTS.creative
-    },
-    research: {
-      key: 'research',
-      name: 'Research',
-      description: 'Information gathering and data analysis assistant',
-      icon: '🔍',
-      systemPrompt: prompts.research || DEFAULT_PROMPTS.research
-    },
-    interview: {
-      key: 'interview',
-      name: 'Interview GPT',
-      description: 'Conduct user interviews and customer discovery',
-      icon: '🎤',
-      systemPrompt: prompts.interview || DEFAULT_PROMPTS.interview
-    },
-    bmc: {
-      key: 'bmc',
-      name: 'BMC Helper',
-      description: 'Business Model Canvas validation and structuring',
-      icon: '📊',
-      systemPrompt: prompts.bmc || DEFAULT_PROMPTS.bmc
-    },
-    reframer: {
-      key: 'reframer',
-      name: 'Challenge Reframer',
-      description: 'Problem reframing and synthesis of insights',
-      icon: '🔄',
-      systemPrompt: prompts.reframer || DEFAULT_PROMPTS.reframer
-    },
-    ideation: {
-      key: 'ideation',
-      name: 'Ideation Card Giver',
-      description: 'Creative brainstorming and ideation',
-      icon: '💡',
-      systemPrompt: prompts.ideation || DEFAULT_PROMPTS.ideation
-    },
-    'problem-explorer': {
-      key: 'problem-explorer',
-      name: 'Problem-Explorer:in',
-      description: 'Design-Thinking Phase 1: Understand the problem space with stakeholder and semantic analysis',
+    'phase1-understanding-coach': {
+      key: 'phase1-understanding-coach',
+      name: 'Phase 1 - Understanding Coach',
+      description: 'Verstehen: Definiert euer Problemfeld mit Stakeholder-Analysen und semantischen Analysen',
       icon: '🔎',
-      systemPrompt: prompts['problem-explorer'] || DEFAULT_PROMPTS['problem-explorer']
+      systemPrompt: prompts['phase1-understanding-coach'] || DEFAULT_PROMPTS['phase1-understanding-coach']
     },
-    'empathie-researcher': {
-      key: 'empathie-researcher',
-      name: 'Empathie-Researcher:in',
-      description: 'Design-Thinking Phase 2: Understand your target audience through interviews and research',
+    'phase2-observation-coach': {
+      key: 'phase2-observation-coach',
+      name: 'Phase 2 - Observation Coach',
+      description: 'Beobachten: Versteht eure Zielgruppe durch Interviews, Forschung und Personas',
       icon: '👥',
-      systemPrompt: prompts['empathie-researcher'] || DEFAULT_PROMPTS['empathie-researcher']
+      systemPrompt: prompts['phase2-observation-coach'] || DEFAULT_PROMPTS['phase2-observation-coach']
     },
-    'sensemaking-architekt': {
-      key: 'sensemaking-architekt',
-      name: 'Sensemaking-Architekt:in',
-      description: 'Design-Thinking Phase 3: Structure insights into How-Might-We questions, journeys and personas',
+    'phase3-synthesis-architect': {
+      key: 'phase3-synthesis-architect',
+      name: 'Phase 3 - Synthesis Architect',
+      description: 'Synthese: Strukturiert Insights in How-Might-We-Fragen, Customer Journeys und Personas',
       icon: '🏗️',
-      systemPrompt: prompts['sensemaking-architekt'] || DEFAULT_PROMPTS['sensemaking-architekt']
+      systemPrompt: prompts['phase3-synthesis-architect'] || DEFAULT_PROMPTS['phase3-synthesis-architect']
+    },
+    'phase4-ideation-coach': {
+      key: 'phase4-ideation-coach',
+      name: 'Phase 4 - Ideation Coach',
+      description: 'Ideation: Generiert kreative Lösungsideen und innovative Variationen',
+      icon: '💡',
+      systemPrompt: prompts['phase4-ideation-coach'] || DEFAULT_PROMPTS['phase4-ideation-coach']
+    },
+    'phase5-prototyping-maker': {
+      key: 'phase5-prototyping-maker',
+      name: 'Phase 5 - Prototyping Maker',
+      description: 'Prototyping: Baut schnelle Prototypen und MVP-Mockups',
+      icon: '🛠️',
+      systemPrompt: prompts['phase5-prototyping-maker'] || DEFAULT_PROMPTS['phase5-prototyping-maker']
+    },
+    'phase6-testing-navigator': {
+      key: 'phase6-testing-navigator',
+      name: 'Phase 6 - Testing Navigator',
+      description: 'Testing: Testet mit echten Nutzern und sammelt wertvolles Feedback',
+      icon: '✅',
+      systemPrompt: prompts['phase6-testing-navigator'] || DEFAULT_PROMPTS['phase6-testing-navigator']
+    },
+    'phase7-prompt-companion': {
+      key: 'phase7-prompt-companion',
+      name: 'Phase 7 - Prompt Companion',
+      description: 'KI-Prompting: Optimiert KI-Prompts iterativ für bessere Ergebnisse',
+      icon: '🤖',
+      systemPrompt: prompts['phase7-prompt-companion'] || DEFAULT_PROMPTS['phase7-prompt-companion']
     }
   }
 }
