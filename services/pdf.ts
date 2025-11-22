@@ -1,8 +1,10 @@
 import * as pdfjsLib from 'pdfjs-dist'
 
-// Configure the worker path - use unpkg as fallback for better reliability
+// Configure the worker path - use local bundled worker for reliability
 if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`
+  // Use relative path accounting for GitHub Pages base URL (/hikeathon-2025/)
+  const basePath = import.meta.env.BASE_URL || '/'
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `${basePath}pdf-worker/pdf.worker.min.mjs`
 }
 
 export interface PDFProcessingResult {
@@ -58,9 +60,11 @@ export class PDFProcessor {
       const arrayBuffer = await file.arrayBuffer()
       
       // Load the PDF document
+      const basePath = import.meta.env.BASE_URL || '/'
       const loadingTask = pdfjsLib.getDocument({
         data: arrayBuffer,
-        standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/standard_fonts/`
+        // Use jsdelivr CDN for standard fonts - more reliable than unpkg
+        standardFontDataUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/standard_fonts/`
       })
       
       const pdf = await loadingTask.promise
