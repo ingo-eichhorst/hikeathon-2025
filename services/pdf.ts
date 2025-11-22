@@ -1,46 +1,4 @@
-import * as pdfjsLib from 'pdfjs-dist'
-
-// Initialize worker configuration function that will be called when PDFProcessor is instantiated
-function initializePDFWorker() {
-  if (typeof window === 'undefined') {
-    console.warn('[pdf.ts] Not in browser environment, skipping worker initialization')
-    return
-  }
-
-  try {
-    console.log('[pdf.ts] Initializing PDF.js worker configuration...')
-
-    // Access GlobalWorkerOptions from the pdfjsLib namespace
-    const GlobalWorkerOptions = (pdfjsLib as any).GlobalWorkerOptions
-
-    if (!GlobalWorkerOptions) {
-      console.error('[pdf.ts] ✗ GlobalWorkerOptions not found in pdfjs-dist')
-      return
-    }
-
-    // Dynamically determine base path accounting for GitHub Pages base URL (/hikeathon-2025/)
-    // import.meta.env.BASE_URL may not be available in dev mode, so derive from URL as fallback
-    let basePath = import.meta.env.BASE_URL || '/'
-    console.log('[pdf.ts] Initial basePath from env:', basePath)
-
-    // Fallback: If BASE_URL is not set, derive from current pathname
-    if (basePath === '/' && typeof window !== 'undefined') {
-      const pathname = window.location.pathname
-      console.log('[pdf.ts] Current pathname:', pathname)
-      if (pathname.startsWith('/hikeathon-2025/')) {
-        basePath = '/hikeathon-2025/'
-        console.log('[pdf.ts] Detected GitHub Pages path, using:', basePath)
-      }
-    }
-
-    // Use .js extension for better compatibility (not .mjs)
-    const workerPath = `${basePath}pdf-worker/pdf.worker.min.js`
-    GlobalWorkerOptions.workerSrc = workerPath
-    console.log('[pdf.ts] ✓ Successfully configured PDF.js worker at:', workerPath)
-  } catch (err) {
-    console.error('[pdf.ts] Failed to configure worker:', err)
-  }
-}
+import { extractText, getMeta } from 'unpdf'
 
 export interface PDFProcessingResult {
   text: string
@@ -65,19 +23,9 @@ export interface PDFProcessingProgress {
 export class PDFProcessor {
   private maxFileSize = 50 * 1024 * 1024 // 50MB
   private progressCallback?: (progress: PDFProcessingProgress) => void
-  private static workerInitialized = false
 
   constructor() {
-    console.log('[pdf.ts] PDFProcessor constructor called')
-    // Initialize PDF.js worker on first instantiation
-    if (!PDFProcessor.workerInitialized) {
-      console.log('[pdf.ts] Calling initializePDFWorker from constructor')
-      initializePDFWorker()
-      PDFProcessor.workerInitialized = true
-      console.log('[pdf.ts] Worker initialization complete')
-    } else {
-      console.log('[pdf.ts] Worker already initialized, skipping')
-    }
+    console.log('[pdf.ts] PDFProcessor initialized with unpdf')
   }
 
   /**
@@ -86,187 +34,132 @@ export class PDFProcessor {
   onProgress(callback: (progress: PDFProcessingProgress) => void) {
     this.progressCallback = callback
   }
-  
+
   /**
-   * Processes a PDF file and extracts text
+   * Processes a PDF file and extracts text using unpdf
    */
   async processPDF(file: File): Promise<PDFProcessingResult> {
     // Validate file size
     if (file.size > this.maxFileSize) {
       throw new Error(`File size exceeds ${this.maxFileSize / (1024 * 1024)}MB limit`)
     }
-    
+
     // Validate file type
     if (!file.type.includes('pdf')) {
       throw new Error('Invalid file type. Please provide a PDF file.')
     }
-    
+
     try {
-      // Update progress
       this.updateProgress(0, 0, 'loading')
+      console.log('[pdf.ts] Starting PDF processing with unpdf:', file.name)
 
-      // Convert file to ArrayBuffer
+      // Convert file to buffer
       const arrayBuffer = await file.arrayBuffer()
+      const uint8Array = new Uint8Array(arrayBuffer)
 
-      // Load the PDF document
-      const loadingTask = pdfjsLib.getDocument({
-        data: arrayBuffer,
-        // Use jsdelivr CDN for standard fonts - more reliable than unpkg
-        standardFontDataUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/standard_fonts/`
-      })
-      
-      const pdf = await loadingTask.promise
-      const pageCount = pdf.numPages
-      
-      // Extract metadata
-      const metadata = await this.extractMetadata(pdf)
-      
-      // Extract text from all pages
-      let fullText = ''
-      
-      for (let pageNum = 1; pageNum <= pageCount; pageNum++) {
-        this.updateProgress(pageNum, pageCount, 'processing')
-        
-        const page = await pdf.getPage(pageNum)
-        const textContent = await page.getTextContent()
-        
-        // Combine text items into a single string
-        const pageText = textContent.items
-          .map((item: any) => item.str)
-          .join(' ')
-        
-        fullText += `\n--- Page ${pageNum} ---\n${pageText}\n`
-        
-        // Clean up page resources
-        page.cleanup()
-      }
-      
-      // Clean up document resources
-      pdf.cleanup()
-      
+      // Extract text using unpdf
+      console.log('[pdf.ts] Extracting text...')
+      const textResult = await extractText(uint8Array)
+
+      // Get metadata
+      console.log('[pdf.ts] Extracting metadata...')
+      const metaResult = await getMeta(uint8Array)
+      const metadata = this.formatMetadata(metaResult)
+
+      // Calculate page count from metadata
+      const pageCount = metaResult.pages || 1
+
       this.updateProgress(pageCount, pageCount, 'complete')
-      
+      console.log('[pdf.ts] ✓ PDF processing complete:', file.name, 'Pages:', pageCount)
+
       return {
-        text: fullText.trim(),
+        text: textResult || '',
         pageCount,
         metadata
       }
     } catch (error) {
       this.updateProgress(0, 0, 'error')
-      console.error('Error processing PDF:', error)
+      console.error('[pdf.ts] Error processing PDF:', file.name, error)
       throw new Error(`Failed to process PDF: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
-  
+
+  /**
+   * Format metadata from unpdf into our format
+   */
+  private formatMetadata(metaResult: any) {
+    if (!metaResult) return undefined
+
+    return {
+      title: metaResult.title || undefined,
+      author: metaResult.author || undefined,
+      subject: metaResult.subject || undefined,
+      keywords: metaResult.keywords || undefined,
+      creationDate: metaResult.creationDate ? new Date(metaResult.creationDate) : undefined,
+      modificationDate: metaResult.modificationDate ? new Date(metaResult.modificationDate) : undefined
+    }
+  }
+
   /**
    * Processes a PDF from a URL
    */
   async processPDFFromURL(url: string): Promise<PDFProcessingResult> {
     try {
       this.updateProgress(0, 0, 'loading')
-      
-      // Load the PDF document from URL
-      const loadingTask = pdfjsLib.getDocument(url)
-      const pdf = await loadingTask.promise
-      const pageCount = pdf.numPages
-      
-      // Extract metadata
-      const metadata = await this.extractMetadata(pdf)
-      
-      // Extract text from all pages
-      let fullText = ''
-      
-      for (let pageNum = 1; pageNum <= pageCount; pageNum++) {
-        this.updateProgress(pageNum, pageCount, 'processing')
-        
-        const page = await pdf.getPage(pageNum)
-        const textContent = await page.getTextContent()
-        
-        const pageText = textContent.items
-          .map((item: any) => item.str)
-          .join(' ')
-        
-        fullText += `\n--- Page ${pageNum} ---\n${pageText}\n`
-        
-        page.cleanup()
+      console.log('[pdf.ts] Fetching PDF from URL:', url)
+
+      // Fetch the PDF
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch PDF: ${response.statusText}`)
       }
-      
-      pdf.cleanup()
-      
+
+      const arrayBuffer = await response.arrayBuffer()
+      const uint8Array = new Uint8Array(arrayBuffer)
+
+      // Extract text
+      console.log('[pdf.ts] Extracting text from URL PDF...')
+      const textResult = await extractText(uint8Array)
+
+      // Get metadata
+      console.log('[pdf.ts] Extracting metadata from URL PDF...')
+      const metaResult = await getMeta(uint8Array)
+      const metadata = this.formatMetadata(metaResult)
+
+      const pageCount = metaResult.pages || 1
+
       this.updateProgress(pageCount, pageCount, 'complete')
-      
+      console.log('[pdf.ts] ✓ PDF from URL processed successfully:', url)
+
       return {
-        text: fullText.trim(),
+        text: textResult || '',
         pageCount,
         metadata
       }
     } catch (error) {
       this.updateProgress(0, 0, 'error')
-      console.error('Error processing PDF from URL:', error)
+      console.error('[pdf.ts] Error processing PDF from URL:', url, error)
       throw new Error(`Failed to process PDF from URL: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
-  
-  /**
-   * Extracts metadata from a PDF document
-   */
-  private async extractMetadata(pdf: any): Promise<PDFProcessingResult['metadata']> {
-    try {
-      const metadata = await pdf.getMetadata()
-      
-      if (!metadata || !metadata.info) {
-        return undefined
-      }
-      
-      const info = metadata.info
-      
-      return {
-        title: info.Title || undefined,
-        author: info.Author || undefined,
-        subject: info.Subject || undefined,
-        keywords: info.Keywords || undefined,
-        creationDate: info.CreationDate ? new Date(info.CreationDate) : undefined,
-        modificationDate: info.ModDate ? new Date(info.ModDate) : undefined
-      }
-    } catch (error) {
-      console.warn('Could not extract PDF metadata:', error)
-      return undefined
-    }
-  }
-  
-  /**
-   * Updates the progress callback
-   */
-  private updateProgress(currentPage: number, totalPages: number, status: PDFProcessingProgress['status']) {
-    if (this.progressCallback) {
-      const percentage = totalPages > 0 ? Math.round((currentPage / totalPages) * 100) : 0
-      
-      this.progressCallback({
-        currentPage,
-        totalPages,
-        percentage,
-        status
-      })
-    }
-  }
-  
+
   /**
    * Chunks PDF text for context windows
    */
   chunkText(text: string, maxChunkSize: number = 2000): string[] {
     const chunks: string[] = []
     const pages = text.split(/--- Page \d+ ---/)
-    
+
     for (const page of pages) {
       if (!page.trim()) continue
-      
+
       if (page.length <= maxChunkSize) {
         chunks.push(page.trim())
       } else {
-        // Split large pages into smaller chunks
+        // Split large pages into smaller chunks by sentences
         const sentences = page.match(/[^.!?]+[.!?]+/g) || [page]
         let currentChunk = ''
-        
+
         for (const sentence of sentences) {
           if (currentChunk.length + sentence.length > maxChunkSize && currentChunk.length > 0) {
             chunks.push(currentChunk.trim())
@@ -275,16 +168,16 @@ export class PDFProcessor {
             currentChunk += (currentChunk ? ' ' : '') + sentence
           }
         }
-        
+
         if (currentChunk) {
           chunks.push(currentChunk.trim())
         }
       }
     }
-    
+
     return chunks
   }
-  
+
   /**
    * Validates if a file is a valid PDF
    */
@@ -292,7 +185,7 @@ export class PDFProcessor {
     try {
       const arrayBuffer = await file.arrayBuffer()
       const bytes = new Uint8Array(arrayBuffer)
-      
+
       // Check PDF magic number (%PDF)
       return bytes[0] === 0x25 &&
              bytes[1] === 0x50 &&
@@ -300,6 +193,22 @@ export class PDFProcessor {
              bytes[3] === 0x46
     } catch {
       return false
+    }
+  }
+
+  /**
+   * Updates the progress callback
+   */
+  private updateProgress(currentPage: number, totalPages: number, status: PDFProcessingProgress['status']) {
+    if (this.progressCallback) {
+      const percentage = totalPages > 0 ? Math.round((currentPage / totalPages) * 100) : 0
+
+      this.progressCallback({
+        currentPage,
+        totalPages,
+        percentage,
+        status
+      })
     }
   }
 }

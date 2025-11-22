@@ -2,11 +2,7 @@ import { readonly, ref } from 'vue'
 import { PDFProcessor, type PDFProcessingResult, type PDFProcessingProgress } from '~/services/pdf'
 
 export const usePDF = () => {
-  // Use ref instead of useState for client-side only composable
-  // useState is for SSR state management, causing initialization issues
-  console.log('[usePDF] Initializing PDF composable')
   const processor = ref<PDFProcessor>(new PDFProcessor())
-  console.log('[usePDF] PDFProcessor instance created')
 
   const isProcessing = ref<boolean>(false)
   const progress = ref<PDFProcessingProgress | null>(null)
@@ -17,7 +13,7 @@ export const usePDF = () => {
   const processedPDFs = ref<Map<string, PDFProcessingResult>>(new Map())
   
   /**
-   * Processes a PDF file with timeout protection
+   * Processes a PDF file
    */
   const processPDF = async (file: File): Promise<PDFProcessingResult> => {
     isProcessing.value = true
@@ -25,28 +21,6 @@ export const usePDF = () => {
     progress.value = null
 
     try {
-      // Failsafe: Ensure PDF.js worker is configured before processing
-      // This catches cases where the constructor initialization didn't run
-      try {
-        const pdfjsLib = await import('pdfjs-dist')
-        const GlobalWorkerOptions = (pdfjsLib as any).GlobalWorkerOptions
-        if (GlobalWorkerOptions && !GlobalWorkerOptions.workerSrc) {
-          console.warn('[usePDF] Worker not configured by constructor, configuring now as failsafe')
-          let basePath = import.meta.env.BASE_URL || '/'
-          if (basePath === '/' && typeof window !== 'undefined') {
-            const pathname = window.location.pathname
-            if (pathname.startsWith('/hikeathon-2025/')) {
-              basePath = '/hikeathon-2025/'
-            }
-          }
-          const workerPath = `${basePath}pdf-worker/pdf.worker.min.js`
-          GlobalWorkerOptions.workerSrc = workerPath
-          console.log('[usePDF] ✓ Failsafe: Configured PDF.js worker at:', workerPath)
-        }
-      } catch (workerErr) {
-        console.error('[usePDF] Failsafe worker configuration error:', workerErr)
-      }
-
       // Check if already processed
       const cacheKey = `${file.name}-${file.size}-${file.lastModified}`
       const cached = processedPDFs.value.get(cacheKey)
@@ -61,18 +35,10 @@ export const usePDF = () => {
         progress.value = p
       })
 
-      console.log('[usePDF] Starting PDF processing with timeout protection:', file.name)
+      console.log('[usePDF] Starting PDF processing with unpdf:', file.name)
 
-      // Add timeout protection to prevent hanging
-      const processingPromise = processor.value.processPDF(file)
-      const timeoutPromise = new Promise<PDFProcessingResult>((_, reject) =>
-        setTimeout(
-          () => reject(new Error('PDF processing timeout (15s) - worker may not have loaded or PDF is corrupted')),
-          15000
-        )
-      )
-
-      const result = await Promise.race([processingPromise, timeoutPromise])
+      // Process with unpdf (no timeout needed)
+      const result = await processor.value.processPDF(file)
 
       console.log('[usePDF] PDF processed successfully:', file.name)
 
