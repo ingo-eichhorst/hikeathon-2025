@@ -51,6 +51,15 @@
             :attachment="convertURLAttachment(attachment)"
           />
         </div>
+
+        <!-- Text file attachments -->
+        <div v-if="message.attachments && message.attachments.length > 0" class="space-y-2">
+          <FileAttachmentCard
+            v-for="attachment in message.attachments.filter(a => a.type === 'text')"
+            :key="attachment.id"
+            :attachment="attachment"
+          />
+        </div>
       </div>
       
       <!-- Edit mode -->
@@ -121,6 +130,7 @@ import { marked } from 'marked'
 import hljs from 'highlight.js'
 import type { Message, Attachment } from '~/stores/chat'
 import URLAttachmentCard from './URLAttachmentCard.vue'
+import FileAttachmentCard from './FileAttachmentCard.vue'
 
 const props = defineProps<{
   message: Message

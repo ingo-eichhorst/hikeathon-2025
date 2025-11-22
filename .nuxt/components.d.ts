@@ -23,6 +23,7 @@ export const ChatMenu: typeof import("../components/ChatMenu.vue")['default']
 export const ChatMessage: typeof import("../components/ChatMessage.vue")['default']
 export const ChatSessionCard: typeof import("../components/ChatSessionCard.vue")['default']
 export const Countdown: typeof import("../components/Countdown.vue")['default']
+export const FileAttachmentCard: typeof import("../components/FileAttachmentCard.vue")['default']
 export const GPTCard: typeof import("../components/GPTCard.vue")['default']
 export const ImagePreview: typeof import("../components/ImagePreview.vue")['default']
 export const ImageUploadButton: typeof import("../components/ImageUploadButton.vue")['default']
@@ -63,6 +64,7 @@ export const LazyChatMenu: LazyComponent<typeof import("../components/ChatMenu.v
 export const LazyChatMessage: LazyComponent<typeof import("../components/ChatMessage.vue")['default']>
 export const LazyChatSessionCard: LazyComponent<typeof import("../components/ChatSessionCard.vue")['default']>
 export const LazyCountdown: LazyComponent<typeof import("../components/Countdown.vue")['default']>
+export const LazyFileAttachmentCard: LazyComponent<typeof import("../components/FileAttachmentCard.vue")['default']>
 export const LazyGPTCard: LazyComponent<typeof import("../components/GPTCard.vue")['default']>
 export const LazyImagePreview: LazyComponent<typeof import("../components/ImagePreview.vue")['default']>
 export const LazyImageUploadButton: LazyComponent<typeof import("../components/ImageUploadButton.vue")['default']>

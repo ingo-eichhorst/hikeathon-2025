@@ -27,21 +27,12 @@
       </svg>
     </button>
 
-    <!-- Hidden File Inputs -->
-    <input
-      ref="imageInput"
-      type="file"
-      multiple
-      accept="image/*"
-      class="hidden"
-      @change="handleImageSelect"
-    />
-
+    <!-- Hidden File Input (images and text files) -->
     <input
       ref="fileInput"
       type="file"
       multiple
-      accept=".txt"
+      accept="image/*,.txt"
       class="hidden"
       @change="handleFileSelect"
     />
@@ -58,25 +49,10 @@ const emit = defineEmits<{
 }>()
 
 const isLoading = ref(false)
-const imageInput = ref<HTMLInputElement>()
 const fileInput = ref<HTMLInputElement>()
 
 const handleClick = () => {
-  imageInput.value?.click()
-}
-
-const handleImageSelect = async (event: Event) => {
-  const input = event.target as HTMLInputElement
-  const files = input.files
-
-  if (!files) return
-
-  for (let i = 0; i < files.length; i++) {
-    emit('imageAdded', files[i])
-  }
-
-  // Reset input
-  input.value = ''
+  fileInput.value?.click()
 }
 
 const handleFileSelect = async (event: Event) => {
@@ -86,7 +62,13 @@ const handleFileSelect = async (event: Event) => {
   if (!files) return
 
   for (let i = 0; i < files.length; i++) {
-    emit('fileAdded', files[i])
+    const file = files[i]
+    // Separate images from text files
+    if (file.type.startsWith('image/')) {
+      emit('imageAdded', file)
+    } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+      emit('fileAdded', file)
+    }
   }
 
   // Reset input

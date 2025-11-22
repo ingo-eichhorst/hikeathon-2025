@@ -38,6 +38,8 @@
         :key="file.id"
         class="flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-sm text-dark-900 dark:text-gray-300 font-medium"
       >
+        <span v-if="file.type === 'image'">🖼️</span>
+        <span v-else-if="file.type === 'text'">📄</span>
         <span>{{ file.name }}</span>
         <button @click="removeAttachment(file.id)" class="text-red-500 hover:text-red-700">
           ×
