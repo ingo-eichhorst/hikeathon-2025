@@ -80,6 +80,7 @@ const quickStartGPTs = computed((): GPT[] => {
   return [
     settingsStore.allGPTs['problem-explorer'],
     settingsStore.allGPTs['empathie-researcher'],
+    settingsStore.allGPTs['sensemaking-architekt'],
     settingsStore.allGPTs['interview'],
     settingsStore.allGPTs['bmc'],
     settingsStore.allGPTs['reframer'],

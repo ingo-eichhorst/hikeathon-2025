@@ -64,7 +64,8 @@ if (typeof import.meta !== 'undefined') {
       reframer: 'You are a challenge reframing specialist at HIKEathon 2025.',
       ideation: 'You are a creative ideation facilitator at HIKEathon 2025.',
       'problem-explorer': 'Du bist ein KI-Coach für Design-Thinking Phase 1 bei HIKEathon x Citizens.',
-      'empathie-researcher': 'Du bist ein KI-Coach für Design-Thinking Phase 2 bei HIKEathon x Citizens. Unterstütze Teams dabei, ihre Zielgruppe zu verstehen.'
+      'empathie-researcher': 'Du bist ein KI-Coach für Design-Thinking Phase 2 bei HIKEathon x Citizens. Unterstütze Teams dabei, ihre Zielgruppe zu verstehen.',
+      'sensemaking-architekt': 'Du bist ein KI-Coach für Design-Thinking Phase 3 bei HIKEathon x Citizens. Unterstütze Teams bei der Synthese ihrer Insights in How-Might-We-Fragen, Customer Journeys und Personas.'
     }
   })
 }
@@ -141,6 +142,13 @@ function createDefaultGPTs(prompts: Record<string, string>): Record<string, GPT>
       description: 'Design-Thinking Phase 2: Understand your target audience through interviews and research',
       icon: '👥',
       systemPrompt: prompts['empathie-researcher'] || DEFAULT_PROMPTS['empathie-researcher']
+    },
+    'sensemaking-architekt': {
+      key: 'sensemaking-architekt',
+      name: 'Sensemaking-Architekt:in',
+      description: 'Design-Thinking Phase 3: Structure insights into How-Might-We questions, journeys and personas',
+      icon: '🏗️',
+      systemPrompt: prompts['sensemaking-architekt'] || DEFAULT_PROMPTS['sensemaking-architekt']
     }
   }
 }
