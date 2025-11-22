@@ -22,7 +22,7 @@ export interface Message {
 export interface Attachment {
   id: string
   name: string
-  type: 'image' | 'text' | 'pdf' | 'url'
+  type: 'image' | 'text' | 'pdf' | 'docx' | 'url'
   size: number
   content?: string
   url?: string
@@ -233,14 +233,15 @@ export const useChatStore = defineStore('chat', {
               role: m.role
             }
 
-            // Handle multimodal messages with images, URLs, text files, and PDFs
+            // Handle multimodal messages with images, URLs, text files, PDFs, and DOCX files
             if (m.attachments && m.attachments.length > 0) {
               const images = m.attachments.filter(a => a.type === 'image')
               const urls = m.attachments.filter(a => a.type === 'url')
               const textFiles = m.attachments.filter(a => a.type === 'text')
               const pdfFiles = m.attachments.filter(a => a.type === 'pdf')
+              const docxFiles = m.attachments.filter(a => a.type === 'docx')
 
-              // Build combined content from URLs, text files, and PDFs
+              // Build combined content from URLs, text files, PDFs, and DOCX files
               const urlContent = urls
                 .map(url => `[Web Content from ${url.name}]:\n${url.content}`)
                 .join('\n\n')
@@ -253,7 +254,11 @@ export const useChatStore = defineStore('chat', {
                 .map(file => `[PDF Content from ${file.name}]:\n${file.content}`)
                 .join('\n\n')
 
-              const combinedContent = [urlContent, textFileContent, pdfContent].filter(c => c).join('\n\n')
+              const docxContent = docxFiles
+                .map(file => `[Document Content from ${file.name}]:\n${file.content}`)
+                .join('\n\n')
+
+              const combinedContent = [urlContent, textFileContent, pdfContent, docxContent].filter(c => c).join('\n\n')
 
               if (images.length > 0) {
                 // For multimodal requests with images, content must be an array
@@ -275,8 +280,8 @@ export const useChatStore = defineStore('chat', {
                     }
                   }))
                 ]
-              } else if (urls.length > 0 || textFiles.length > 0 || pdfFiles.length > 0) {
-                // Text-only message with URL, text file, and/or PDF content
+              } else if (urls.length > 0 || textFiles.length > 0 || pdfFiles.length > 0 || docxFiles.length > 0) {
+                // Text-only message with URL, text file, PDF, and/or DOCX content
                 const fullText = combinedContent
                   ? `${m.content}\n\n${combinedContent}`
                   : m.content

@@ -70,6 +70,9 @@ const contentType = computed(() => {
   if (props.attachment.type === 'pdf') {
     return 'application/pdf'
   }
+  if (props.attachment.type === 'docx') {
+    return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  }
   return 'text/plain'
 })
 

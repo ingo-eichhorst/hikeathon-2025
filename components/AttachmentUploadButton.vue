@@ -27,12 +27,12 @@
       </svg>
     </button>
 
-    <!-- Hidden File Input (images, text files, and PDFs) -->
+    <!-- Hidden File Input (images, text files, PDFs, and DOCX) -->
     <input
       ref="fileInput"
       type="file"
       multiple
-      accept="image/*,.txt,.pdf"
+      accept="image/*,.txt,.pdf,.docx"
       class="hidden"
       @change="handleFileSelect"
     />
@@ -63,12 +63,14 @@ const handleFileSelect = async (event: Event) => {
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i]
-    // Separate images from text/PDF files
+    // Separate images from text/PDF/DOCX files
     if (file.type.startsWith('image/')) {
       emit('imageAdded', file)
     } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
       emit('fileAdded', file)
     } else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+      emit('fileAdded', file)
+    } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.docx')) {
       emit('fileAdded', file)
     }
   }

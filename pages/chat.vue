@@ -193,6 +193,7 @@ import { useRealtime } from '~/composables/useRealtime'
 import { fetchMultipleURLs } from '~/composables/useURLFetching'
 import { extractURLs } from '~/utils/urlExtractor'
 import { extractPDFText } from '~/services/pdf'
+import { extractDocxText } from '~/services/word'
 import { IMAGE_CONFIG, type UploadedImage } from '~/types/image'
 import type { Attachment } from '~/stores/chat'
 import ChatMenu from '~/components/ChatMenu.vue'
@@ -487,6 +488,32 @@ const handleFileUpload = async (file: File) => {
       } catch (err) {
         console.error('[chat] PDF processing failed:', file.name, err)
         alert(`Failed to process PDF: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        return
+      }
+    } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.docx')) {
+      try {
+        console.log('[chat] Extracting DOCX:', file.name)
+        const result = await extractDocxText(file)
+
+        if (result.error) {
+          console.warn('[chat] DOCX extraction warning:', file.name, result.error)
+          alert(`DOCX extraction warning: ${result.error}`)
+        }
+
+        if (!result.text) {
+          console.warn('[chat] DOCX has no extractable text:', file.name)
+          return
+        }
+
+        content = result.text
+        processedData = {
+          extractionError: result.error
+        }
+        attachmentType = 'docx'
+        console.log('[chat] DOCX processed successfully:', file.name)
+      } catch (err) {
+        console.error('[chat] DOCX processing failed:', file.name, err)
+        alert(`Failed to process DOCX: ${err instanceof Error ? err.message : 'Unknown error'}`)
         return
       }
     } else {
