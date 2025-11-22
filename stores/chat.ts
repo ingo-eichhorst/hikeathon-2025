@@ -3,6 +3,8 @@ import { apiClient } from '~/utils/api-client'
 import { useAuthStore } from './auth'
 import { useChatHistoryStore } from './chatHistory'
 import { useSettingsStore } from './settings'
+import { fetchMultipleURLs } from '~/composables/useURLFetching'
+import { extractURLs } from '~/utils/urlExtractor'
 import type { UploadedImage } from '~/types/image'
 
 export interface Message {
@@ -20,11 +22,22 @@ export interface Message {
 export interface Attachment {
   id: string
   name: string
-  type: 'image' | 'pdf' | 'text'
+  type: 'image' | 'pdf' | 'text' | 'url'
   size: number
   content?: string
   url?: string
   processedData?: any
+}
+
+export interface URLAttachment {
+  id: string
+  url: string
+  fetchedAt: Date
+  contentType: string
+  content: string
+  summary?: string
+  error?: string
+  isLoading: boolean
 }
 
 export interface ChatModel {
@@ -61,8 +74,6 @@ interface ChatState {
   topP: number
   abortController: AbortController | null
   availableModels: ChatModel[]
-  modelsLoading: boolean
-  modelsError: string | null
   currentSessionId: string | null
 }
 
@@ -73,7 +84,6 @@ interface ChatGetters {
 }
 
 interface ChatActions {
-  fetchAvailableModels(): Promise<void>
   sendMessage(content: string, images?: UploadedImage[]): Promise<void>
   stopGenerating(): void
   clearMessages(): void
@@ -96,7 +106,7 @@ interface ChatActions {
 export const useChatStore = defineStore('chat', {
   state: (): ChatState => ({
     messages: [],
-    currentModel: '',
+    currentModel: 'openai/gpt-oss-120b',
     systemPrompt: 'You are a helpful AI assistant supporting teams at HIKEathon 2025. Be concise, accurate, and friendly.',
     isGenerating: false,
     currentStreamingMessage: null,
@@ -106,9 +116,10 @@ export const useChatStore = defineStore('chat', {
     maxTokens: 2048,
     topP: 0.9,
     abortController: null,
-    availableModels: [],
-    modelsLoading: false,
-    modelsError: null,
+    availableModels: [
+      { id: 'openai/gpt-oss-120b', name: 'GPT OSS 120B', description: 'Most capable open-source model', contextLength: 32768, provider: 'OpenAI' },
+      { id: 'meta-llama/Llama-3.3-70B-Instruct', name: 'Llama 3.3 70B', description: 'Latest Llama model', contextLength: 128000, provider: 'Meta' }
+    ],
     currentSessionId: null
   }),
 
@@ -129,80 +140,23 @@ export const useChatStore = defineStore('chat', {
   },
 
   actions: {
-    async fetchAvailableModels() {
-      if (this.modelsLoading) return
-      
-      this.modelsLoading = true
-      this.modelsError = null
-      
+    async fetchURLAttachments(urls: string[]): Promise<URLAttachment[]> {
+      if (urls.length === 0) return []
+
       try {
-        const { $supabase } = useNuxtApp()
-        
-        const response = await fetch(
-          `${$supabase.functions.url}/get-models`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${$supabase.supabaseKey}`,
-              'apikey': $supabase.supabaseKey
-            },
-            body: JSON.stringify({}) // No token needed - hardcoded in edge function
-          }
-        )
-        
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || 'Failed to fetch models')
-        }
-        
-        const data = await response.json()
-        
-        // Transform IONOS models to our ChatModel format
-        this.availableModels = data.data?.map((model: any) => {
-          const metadata = MODEL_METADATA[model.id] || {}
-          return {
-            id: model.id,
-            name: metadata.name || model.id.split('/').pop(),
-            description: metadata.description || 'AI model',
-            contextLength: metadata.contextLength || 8192,
-            provider: metadata.provider || model.id.split('/')[0]
-          }
-        }).filter((model: any) => 
-          // Only include text generation models (exclude embedding and image models)
-          !model.id.includes('bge-') && 
-          !model.id.includes('paraphrase-') && 
-          !model.id.includes('FLUX') && 
-          !model.id.includes('stable-diffusion')
-        ) || []
-        
-        // Set default model if not set
-        if (!this.currentModel && this.availableModels.length > 0) {
-          // Prefer Llama 3.1 8B as default
-          const defaultModel = this.availableModels.find(m => m.id === 'meta-llama/Meta-Llama-3.1-8B-Instruct')
-          this.currentModel = defaultModel?.id || this.availableModels[0].id
-        }
-        
+        const attachments = await fetchMultipleURLs(urls)
+        return attachments
       } catch (error: any) {
-        console.error('Failed to fetch models:', error)
-        this.modelsError = error.message
-        // Set some fallback models
-        this.availableModels = [
-          { id: 'meta-llama/Meta-Llama-3.1-8B-Instruct', name: 'Llama 3.1 8B', description: 'Efficient Llama model', contextLength: 128000, provider: 'Meta' }
-        ]
-        if (!this.currentModel) {
-          this.currentModel = this.availableModels[0].id
-        }
-      } finally {
-        this.modelsLoading = false
+        console.error('Error fetching URLs:', error)
+        throw error
       }
     },
-    
-    async sendMessage(content: string, images?: UploadedImage[]) {
+
+    async sendMessage(content: string, images?: UploadedImage[], urlAttachments?: URLAttachment[]) {
       if (this.isGenerating) return
 
       // Convert UploadedImage[] to Attachment[]
-      const attachments: Attachment[] | undefined = images?.map(img => ({
+      const imageAttachments: Attachment[] | undefined = images?.map(img => ({
         id: img.id,
         name: img.name,
         type: 'image' as const,
@@ -210,12 +164,34 @@ export const useChatStore = defineStore('chat', {
         content: `data:${img.type};base64,${img.base64}`
       }))
 
+      // Convert URLAttachment[] to Attachment[]
+      const urlAttachmentsConverted: Attachment[] | undefined = urlAttachments?.map(url => ({
+        id: url.id,
+        name: new URL(url.url).hostname || url.url,
+        type: 'url' as const,
+        size: url.content.length,
+        content: url.content,
+        url: url.url,
+        processedData: {
+          contentType: url.contentType,
+          fetchedAt: url.fetchedAt,
+          summary: url.summary,
+          error: url.error
+        }
+      }))
+
+      // Combine all attachments
+      const attachments = [
+        ...(imageAttachments || []),
+        ...(urlAttachmentsConverted || [])
+      ].filter(a => a) as Attachment[]
+
       const userMessage: Message = {
         id: crypto.randomUUID(),
         role: 'user',
         content,
         timestamp: new Date(),
-        attachments
+        attachments: attachments.length > 0 ? attachments : undefined
       }
       
       this.messages.push(userMessage)
@@ -245,13 +221,23 @@ export const useChatStore = defineStore('chat', {
               role: m.role
             }
 
-            // Handle multimodal messages with images
+            // Handle multimodal messages with images and URLs
             if (m.attachments && m.attachments.length > 0) {
               const images = m.attachments.filter(a => a.type === 'image')
+              const urls = m.attachments.filter(a => a.type === 'url')
+
               if (images.length > 0) {
-                // For multimodal requests, content must be an array
+                // For multimodal requests with images, content must be an array
+                const textContent = m.content || ''
+                const urlContent = urls
+                  .map(url => `[Web Content from ${url.name}]:\n${url.content}`)
+                  .join('\n\n')
+
                 msg.content = [
-                  { type: 'text', text: m.content || '' },
+                  {
+                    type: 'text',
+                    text: urlContent ? `${textContent}\n\n${urlContent}` : textContent
+                  },
                   ...images.map(img => ({
                     type: 'image_url',
                     image_url: {
@@ -260,6 +246,12 @@ export const useChatStore = defineStore('chat', {
                     }
                   }))
                 ]
+              } else if (urls.length > 0) {
+                // Text-only message with URL content
+                const urlContent = urls
+                  .map(url => `[Web Content from ${url.name}]:\n${url.content}`)
+                  .join('\n\n')
+                msg.content = `${m.content}\n\n${urlContent}`
               } else {
                 // Text-only message
                 msg.content = m.content
@@ -474,7 +466,7 @@ export const useChatStore = defineStore('chat', {
       )
     },
 
-    loadSession(sessionId: string) {
+    async loadSession(sessionId: string) {
       const historyStore = useChatHistoryStore()
 
       const session = historyStore.sessions.find(s => s.id === sessionId)
@@ -491,7 +483,7 @@ export const useChatStore = defineStore('chat', {
       this.topP = session.topP
 
       const settingsStore = useSettingsStore()
-      settingsStore.selectSystemPrompt(session.selectedGPT)
+      await settingsStore.selectSystemPrompt(session.selectedGPT)
 
       this.updateTokenCounts()
     }

@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col lg:flex-row">
     <!-- Left Sidebar Menu (hidden on mobile, visible on lg+) -->
-    <div class="hidden lg:flex lg:w-64 lg:border-r lg:border-gray-200 dark:lg:border-gray-700 bg-gray-50 dark:bg-gray-800 overflow-y-auto">
+    <div class="hidden lg:flex lg:w-64 lg:border-r-2 lg:border-gray-300 dark:lg:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto">
       <ChatMenu />
     </div>
 
@@ -16,12 +16,12 @@
       </div>
 
       <!-- Header with model selector -->
-      <div class="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div class="p-4 border-b-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-2 min-w-0">
             <!-- Mobile Menu Toggle Button -->
             <button
-              class="lg:hidden p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              class="lg:hidden p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-dark-900 dark:text-gray-300"
               @click="mobileMenuOpen = !mobileMenuOpen"
               aria-label="Toggle menu"
             >
@@ -33,17 +33,14 @@
             <select
               v-model="currentModel"
               @change="chatStore.setModel(currentModel)"
-              class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm"
-              :disabled="chatStore.modelsLoading"
+              class="px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-dark-900 dark:text-gray-100 font-medium"
             >
-              <option v-if="chatStore.modelsLoading" disabled>Loading models...</option>
-              <option v-else-if="chatStore.availableModels.length === 0" disabled>No models available</option>
               <option v-for="model in chatStore.availableModels" :key="model.id" :value="model.id">
                 {{ model.name }}
               </option>
             </select>
 
-            <div class="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
+            <div class="text-xs text-dark-900 dark:text-gray-400 whitespace-nowrap font-medium">
               {{ chatStore.contextTokens }} / {{ chatStore.currentModelInfo?.contextLength || 0 }}
             </div>
           </div>
@@ -64,12 +61,12 @@
         <!-- Typing indicators -->
         <div
           v-if="typingTeams.length > 0"
-          class="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-2"
+          class="flex items-center gap-2 text-dark-900 dark:text-gray-400 mb-2 font-medium"
         >
           <div class="flex gap-1">
-            <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-            <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
-            <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+            <div class="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
+            <div class="w-2 h-2 bg-primary-500 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+            <div class="w-2 h-2 bg-primary-500 rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
           </div>
           <span class="text-sm">
             {{ typingTeams.join(', ') }} {{ typingTeams.length === 1 ? 'is' : 'are' }} typing...
@@ -79,19 +76,19 @@
         <!-- Streaming indicator -->
         <div
           v-if="chatStore.isGenerating && !chatStore.currentStreamingMessage?.content"
-          class="flex items-center gap-2 text-gray-600 dark:text-gray-400"
+          class="flex items-center gap-2 text-dark-900 dark:text-gray-400 font-medium"
         >
           <div class="flex gap-1">
-            <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-            <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-            <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce"></div>
+            <div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+            <div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
           </div>
           <span class="text-sm">Generating...</span>
         </div>
       </div>
 
       <!-- Input -->
-      <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div class="p-4 border-t-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800">
         <!-- Image Preview -->
         <ImagePreview
           :images="uploadedImages"
@@ -107,7 +104,7 @@
             placeholder="Type your message... (paste images with Ctrl+V)"
             :disabled="chatStore.isGenerating"
             rows="2"
-            class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 resize-none"
+            class="flex-1 px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-dark-900 dark:text-gray-100 resize-none font-medium"
           ></textarea>
 
           <div class="flex flex-col gap-2">
@@ -120,7 +117,7 @@
               v-if="!chatStore.isGenerating"
               @click="sendMessage"
               :disabled="!inputMessage.trim() && uploadedImages.length === 0"
-              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
+              class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-dark-900 rounded-lg disabled:opacity-50 font-semibold uppercase"
             >
               Send
             </button>
@@ -128,7 +125,7 @@
             <button
               v-else
               @click="chatStore.stopGeneration()"
-              class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+              class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold uppercase"
             >
               Stop
             </button>
@@ -145,15 +142,15 @@
     />
     <div
       :class="[
-        'lg:hidden fixed left-0 top-0 h-full w-64 bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-50 transition-transform duration-300',
+        'lg:hidden fixed left-0 top-0 h-full w-64 bg-white dark:bg-gray-800 border-r-2 border-gray-300 dark:border-gray-700 z-50 transition-transform duration-300',
         mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
       ]"
     >
-      <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        <h2 class="font-bold">Menu</h2>
+      <div class="p-4 border-b-2 border-gray-300 dark:border-gray-700 flex items-center justify-between">
+        <h2 class="font-bold text-dark-900 dark:text-white">Menu</h2>
         <button
           @click="mobileMenuOpen = false"
-          class="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+          class="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-dark-900 dark:text-gray-300"
           aria-label="Close menu"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,6 +172,8 @@ import { useChatHistoryStore } from '~/stores/chatHistory'
 import { useSettingsStore } from '~/stores/settings'
 import { useImageUpload } from '~/composables/useImageUpload'
 import { useRealtime } from '~/composables/useRealtime'
+import { fetchMultipleURLs } from '~/composables/useURLFetching'
+import { extractURLs } from '~/utils/urlExtractor'
 import { IMAGE_CONFIG, type UploadedImage } from '~/types/image'
 import ChatMenu from '~/components/ChatMenu.vue'
 
@@ -198,9 +197,8 @@ const typingTeams = computed(() => {
     .map(user => user.teamName)
 })
 
-// Fetch available models on mount
+// Initialize on mount
 onMounted(async () => {
-  await chatStore.fetchAvailableModels()
   currentModel.value = chatStore.currentModel
 
   // Small delay to ensure Pinia persistence hydration is complete
@@ -220,13 +218,13 @@ onMounted(async () => {
     )
   } else if (chatStore.currentSessionId && historyStore.allSessions.some(s => s.id === chatStore.currentSessionId)) {
     // Restore from persisted sessionId if it still exists
-    chatStore.loadSession(chatStore.currentSessionId)
+    await chatStore.loadSession(chatStore.currentSessionId)
   } else if (historyStore.currentSessionId) {
     // Fall back to history store's current session
-    chatStore.loadSession(historyStore.currentSessionId)
+    await chatStore.loadSession(historyStore.currentSessionId)
   } else if (historyStore.allSessions.length > 0) {
     // Load the first available session
-    chatStore.loadSession(historyStore.allSessions[0].id)
+    await chatStore.loadSession(historyStore.allSessions[0].id)
   }
 })
 
@@ -320,12 +318,34 @@ const sendMessage = async () => {
     chatStore.setModel(IMAGE_CONFIG.VISION_MODEL)
   }
 
-  // Send message with images
+  // Extract and fetch URLs from the message
+  const detectedURLs = extractURLs(message)
+  let urlAttachments = []
+
+  if (detectedURLs.length > 0) {
+    try {
+      urlAttachments = await fetchMultipleURLs(detectedURLs.map(u => u.url))
+
+      // Filter out any failed fetches (those with errors)
+      const failedUrls = urlAttachments.filter(u => u.error)
+      if (failedUrls.length > 0) {
+        console.warn('Failed to fetch some URLs:', failedUrls)
+        // Remove failed URLs from the list
+        urlAttachments = urlAttachments.filter(u => !u.error)
+      }
+    } catch (error) {
+      console.error('Error fetching URLs:', error)
+      // Continue sending message without URL content
+      urlAttachments = []
+    }
+  }
+
+  // Send message with images and URL attachments
   if (images.length > 0) {
-    await chatStore.sendMessage(message, images)
+    await chatStore.sendMessage(message, images, urlAttachments.length > 0 ? urlAttachments : undefined)
     uploadedImages.value = []
   } else {
-    await chatStore.sendMessage(message)
+    await chatStore.sendMessage(message, undefined, urlAttachments.length > 0 ? urlAttachments : undefined)
   }
 
   // Save the session after sending

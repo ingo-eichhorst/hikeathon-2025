@@ -1,21 +1,59 @@
 <template>
   <div class="space-y-2">
-    <!-- Processing indicator -->
-    <div v-if="isProcessingFile && fileProgress" class="text-sm text-gray-600 dark:text-gray-400" data-testid="pdf-progress">
+    <!-- Processing indicator (files) -->
+    <div v-if="isProcessingFile && fileProgress" class="text-sm text-dark-900 dark:text-gray-400 font-medium" data-testid="pdf-progress">
       {{ fileProgress }}
     </div>
-    
+
+    <!-- URL fetching progress indicator -->
+    <div v-if="isFetchingURLs && urlFetchProgress" class="text-sm text-dark-900 dark:text-gray-400 font-medium" data-testid="url-fetch-progress">
+      {{ urlFetchProgress }}
+    </div>
+
+    <!-- URL fetch error with actions -->
+    <div v-if="urlFetchError" class="bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg p-3 text-sm">
+      <div class="text-red-800 dark:text-red-200 whitespace-pre-wrap font-medium">{{ urlFetchError }}</div>
+      <div class="flex gap-2 mt-2">
+        <button
+          @click="handleRetryURLFetch"
+          class="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded text-xs font-semibold"
+          data-testid="retry-url-fetch"
+        >
+          Retry
+        </button>
+        <button
+          @click="handleContinueWithoutURLs"
+          class="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded text-xs font-semibold"
+          data-testid="continue-without-urls"
+        >
+          Continue Anyway
+        </button>
+      </div>
+    </div>
+
     <!-- File attachments -->
     <div v-if="attachments.length > 0" class="flex flex-wrap gap-2">
-      <div 
-        v-for="file in attachments" 
+      <div
+        v-for="file in attachments"
         :key="file.id"
-        class="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm"
+        class="flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-sm text-dark-900 dark:text-gray-300 font-medium"
       >
         <span>{{ file.name }}</span>
         <button @click="removeAttachment(file.id)" class="text-red-500 hover:text-red-700">
           ×
         </button>
+      </div>
+    </div>
+
+    <!-- URL attachments display -->
+    <div v-if="urlAttachments.length > 0" class="flex flex-wrap gap-2">
+      <div
+        v-for="url in urlAttachments"
+        :key="url.id"
+        class="flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900 rounded text-sm text-blue-900 dark:text-blue-100 font-medium"
+      >
+        <span class="text-xs">🌐</span>
+        <span>{{ url.url.split('/')[2] }}</span>
       </div>
     </div>
     
@@ -29,7 +67,7 @@
           :placeholder="t('typeMessage')"
           :disabled="isGenerating"
           rows="3"
-          class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-dark-900 dark:text-gray-100 resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
           data-testid="chat-input"
         ></textarea>
         
@@ -53,17 +91,17 @@
       <button
         v-if="!isGenerating"
         @click="handleSend"
-        :disabled="!message.trim() || isGenerating"
-        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        :disabled="!message.trim() || isGenerating || isFetchingURLs"
+        class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-dark-900 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold uppercase"
         data-testid="send-button"
       >
-        {{ t('send') }}
+        {{ isFetchingURLs ? 'Fetching...' : t('send') }}
       </button>
       
       <button
         v-else
         @click="$emit('stop')"
-        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold uppercase"
         data-testid="stop-button"
       >
         {{ t('stopGenerating') }}
@@ -77,14 +115,16 @@ import { ref, computed } from 'vue'
 import { useSettingsStore } from '~/stores/settings'
 import { usePDF } from '~/composables/usePDF'
 import { useImageProcessor } from '~/composables/useImageProcessor'
-import type { Attachment } from '~/stores/chat'
+import { useURLFetching, fetchMultipleURLs } from '~/composables/useURLFetching'
+import { extractURLs } from '~/utils/urlExtractor'
+import type { Attachment, URLAttachment } from '~/stores/chat'
 
 const props = defineProps<{
   isGenerating: boolean
 }>()
 
 const emit = defineEmits<{
-  send: [content: string, attachments: Attachment[]]
+  send: [content: string, attachments: Attachment[], urlAttachments: URLAttachment[]]
   stop: []
 }>()
 
@@ -95,15 +135,66 @@ const { processImage } = useImageProcessor()
 
 const message = ref('')
 const attachments = ref<Attachment[]>([])
+const urlAttachments = ref<URLAttachment[]>([])
 const isProcessingFile = ref(false)
 const fileProgress = ref<string | null>(null)
+const isFetchingURLs = ref(false)
+const urlFetchError = ref<string | null>(null)
+const urlFetchProgress = ref<string | null>(null)
+const failedURLs = ref<Map<string, string>>(new Map())
 
-const handleSend = () => {
-  if (!message.value.trim() || props.isGenerating) return
-  
-  emit('send', message.value, attachments.value)
-  message.value = ''
-  attachments.value = []
+const handleSend = async () => {
+  if (!message.value.trim() || props.isGenerating || isFetchingURLs.value) return
+
+  // Extract URLs from message
+  const detectedURLs = extractURLs(message.value)
+  urlFetchError.value = null
+  failedURLs.value.clear()
+
+  // Fetch URLs if any detected
+  if (detectedURLs.length > 0) {
+    isFetchingURLs.value = true
+    urlFetchProgress.value = `Fetching ${detectedURLs.length} URL(s)...`
+
+    try {
+      const results = await fetchMultipleURLs(detectedURLs.map(u => u.url))
+
+      // Separate successful and failed fetches
+      const successful = results.filter(r => !r.error)
+      const failed = results.filter(r => r.error)
+
+      urlAttachments.value = successful
+
+      if (failed.length > 0) {
+        // Show error message with failed URLs
+        const failedList = failed.map(f => `• ${new URL(f.url).hostname}: ${f.error}`).join('\n')
+        urlFetchError.value = `Failed to fetch ${failed.length} URL(s):\n${failedList}\n\nContinue without these URLs?`
+
+        // User should click retry or continue, so return here
+        isFetchingURLs.value = false
+        urlFetchProgress.value = null
+        return
+      }
+
+      // All URLs fetched successfully, proceed with send
+      emit('send', message.value, attachments.value, urlAttachments.value)
+      message.value = ''
+      attachments.value = []
+      urlAttachments.value = []
+      isFetchingURLs.value = false
+      urlFetchProgress.value = null
+    } catch (error) {
+      console.error('Error fetching URLs:', error)
+      urlFetchError.value = `Error fetching URLs: ${error instanceof Error ? error.message : 'Unknown error'}`
+      isFetchingURLs.value = false
+      urlFetchProgress.value = null
+    }
+  } else {
+    // No URLs, send directly
+    emit('send', message.value, attachments.value, [])
+    message.value = ''
+    attachments.value = []
+  }
 }
 
 const handleFileUpload = async (event: Event) => {
@@ -169,5 +260,21 @@ const handleFileUpload = async (event: Event) => {
 
 const removeAttachment = (id: string) => {
   attachments.value = attachments.value.filter(a => a.id !== id)
+}
+
+const handleRetryURLFetch = async () => {
+  if (urlAttachments.value.length === 0) {
+    // Retry fetching all URLs
+    await handleSend()
+  }
+}
+
+const handleContinueWithoutURLs = async () => {
+  // Send message without URL attachments
+  urlFetchError.value = null
+  emit('send', message.value, attachments.value, urlAttachments.value)
+  message.value = ''
+  attachments.value = []
+  urlAttachments.value = []
 }
 </script>

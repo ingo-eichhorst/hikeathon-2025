@@ -15,6 +15,7 @@ declare global {
   const clearError: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/error')['clearError']
   const clearNuxtData: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/asyncData')['clearNuxtData']
   const clearNuxtState: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/state')['clearNuxtState']
+  const clearURLCache: typeof import('../../composables/useURLFetching')['clearURLCache']
   const computed: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['computed']
   const computedAsync: typeof import('@vueuse/core')['computedAsync']
   const computedEager: typeof import('@vueuse/core')['computedEager']
@@ -50,9 +51,14 @@ declare global {
   const effect: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['effect']
   const effectScope: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['effectScope']
   const extendRef: typeof import('@vueuse/core')['extendRef']
+  const extractURLs: typeof import('../../utils/urlExtractor')['extractURLs']
+  const fetchMultipleURLs: typeof import('../../composables/useURLFetching')['fetchMultipleURLs']
+  const fetchURL: typeof import('../../composables/useURLFetching')['fetchURL']
   const getAppManifest: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/manifest')['getAppManifest']
+  const getCacheInfo: typeof import('../../composables/useURLFetching')['getCacheInfo']
   const getCurrentInstance: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['getCurrentInstance']
   const getCurrentScope: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['getCurrentScope']
+  const getDomain: typeof import('../../utils/urlExtractor')['getDomain']
   const getRouteRules: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/manifest')['getRouteRules']
   const h: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['h']
   const hasInjectionContext: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['hasInjectionContext']
@@ -61,6 +67,7 @@ declare global {
   const injectHead: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/head')['injectHead']
   const injectLocal: typeof import('@vueuse/core')['injectLocal']
   const isDefined: typeof import('@vueuse/core')['isDefined']
+  const isDocumentURL: typeof import('../../utils/urlExtractor')['isDocumentURL']
   const isNuxtError: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/error')['isNuxtError']
   const isPrerendered: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/payload')['isPrerendered']
   const isProxy: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['isProxy']
@@ -68,8 +75,10 @@ declare global {
   const isReadonly: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['isReadonly']
   const isRef: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['isRef']
   const isShallow: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['isShallow']
+  const isValidURL: typeof import('../../utils/urlExtractor')['isValidURL']
   const isVue2: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/compat/vue-demi')['isVue2']
   const isVue3: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/compat/vue-demi')['isVue3']
+  const limitURLs: typeof import('../../utils/urlExtractor')['limitURLs']
   const loadPayload: typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/payload')['loadPayload']
   const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
   const markRaw: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['markRaw']
@@ -369,6 +378,7 @@ declare global {
   const useToggle: typeof import('@vueuse/core')['useToggle']
   const useTransition: typeof import('@vueuse/core')['useTransition']
   const useTransitionState: typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['useTransitionState']
+  const useURLFetching: typeof import('../../composables/useURLFetching')['useURLFetching']
   const useUrlSearchParams: typeof import('@vueuse/core')['useUrlSearchParams']
   const useUserMedia: typeof import('@vueuse/core')['useUserMedia']
   const useVModel: typeof import('@vueuse/core')['useVModel']
@@ -416,6 +426,9 @@ declare global {
   export type { BroadcastMessage, PresenceUser, TypingIndicator } from '../../composables/useRealtime'
   import('../../composables/useRealtime')
   // @ts-ignore
+  export type { URLFetchOptions, URLFetchError } from '../../composables/useURLFetching'
+  import('../../composables/useURLFetching')
+  // @ts-ignore
   export type { WebSearchResult, WebSearchResponse, URLFetchResponse } from '../../composables/useWebTools'
   import('../../composables/useWebTools')
   // @ts-ignore
@@ -427,6 +440,9 @@ declare global {
   // @ts-ignore
   export type { CSRFProtection } from '../../utils/sanitize'
   import('../../utils/sanitize')
+  // @ts-ignore
+  export type { DetectedURL } from '../../utils/urlExtractor'
+  import('../../utils/urlExtractor')
 }
 // for vue template auto import
 import { UnwrapRef } from 'vue'
@@ -446,6 +462,7 @@ declare module 'vue' {
     readonly clearError: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/error')['clearError']>
     readonly clearNuxtData: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/asyncData')['clearNuxtData']>
     readonly clearNuxtState: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/state')['clearNuxtState']>
+    readonly clearURLCache: UnwrapRef<typeof import('../../composables/useURLFetching')['clearURLCache']>
     readonly computed: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
     readonly computedEager: UnwrapRef<typeof import('@vueuse/core')['computedEager']>
@@ -481,9 +498,14 @@ declare module 'vue' {
     readonly effect: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['effect']>
     readonly effectScope: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly extractURLs: UnwrapRef<typeof import('../../utils/urlExtractor')['extractURLs']>
+    readonly fetchMultipleURLs: UnwrapRef<typeof import('../../composables/useURLFetching')['fetchMultipleURLs']>
+    readonly fetchURL: UnwrapRef<typeof import('../../composables/useURLFetching')['fetchURL']>
     readonly getAppManifest: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/manifest')['getAppManifest']>
+    readonly getCacheInfo: UnwrapRef<typeof import('../../composables/useURLFetching')['getCacheInfo']>
     readonly getCurrentInstance: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['getCurrentScope']>
+    readonly getDomain: UnwrapRef<typeof import('../../utils/urlExtractor')['getDomain']>
     readonly getRouteRules: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/manifest')['getRouteRules']>
     readonly h: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['h']>
     readonly hasInjectionContext: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['hasInjectionContext']>
@@ -492,6 +514,7 @@ declare module 'vue' {
     readonly injectHead: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/head')['injectHead']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>
     readonly isDefined: UnwrapRef<typeof import('@vueuse/core')['isDefined']>
+    readonly isDocumentURL: UnwrapRef<typeof import('../../utils/urlExtractor')['isDocumentURL']>
     readonly isNuxtError: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/error')['isNuxtError']>
     readonly isPrerendered: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/payload')['isPrerendered']>
     readonly isProxy: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['isProxy']>
@@ -499,8 +522,10 @@ declare module 'vue' {
     readonly isReadonly: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['isRef']>
     readonly isShallow: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['isShallow']>
+    readonly isValidURL: UnwrapRef<typeof import('../../utils/urlExtractor')['isValidURL']>
     readonly isVue2: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/compat/vue-demi')['isVue2']>
     readonly isVue3: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/compat/vue-demi')['isVue3']>
+    readonly limitURLs: UnwrapRef<typeof import('../../utils/urlExtractor')['limitURLs']>
     readonly loadPayload: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.19.2_@parcel+watcher@2.5.1_@types+node@22.18.8_@vue+compiler-sfc@3.5.22_db0@0.3._6dc59af77f4eaa65fa72d3080cbfa1f7/node_modules/nuxt/dist/app/composables/payload')['loadPayload']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly markRaw: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['markRaw']>
@@ -800,6 +825,7 @@ declare module 'vue' {
     readonly useToggle: UnwrapRef<typeof import('@vueuse/core')['useToggle']>
     readonly useTransition: UnwrapRef<typeof import('@vueuse/core')['useTransition']>
     readonly useTransitionState: UnwrapRef<typeof import('../../node_modules/.pnpm/vue@3.5.22_typescript@5.9.3/node_modules/vue')['useTransitionState']>
+    readonly useURLFetching: UnwrapRef<typeof import('../../composables/useURLFetching')['useURLFetching']>
     readonly useUrlSearchParams: UnwrapRef<typeof import('@vueuse/core')['useUrlSearchParams']>
     readonly useUserMedia: UnwrapRef<typeof import('@vueuse/core')['useUserMedia']>
     readonly useVModel: UnwrapRef<typeof import('@vueuse/core')['useVModel']>

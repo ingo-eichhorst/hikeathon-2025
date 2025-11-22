@@ -79,8 +79,8 @@ const currentGPT = computed(() => settingsStore.currentGPT)
 const allSessions = computed(() => historyStore.allSessions)
 const currentSessionId = computed(() => historyStore.currentSessionId)
 
-const selectGPT = (gptKey: string) => {
-  settingsStore.selectSystemPrompt(gptKey)
+const selectGPT = async (gptKey: string) => {
+  await settingsStore.selectSystemPrompt(gptKey)
   // Update current session's GPT if there's an active session
   if (currentSessionId.value) {
     historyStore.updateSessionGPT(gptKey)
@@ -108,14 +108,14 @@ const startNewChat = () => {
   chatStore.clearMessages()
 }
 
-const switchChat = (sessionId: string) => {
+const switchChat = async (sessionId: string) => {
   // Save current session first
   if (currentSessionId.value && currentSessionId.value !== sessionId) {
     chatStore.saveCurrentSession()
   }
 
   // Load the selected session
-  chatStore.loadSession(sessionId)
+  await chatStore.loadSession(sessionId)
 }
 
 const deleteChat = (sessionId: string) => {

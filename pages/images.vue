@@ -28,37 +28,6 @@
             {{ imagesStore.currentModelInfo?.provider }}
           </div>
         </div>
-
-        <div class="flex gap-2">
-          <button
-            @click="imagesStore.setGalleryView('grid')"
-            :class="[
-              'px-3 py-2 text-sm rounded-lg',
-              imagesStore.galleryView === 'grid'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 dark:bg-gray-700'
-            ]"
-          >
-            Grid
-          </button>
-          <button
-            @click="imagesStore.setGalleryView('list')"
-            :class="[
-              'px-3 py-2 text-sm rounded-lg',
-              imagesStore.galleryView === 'list'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 dark:bg-gray-700'
-            ]"
-          >
-            List
-          </button>
-          <button
-            @click="imagesStore.clearHistory()"
-            class="px-3 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg"
-          >
-            Clear History
-          </button>
-        </div>
       </div>
     </div>
 
@@ -75,12 +44,7 @@
       <!-- Gallery -->
       <div
         v-if="imagesStore.sortedHistory.length > 0"
-        :class="[
-          'mb-4',
-          imagesStore.galleryView === 'grid'
-            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
-            : 'space-y-4'
-        ]"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4"
       >
         <div
           v-for="image in imagesStore.sortedHistory"
@@ -151,7 +115,7 @@
         <button
           @click="generateImage"
           :disabled="!promptInput.trim() || imagesStore.isGenerating"
-          class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-dark-900 rounded-lg disabled:opacity-50 font-semibold uppercase"
         >
           {{ imagesStore.isGenerating ? 'Generating...' : 'Generate' }}
         </button>

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { apiClient } from '~/utils/api-client'
 import { useAuthStore } from './auth'
+import { useSettingsStore } from './settings'
 
 export interface GeneratedImage {
   id: string

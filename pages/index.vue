@@ -1,24 +1,41 @@
 <template>
   <div class="space-y-8">
-    <!-- Countdown Section -->
-    <Countdown />
+    <!-- Hero Selection Section -->
+    <section class="py-12 px-4">
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Chat Card -->
+        <div class="flex flex-col items-center p-8 border-2 border-dark-900 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow">
+          <div class="w-full flex justify-center mb-6">
+            <img
+              src="/text_gen.png"
+              alt="Start Chat"
+              class="h-80 object-contain rounded-lg"
+            />
+          </div>
+          <NuxtLink to="/chat" class="btn btn-primary w-full">
+            Start Chat
+          </NuxtLink>
+        </div>
 
-    <section class="text-center py-12">
-      <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4">
-        Welcome to HIKEathon 2025
-      </h1>
-      <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">
-        Track your team's progress in real-time
-      </p>
-
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <NuxtLink to="/chat" class="btn btn-primary">
-          Start Chatting
-        </NuxtLink>
-        <NuxtLink to="/images" class="btn btn-secondary">
-          Generate Images
-        </NuxtLink>
+        <!-- Images Card -->
+        <div class="flex flex-col items-center p-8 border-2 border-dark-900 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow">
+          <div class="w-full flex justify-center mb-6">
+            <img
+              src="/image_gen.png"
+              alt="Generate Images"
+              class="h-80 object-contain rounded-lg"
+            />
+          </div>
+          <NuxtLink to="/images" class="btn btn-primary w-full">
+            Generate Images
+          </NuxtLink>
+        </div>
       </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section class="py-12">
+      <QuickStartCarousel />
     </section>
 
     <!-- Notifications Section -->
@@ -30,28 +47,6 @@
       />
     </section>
 
-    <section class="grid md:grid-cols-3 gap-6">
-      <div class="card">
-        <h2 class="text-xl font-semibold mb-2">AI Chat</h2>
-        <p class="text-gray-600 dark:text-gray-400">
-          Chat with advanced AI models powered by IONOS Model Hub with streaming support.
-        </p>
-      </div>
-
-      <div class="card">
-        <h2 class="text-xl font-semibold mb-2">Image Generation</h2>
-        <p class="text-gray-600 dark:text-gray-400">
-          Create stunning images with DALL-E 3, FLUX, and Stable Diffusion models.
-        </p>
-      </div>
-
-      <div class="card">
-        <h2 class="text-xl font-semibold mb-2">Live Updates</h2>
-        <p class="text-gray-600 dark:text-gray-400">
-          Receive instant broadcasts and announcements from event organizers.
-        </p>
-      </div>
-    </section>
   </div>
 </template>
 
