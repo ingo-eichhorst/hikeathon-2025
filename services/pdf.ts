@@ -1,5 +1,3 @@
-import * as pdfjsLib from 'pdfjs-dist'
-
 export interface PDFExtractionResult {
   text: string
   pageCount: number
@@ -16,11 +14,15 @@ export async function extractPDFText(file: File): Promise<PDFExtractionResult> {
   console.log('[PDF] Starting extraction for file:', file.name, 'Size:', file.size, 'bytes')
 
   try {
-    // Set up the PDF.js worker
-    // Use the bundled worker from pdfjs-dist
-    const workerScript = `/pdfjs-dist/build/pdf.worker.min.js`
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerScript
-    console.log('[PDF] Worker configured:', workerScript)
+    // Dynamically import pdfjs-dist to allow Nuxt to handle worker setup correctly
+    const pdfjsLib = await import('pdfjs-dist')
+    console.log('[PDF] pdfjs-dist library loaded')
+
+    // Set up the worker using dynamic import path
+    // This allows Nuxt's bundler to resolve the worker file correctly
+    const workerURL = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url)
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerURL.href
+    console.log('[PDF] Worker configured from:', workerURL.href)
 
     // Convert File to ArrayBuffer
     console.log('[PDF] Converting file to ArrayBuffer...')
