@@ -19,11 +19,13 @@ export async function extractPDFText(file: File): Promise<PDFExtractionResult> {
     const pdfjsLib = await import('pdfjs-dist')
     console.log('[PDF] pdfjs-dist library loaded')
 
-    // Set up the worker using dynamic import path with .js extension
-    // .mjs doesn't work in some bundler contexts, .js is the standard extension
-    const workerURL = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url)
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerURL.href
-    console.log('[PDF] Worker configured from:', workerURL.href)
+    // Set up the worker using CDN URL
+    // Dynamic import path resolution doesn't work reliably with bundled assets
+    // CDN approach is industry standard and guaranteed to work
+    const version = pdfjsLib.version || '4.5.0'
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      `https://cdn.jsdelivr.net/npm/pdfjs-dist@${version}/build/pdf.worker.min.js`
+    console.log('[PDF] Worker configured from CDN:', pdfjsLib.GlobalWorkerOptions.workerSrc)
 
     // Convert File to ArrayBuffer
     console.log('[PDF] Converting file to ArrayBuffer...')
