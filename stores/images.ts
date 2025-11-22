@@ -94,7 +94,11 @@ export const useImagesStore = defineStore('images', {
     },
     
     sortedHistory: (state): GeneratedImage[] => {
-      return [...state.history].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+      return [...state.history].sort((a, b) => {
+        const aTime = a.timestamp instanceof Date ? a.timestamp : new Date(a.timestamp)
+        const bTime = b.timestamp instanceof Date ? b.timestamp : new Date(b.timestamp)
+        return bTime.getTime() - aTime.getTime()
+      })
     },
     
     todayImages: (state): GeneratedImage[] => {
@@ -145,19 +149,12 @@ export const useImagesStore = defineStore('images', {
           throw new Error('No image data in response')
         }
 
-        // Convert base64 to blob URL
+        // Convert base64 to data URL (persists across sessions, unlike blob URLs)
         let imageUrl: string
         if (imageData.b64_json) {
-          // Convert base64 to blob
+          // Use data URL instead of blob URL for persistence across page reloads
           const base64Data = imageData.b64_json
-          const byteCharacters = atob(base64Data)
-          const byteNumbers = new Array(byteCharacters.length)
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i)
-          }
-          const byteArray = new Uint8Array(byteNumbers)
-          const blob = new Blob([byteArray], { type: 'image/png' })
-          imageUrl = URL.createObjectURL(blob)
+          imageUrl = `data:image/png;base64,${base64Data}`
         } else if (imageData.url) {
           // Fallback to URL if provided
           imageUrl = imageData.url
@@ -270,6 +267,16 @@ export const useImagesStore = defineStore('images', {
   },
 
   persist: {
-    paths: ['history', 'currentModel', 'currentSize', 'galleryView', 'maxHistory']
+    paths: ['history', 'currentModel', 'currentSize', 'galleryView', 'maxHistory'],
+    hydrate: (state: any) => {
+      // Normalize timestamps when restoring from storage
+      // Persisted timestamps are strings, need to convert back to Date objects
+      if (state.history && Array.isArray(state.history)) {
+        state.history = state.history.map((img: any) => ({
+          ...img,
+          timestamp: img.timestamp instanceof Date ? img.timestamp : new Date(img.timestamp)
+        }))
+      }
+    }
   }
 })
