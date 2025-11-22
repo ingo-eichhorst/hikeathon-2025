@@ -63,10 +63,12 @@ const handleFileSelect = async (event: Event) => {
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i]
-    // Separate images from text files
+    // Separate images from text/PDF files
     if (file.type.startsWith('image/')) {
       emit('imageAdded', file)
     } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+      emit('fileAdded', file)
+    } else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
       emit('fileAdded', file)
     }
   }
