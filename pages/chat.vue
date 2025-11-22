@@ -448,34 +448,80 @@ const handleFileUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement
   if (!input.files?.length) return
 
-  try {
-    for (const file of Array.from(input.files)) {
+  console.log('[chat] File upload started:', input.files.length, 'files')
+
+  for (const file of Array.from(input.files)) {
+    try {
       let content: string | undefined
       let processedData: any = undefined
       let attachmentType: 'pdf' | 'docx' | 'text' = 'text'
 
+      console.log('[chat] Processing file:', file.name, 'Type:', file.type, 'Size:', file.size)
+
       // Process based on file type
       if (file.type === 'application/pdf') {
-        const result = await processPDF(file)
-        content = result.text
-        processedData = {
-          pageCount: result.pageCount,
-          metadata: result.metadata
+        try {
+          const result = await processPDF(file)
+          if (!result.text) {
+            console.warn('[chat] PDF extraction returned empty text:', file.name)
+            continue
+          }
+          content = result.text
+          processedData = {
+            pageCount: result.pageCount,
+            metadata: result.metadata
+          }
+          attachmentType = 'pdf'
+          console.log('[chat] PDF processed successfully:', file.name, 'Pages:', result.pageCount)
+        } catch (err) {
+          console.error('[chat] PDF processing failed:', file.name, err)
+          alert(`Failed to process PDF: ${err instanceof Error ? err.message : 'Unknown error'}`)
+          continue
         }
-        attachmentType = 'pdf'
       } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/msword' || file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
-        const result = await processDOCX(file)
-        content = result.text
-        processedData = {
-          metadata: result.metadata
+        try {
+          const result = await processDOCX(file)
+          if (!result.text) {
+            console.warn('[chat] DOCX extraction returned empty text:', file.name)
+            continue
+          }
+          content = result.text
+          processedData = {
+            metadata: result.metadata
+          }
+          attachmentType = 'docx'
+          console.log('[chat] DOCX processed successfully:', file.name)
+        } catch (err) {
+          console.error('[chat] DOCX processing failed:', file.name, err)
+          alert(`Failed to process DOCX: ${err instanceof Error ? err.message : 'Unknown error'}`)
+          continue
         }
-        attachmentType = 'docx'
       } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
-        content = await file.text()
-        attachmentType = 'text'
+        try {
+          const text = await file.text()
+          if (!text) {
+            console.warn('[chat] Text file is empty:', file.name)
+            continue
+          }
+          content = text
+          processedData = {
+            size: text.length
+          }
+          attachmentType = 'text'
+          console.log('[chat] Text file processed successfully:', file.name)
+        } catch (err) {
+          console.error('[chat] Text file reading failed:', file.name, err)
+          alert(`Failed to read text file: ${err instanceof Error ? err.message : 'Unknown error'}`)
+          continue
+        }
+      } else {
+        console.warn('[chat] Unsupported file type:', file.name, 'Type:', file.type)
+        alert(`Unsupported file type: ${file.type || file.name.split('.').pop()}`)
+        continue
       }
 
-      if (content) {
+      // Only add attachment if content was successfully extracted
+      if (content && content.trim()) {
         const attachment: Attachment = {
           id: crypto.randomUUID(),
           name: file.name,
@@ -485,18 +531,21 @@ const handleFileUpload = async (event: Event) => {
           processedData
         }
         attachments.value.push(attachment)
-        console.log('[chat] File attachment added:', attachment.name, 'Type:', attachment.type)
+        console.log('[chat] File attachment added:', attachment.name, 'Type:', attachment.type, 'Content length:', content.length)
+      } else {
+        console.warn('[chat] Attachment not added - no content extracted:', file.name)
+        alert(`No content could be extracted from: ${file.name}`)
       }
+    } catch (error) {
+      console.error('[chat] Unexpected error processing file:', error)
+      alert(`Unexpected error processing file: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
-  } catch (error) {
-    console.error('Error processing file:', error)
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    alert(`Error processing file: ${errorMessage}`)
-  } finally {
-    // Reset input
-    if (fileInput.value) {
-      fileInput.value.value = ''
-    }
+  }
+
+  // Reset input
+  if (fileInput.value) {
+    fileInput.value.value = ''
+    console.log('[chat] File input reset')
   }
 }
 
