@@ -94,14 +94,15 @@ import { ref } from 'vue'
 import { useImageUpload } from '~/composables/useImageUpload'
 
 const emit = defineEmits<{
-  imageAdded: [image: any]
+  imageAdded: [file: File]
   error: [error: string]
 }>()
 
-const { addImage, handleFileInput, isMobile, isLoading } = useImageUpload()
+const { isMobile } = useImageUpload()
 const fileInput = ref<HTMLInputElement>()
 const desktopFileInput = ref<HTMLInputElement>()
 const showMobileActions = ref(false)
+const isLoading = ref(false)
 
 const handleButtonClick = () => {
   if (isMobile()) {
@@ -118,10 +119,7 @@ const handleFileSelect = async (event: Event) => {
   if (!files) return
 
   for (let i = 0; i < files.length; i++) {
-    const success = await addImage(files[i])
-    if (success) {
-      emit('imageAdded', files[i])
-    }
+    emit('imageAdded', files[i])
   }
 
   // Reset input
@@ -140,10 +138,7 @@ const handlePaste = async (event: ClipboardEvent) => {
       const file = item.getAsFile()
       if (file) {
         event.preventDefault()
-        const success = await addImage(file)
-        if (success) {
-          emit('imageAdded', file)
-        }
+        emit('imageAdded', file)
       }
     }
   }
@@ -158,10 +153,7 @@ const openCamera = () => {
   input.onchange = async (e) => {
     const files = (e.target as HTMLInputElement).files
     if (files) {
-      const success = await addImage(files[0])
-      if (success) {
-        emit('imageAdded', files[0])
-      }
+      emit('imageAdded', files[0])
     }
   }
   input.click()
@@ -175,10 +167,7 @@ const openPhotoLibrary = () => {
   input.onchange = async (e) => {
     const files = (e.target as HTMLInputElement).files
     if (files) {
-      const success = await addImage(files[0])
-      if (success) {
-        emit('imageAdded', files[0])
-      }
+      emit('imageAdded', files[0])
     }
   }
   input.click()

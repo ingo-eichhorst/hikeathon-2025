@@ -12,7 +12,7 @@ HIKEathon 2025 is a hackathon web application built as a Nuxt 3 SPA with Supabas
 # Install dependencies
 pnpm install
 
-# Run development server (port 4000)
+# Run development server (port 4000, accessible at http://localhost:4000/hikeathon-2025/)
 pnpm dev
 
 # Build for production (GitHub Pages deployment)
@@ -36,6 +36,9 @@ pnpm test:watch
 # Run tests with coverage
 pnpm test:coverage
 
+# Run a single test file (replace path as needed)
+pnpm test:unit test/unit/stores/auth.test.ts
+
 # Run E2E tests
 pnpm test:e2e
 
@@ -44,6 +47,12 @@ pnpm test:e2e:ui
 
 # Test IONOS API connection
 ./test.sh
+
+# Run Edge Functions locally
+supabase functions serve
+
+# Check for type errors and lint issues before committing
+pnpm typecheck && pnpm lint
 ```
 
 ## Architecture
@@ -99,13 +108,26 @@ pnpm test:e2e:ui
 - **CORS Handling**: Supabase Edge Functions proxy external APIs
 - **CSP Headers**: Configured in `nuxt.config.ts` for security
 
-## Environment Variables
+## Environment Setup
 
-Required in `.env`:
+### Initial Setup
+
+```bash
+# Copy example environment file
+cp .env.example .env
+
+# Edit .env with your Supabase credentials
+```
+
+### Required Environment Variables
+
+Set these in `.env`:
 ```
 NUXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 NUXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
+
+The IONOS API token is stored as a Supabase secret and accessed via Edge Functions (see README.md for management instructions).
 
 ## Database Schema
 
@@ -170,3 +192,38 @@ Manual code splitting in Vite config:
 - `crypto`: bcryptjs, jsonwebtoken
 - `ui`: Chart.js components
 - `markdown`: Marked, Highlight.js
+
+## Development Workflows
+
+### Before Committing
+Always run type checking and linting to catch issues early:
+```bash
+pnpm typecheck && pnpm lint
+```
+
+### Debugging Edge Functions
+When testing locally:
+```bash
+# Terminal 1: Start Edge Functions emulator
+supabase functions serve
+
+# Terminal 2: Start dev server (will use local functions)
+pnpm dev
+```
+
+### Checking Edge Function Logs
+View logs from deployed functions in Supabase Dashboard:
+1. Go to https://app.supabase.com
+2. Select your project
+3. Navigate to **Edge Functions**
+4. Select the function name to see real-time logs
+
+This is essential when debugging 401 errors or API issues in production.
+
+### PDF Extraction Testing
+PDF handling uses pdf.js. If you modify PDF processing:
+```bash
+pnpm test:watch test/unit/services/pdf.test.ts
+```
+
+Note: The PDF.js worker uses a bundled `.js` file (not external CDN) to work with Nuxt's build system.

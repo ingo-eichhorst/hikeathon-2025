@@ -429,9 +429,15 @@ const handleRegenerate = async () => {
   }
 }
 
-const handleImageAdded = (file: File) => {
-  // Image has been added via composable, it will be shown in the preview
-  console.log('Image added:', file.name)
+const handleImageAdded = async (file: File) => {
+  // Handle image from ImageUploadButton component
+  console.log('[chat] Image file received:', file.name)
+  const success = await addImage(file)
+  if (success) {
+    console.log('[chat] Image successfully added to upload list:', file.name)
+  } else {
+    console.error('[chat] Failed to add image:', file.name)
+  }
 }
 
 const handleImageError = (error: string) => {

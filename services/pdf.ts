@@ -1,14 +1,42 @@
 import * as pdfjsLib from 'pdfjs-dist'
 
-// Configure the worker path - use local bundled worker for reliability
-if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+// Initialize worker configuration function that will be called when PDFProcessor is instantiated
+function initializePDFWorker() {
+  if (typeof window === 'undefined') {
+    console.warn('[pdf.ts] Not in browser environment, skipping worker initialization')
+    return
+  }
+
   try {
-    // Use relative path accounting for GitHub Pages base URL (/hikeathon-2025/)
+    console.log('[pdf.ts] Initializing PDF.js worker configuration...')
+
+    // Access GlobalWorkerOptions from the pdfjsLib namespace
+    const GlobalWorkerOptions = (pdfjsLib as any).GlobalWorkerOptions
+
+    if (!GlobalWorkerOptions) {
+      console.error('[pdf.ts] ✗ GlobalWorkerOptions not found in pdfjs-dist')
+      return
+    }
+
+    // Dynamically determine base path accounting for GitHub Pages base URL (/hikeathon-2025/)
+    // import.meta.env.BASE_URL may not be available in dev mode, so derive from URL as fallback
+    let basePath = import.meta.env.BASE_URL || '/'
+    console.log('[pdf.ts] Initial basePath from env:', basePath)
+
+    // Fallback: If BASE_URL is not set, derive from current pathname
+    if (basePath === '/' && typeof window !== 'undefined') {
+      const pathname = window.location.pathname
+      console.log('[pdf.ts] Current pathname:', pathname)
+      if (pathname.startsWith('/hikeathon-2025/')) {
+        basePath = '/hikeathon-2025/'
+        console.log('[pdf.ts] Detected GitHub Pages path, using:', basePath)
+      }
+    }
+
     // Use .js extension for better compatibility (not .mjs)
-    const basePath = import.meta.env.BASE_URL || '/'
     const workerPath = `${basePath}pdf-worker/pdf.worker.min.js`
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath
-    console.log('[pdf.ts] Configured PDF.js worker:', workerPath)
+    GlobalWorkerOptions.workerSrc = workerPath
+    console.log('[pdf.ts] ✓ Successfully configured PDF.js worker at:', workerPath)
   } catch (err) {
     console.error('[pdf.ts] Failed to configure worker:', err)
   }
@@ -37,7 +65,21 @@ export interface PDFProcessingProgress {
 export class PDFProcessor {
   private maxFileSize = 50 * 1024 * 1024 // 50MB
   private progressCallback?: (progress: PDFProcessingProgress) => void
-  
+  private static workerInitialized = false
+
+  constructor() {
+    console.log('[pdf.ts] PDFProcessor constructor called')
+    // Initialize PDF.js worker on first instantiation
+    if (!PDFProcessor.workerInitialized) {
+      console.log('[pdf.ts] Calling initializePDFWorker from constructor')
+      initializePDFWorker()
+      PDFProcessor.workerInitialized = true
+      console.log('[pdf.ts] Worker initialization complete')
+    } else {
+      console.log('[pdf.ts] Worker already initialized, skipping')
+    }
+  }
+
   /**
    * Sets a callback for progress updates
    */
@@ -62,12 +104,11 @@ export class PDFProcessor {
     try {
       // Update progress
       this.updateProgress(0, 0, 'loading')
-      
+
       // Convert file to ArrayBuffer
       const arrayBuffer = await file.arrayBuffer()
-      
+
       // Load the PDF document
-      const basePath = import.meta.env.BASE_URL || '/'
       const loadingTask = pdfjsLib.getDocument({
         data: arrayBuffer,
         // Use jsdelivr CDN for standard fonts - more reliable than unpkg

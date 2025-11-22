@@ -4,7 +4,10 @@ import { PDFProcessor, type PDFProcessingResult, type PDFProcessingProgress } fr
 export const usePDF = () => {
   // Use ref instead of useState for client-side only composable
   // useState is for SSR state management, causing initialization issues
+  console.log('[usePDF] Initializing PDF composable')
   const processor = ref<PDFProcessor>(new PDFProcessor())
+  console.log('[usePDF] PDFProcessor instance created')
+
   const isProcessing = ref<boolean>(false)
   const progress = ref<PDFProcessingProgress | null>(null)
   const lastResult = ref<PDFProcessingResult | null>(null)
@@ -22,6 +25,28 @@ export const usePDF = () => {
     progress.value = null
 
     try {
+      // Failsafe: Ensure PDF.js worker is configured before processing
+      // This catches cases where the constructor initialization didn't run
+      try {
+        const pdfjsLib = await import('pdfjs-dist')
+        const GlobalWorkerOptions = (pdfjsLib as any).GlobalWorkerOptions
+        if (GlobalWorkerOptions && !GlobalWorkerOptions.workerSrc) {
+          console.warn('[usePDF] Worker not configured by constructor, configuring now as failsafe')
+          let basePath = import.meta.env.BASE_URL || '/'
+          if (basePath === '/' && typeof window !== 'undefined') {
+            const pathname = window.location.pathname
+            if (pathname.startsWith('/hikeathon-2025/')) {
+              basePath = '/hikeathon-2025/'
+            }
+          }
+          const workerPath = `${basePath}pdf-worker/pdf.worker.min.js`
+          GlobalWorkerOptions.workerSrc = workerPath
+          console.log('[usePDF] ✓ Failsafe: Configured PDF.js worker at:', workerPath)
+        }
+      } catch (workerErr) {
+        console.error('[usePDF] Failsafe worker configuration error:', workerErr)
+      }
+
       // Check if already processed
       const cacheKey = `${file.name}-${file.size}-${file.lastModified}`
       const cached = processedPDFs.value.get(cacheKey)
