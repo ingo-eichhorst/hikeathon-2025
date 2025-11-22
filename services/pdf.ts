@@ -53,9 +53,10 @@ export class PDFProcessor {
       this.updateProgress(0, 0, 'loading')
       console.log('[pdf.ts] Starting PDF processing with unpdf:', file.name)
 
-      // Convert file to buffer
+      // Convert file to buffer (copy the data to avoid ArrayBuffer detachment)
       const arrayBuffer = await file.arrayBuffer()
-      const uint8Array = new Uint8Array(arrayBuffer)
+      const uint8Array = new Uint8Array(new ArrayBuffer(arrayBuffer.byteLength))
+      uint8Array.set(new Uint8Array(arrayBuffer))
 
       // Extract text using unpdf
       console.log('[pdf.ts] Extracting text...')
@@ -115,7 +116,9 @@ export class PDFProcessor {
       }
 
       const arrayBuffer = await response.arrayBuffer()
-      const uint8Array = new Uint8Array(arrayBuffer)
+      // Copy the data to avoid ArrayBuffer detachment
+      const uint8Array = new Uint8Array(new ArrayBuffer(arrayBuffer.byteLength))
+      uint8Array.set(new Uint8Array(arrayBuffer))
 
       // Extract text
       console.log('[pdf.ts] Extracting text from URL PDF...')
