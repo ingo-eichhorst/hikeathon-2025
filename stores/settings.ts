@@ -63,7 +63,8 @@ if (typeof import.meta !== 'undefined') {
       bmc: 'You are a Business Model Canvas expert at HIKEathon 2025.',
       reframer: 'You are a challenge reframing specialist at HIKEathon 2025.',
       ideation: 'You are a creative ideation facilitator at HIKEathon 2025.',
-      'problem-explorer': 'Du bist ein KI-Coach für Design-Thinking Phase 1 bei HIKEathon x Citizens.'
+      'problem-explorer': 'Du bist ein KI-Coach für Design-Thinking Phase 1 bei HIKEathon x Citizens.',
+      'empathie-researcher': 'Du bist ein KI-Coach für Design-Thinking Phase 2 bei HIKEathon x Citizens. Unterstütze Teams dabei, ihre Zielgruppe zu verstehen.'
     }
   })
 }
@@ -133,6 +134,13 @@ function createDefaultGPTs(prompts: Record<string, string>): Record<string, GPT>
       description: 'Design-Thinking Phase 1: Understand the problem space with stakeholder and semantic analysis',
       icon: '🔎',
       systemPrompt: prompts['problem-explorer'] || DEFAULT_PROMPTS['problem-explorer']
+    },
+    'empathie-researcher': {
+      key: 'empathie-researcher',
+      name: 'Empathie-Researcher:in',
+      description: 'Design-Thinking Phase 2: Understand your target audience through interviews and research',
+      icon: '👥',
+      systemPrompt: prompts['empathie-researcher'] || DEFAULT_PROMPTS['empathie-researcher']
     }
   }
 }
