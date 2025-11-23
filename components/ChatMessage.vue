@@ -193,7 +193,7 @@ const convertURLAttachment = (attachment: Attachment) => {
 @import 'highlight.js/styles/github-dark.css';
 
 .prose pre {
-  @apply text-gray-100 p-3 rounded-lg overflow-x-auto;
+  @apply text-gray-100 p-3 rounded-lg overflow-x-auto bg-gray-900 dark:bg-gray-950;
 }
 
 .prose code {
@@ -202,5 +202,14 @@ const convertURLAttachment = (attachment: Attachment) => {
 
 .prose :is(h1, h2, h3, h4, h5, h6) {
   @apply dark:text-gray-100;
+}
+
+/* Dark mode code block overrides for better contrast */
+.dark .prose pre {
+  @apply bg-gray-950;
+}
+
+.dark .prose pre code {
+  @apply text-gray-100;
 }
 </style>
