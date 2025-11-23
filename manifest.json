@@ -1,0 +1,35 @@
+{
+  "name": "HIKEathon 2025",
+  "short_name": "HIKEathon",
+  "description": "HIKEathon 2025 Event Management Platform",
+  "start_url": "/hikeathon-2025/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f2937",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Chat",
+      "short_name": "Chat",
+      "description": "Access AI Chat",
+      "url": "/hikeathon-2025/chat",
+      "icons": []
+    },
+    {
+      "name": "Images",
+      "short_name": "Images",
+      "description": "Generate Images",
+      "url": "/hikeathon-2025/images",
+      "icons": []
+    }
+  ]
+}
