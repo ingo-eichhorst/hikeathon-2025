@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8">
+  <div class="home-page space-y-8">
     <!-- Hero Selection Section -->
     <section class="py-12 px-4">
       <div class="grid md:grid-cols-2 gap-8">
@@ -85,7 +85,7 @@ useHead({
 
 <style>
 /* Invert image colors in dark mode for better visibility */
-.dark img {
+.dark .home-page img {
   filter: invert(1);
 }
 </style>
