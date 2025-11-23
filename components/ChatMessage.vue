@@ -233,4 +233,8 @@ const convertURLAttachment = (attachment: Attachment) => {
 .prose code {
   @apply bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded;
 }
+
+.prose :is(h1, h2, h3, h4, h5, h6) {
+  @apply dark:text-gray-100;
+}
 </style>
