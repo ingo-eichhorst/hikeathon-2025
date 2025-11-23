@@ -40,7 +40,7 @@
               v-if="authStore.isAuthenticated"
               @click="authStore.logout()"
               data-testid="logout-button"
-              class="p-2 rounded-lg bg-dark-900 hover:bg-gray-800 dark:bg-primary-500 dark:hover:bg-primary-600 text-white transition-colors text-sm font-medium"
+              class="p-2 rounded-lg bg-dark-900 hover:bg-gray-800 dark:bg-primary-500 dark:hover:bg-primary-600 text-white dark:text-dark-900 transition-colors text-sm font-medium"
             >
               Logout
             </button>
