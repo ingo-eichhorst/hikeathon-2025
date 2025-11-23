@@ -588,3 +588,9 @@ useHead({
   title: 'Admin - HIKEathon 2025'
 })
 </script>
+
+<style>
+:is(h1, h2, h3, h4, h5, h6) {
+  @apply dark:text-gray-100;
+}
+</style>
