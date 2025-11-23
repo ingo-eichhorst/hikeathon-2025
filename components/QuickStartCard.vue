@@ -1,7 +1,7 @@
 <template>
   <div
     @click="startChat"
-    class="flex flex-col items-center p-6 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+    class="flex flex-col items-center p-6 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-black hover:shadow-lg transition-shadow duration-200 cursor-pointer"
   >
     <!-- Image Container -->
     <div class="w-full flex justify-center mb-4 rounded">
