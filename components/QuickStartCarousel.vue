@@ -10,7 +10,7 @@
       <!-- Left Arrow Button -->
       <button
         @click="scrollLeft"
-        class="hidden md:flex flex-shrink-0 items-center justify-center h-12 w-12 rounded-full bg-dark-900 dark:bg-gray-500 hover:bg-primary-500 transition-colors duration-200"
+        class="hidden md:flex flex-shrink-0 items-center justify-center h-12 w-12 rounded-full bg-dark-100 dark:bg-gray-700 hover:bg-primary-500 transition-colors duration-200"
         aria-label="Previous"
       >
         <img
@@ -38,7 +38,7 @@
       <!-- Right Arrow Button -->
       <button
         @click="scrollRight"
-        class="hidden md:flex flex-shrink-0 items-center justify-center h-12 w-12 rounded-full bg-dark-900 dark:bg-gray-500 hover:bg-primary-500 transition-colors duration-200"
+        class="hidden md:flex flex-shrink-0 items-center justify-center h-12 w-12 rounded-full bg-dark-100 dark:bg-gray-700 hover:bg-primary-500 transition-colors duration-200"
         aria-label="Next"
       >
         <img
