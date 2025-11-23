@@ -15,10 +15,7 @@
       ]"
     >
       <!-- Message content -->
-      <div
-        v-if="!isEditing"
-        class="space-y-3"
-      >
+      <div class="space-y-3">
         <!-- Text content -->
         <div
           class="prose prose-sm dark:prose-invert max-w-none"
@@ -79,32 +76,14 @@
           />
         </div>
       </div>
-      
-      <!-- Edit mode -->
-      <div v-else class="space-y-2">
-        <textarea
-          v-model="editContent"
-          class="w-full p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-          rows="3"
-        ></textarea>
-        <div class="flex gap-2">
-          <button @click="saveEdit" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm font-semibold">
-            Save
-          </button>
-          <button @click="cancelEdit" class="px-2 py-1 bg-dark-900 hover:bg-gray-900 text-white rounded text-sm font-semibold">
-            Cancel
-          </button>
-        </div>
-      </div>
-      
+
       <!-- Streaming indicator -->
       <div v-if="message.isStreaming" class="mt-2">
         <span class="inline-block w-2 h-2 bg-current rounded-full animate-pulse"></span>
       </div>
       
       <!-- Actions -->
-      <div v-if="!isEditing" class="mt-2 flex gap-2 text-xs opacity-60">
-        <button @click="isEditing = true" class="hover:opacity-100">Edit</button>
+      <div class="mt-2 flex gap-2 text-xs opacity-60">
         <button @click="$emit('delete')" class="hover:opacity-100">Delete</button>
         <button v-if="message.role === 'assistant'" @click="$emit('regenerate')" class="hover:opacity-100">
           Regenerate
@@ -155,13 +134,10 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  edit: [id: string, content: string]
   delete: []
   regenerate: []
 }>()
 
-const isEditing = ref(false)
-const editContent = ref('')
 const showImageModal = ref(false)
 const selectedImage = ref<Attachment | null>(null)
 
@@ -197,16 +173,6 @@ const renderMarkdown = (content: string): string => {
     console.error('Markdown render error:', error)
     return content
   }
-}
-
-const saveEdit = () => {
-  emit('edit', props.message.id, editContent.value)
-  isEditing.value = false
-}
-
-const cancelEdit = () => {
-  isEditing.value = false
-  editContent.value = ''
 }
 
 const convertURLAttachment = (attachment: Attachment) => {

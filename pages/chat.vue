@@ -52,7 +52,6 @@
         <div v-for="message in chatStore.messages" :key="message.id" class="mb-4">
           <ChatMessage
             :message="message"
-            @edit="handleEditMessage"
             @delete="chatStore.deleteMessage(message.id)"
             @regenerate="handleRegenerate"
           />
@@ -391,15 +390,6 @@ const sendMessage = async () => {
 
   // Close mobile menu if open
   mobileMenuOpen.value = false
-}
-
-const handleEditMessage = async (id: string, newContent: string) => {
-  chatStore.editMessage(id, newContent)
-  const index = chatStore.messages.findIndex(m => m.id === id)
-  if (index !== -1 && index < chatStore.messages.length - 1) {
-    chatStore.messages = chatStore.messages.slice(0, index + 1)
-    await chatStore.sendMessage(newContent)
-  }
 }
 
 const handleRegenerate = async () => {

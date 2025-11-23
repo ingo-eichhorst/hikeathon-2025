@@ -93,7 +93,6 @@ interface ChatActions {
   addMessage(message: Message): void
   updateStreamingMessage(content: string): void
   finalizeStreamingMessage(tokens?: number): void
-  editMessage(messageId: string, content: string): Promise<void>
   resendMessage(messageId: string): Promise<void>
   deleteMessage(messageId: string): void
   setTemperature(temperature: number): void
@@ -433,14 +432,6 @@ export const useChatStore = defineStore('chat', {
       const index = this.messages.findIndex(m => m.id === id)
       if (index !== -1) {
         this.messages.splice(index, 1)
-        this.updateTokenCounts()
-      }
-    },
-    
-    editMessage(id: string, newContent: string) {
-      const message = this.messages.find(m => m.id === id)
-      if (message) {
-        message.content = newContent
         this.updateTokenCounts()
       }
     },
