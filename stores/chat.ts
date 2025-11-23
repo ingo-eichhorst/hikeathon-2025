@@ -163,6 +163,18 @@ export const useChatStore = defineStore('chat', {
       const currentGPT = settingsStore.currentGPT
       if (currentGPT && currentGPT.systemPrompt) {
         this.systemPrompt = currentGPT.systemPrompt
+        // Inject current date and time at the end of the system prompt
+        const currentDateTime = new Date().toLocaleString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        })
+        this.systemPrompt += `\n\n**Current date and time:** ${currentDateTime}`
       }
 
       // Convert UploadedImage[] to Attachment[]
