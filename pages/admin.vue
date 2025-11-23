@@ -254,10 +254,24 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useRealtime } from '~/composables/useRealtime'
+import { useAuthStore } from '~/stores/auth'
 
+// Page metadata for middleware protection
+definePageMeta({
+  middleware: 'auth'
+})
+
+const router = useRouter()
+const authStore = useAuthStore()
 const { $supabase } = useNuxtApp()
 const { sendBroadcast, broadcasts, presence, connectionState, isSupabaseAvailable } = useRealtime()
+
+// Check if user has admin access
+if (!authStore.isAdmin()) {
+  router.push('/')
+}
 
 const broadcastMessage = ref('')
 const broadcastType = ref<'info' | 'success' | 'warning' | 'error'>('info')

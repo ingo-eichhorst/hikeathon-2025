@@ -53,9 +53,10 @@ serve(async (req) => {
       JSON.stringify({
         token: team.tokenValue,
         tokenId: team.tokenId,
-        teamName: team.teamName
+        teamName: team.teamName,
+        isAdmin: team.teamName === 'LIKEHIKE'
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200
       }

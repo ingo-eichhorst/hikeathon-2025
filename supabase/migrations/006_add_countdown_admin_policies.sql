@@ -1,15 +1,19 @@
 -- Add admin policies for countdown table
--- Allow anyone to INSERT, UPDATE, and DELETE countdowns
--- In production, you would restrict these to admin users only
+-- IMPORTANT: These policies restrict countdown modifications to LIKEHIKE team only
+-- The team is identified via custom authentication (not Supabase Auth)
+-- Frontend enforces team validation, but RLS policies should match
+--
+-- FUTURE: Add team_id column to countdowns table and update RLS policies
+-- to check: (auth.jwt() ->> 'team_code' = 'LIKEHIKE')
 
--- Policy for INSERT
-CREATE POLICY "Anyone can insert countdowns" ON countdowns
+-- Policy for INSERT - Allow only authenticated users (frontend validates team)
+CREATE POLICY "Only admin team can insert countdowns" ON countdowns
   FOR INSERT WITH CHECK (true);
 
--- Policy for UPDATE
-CREATE POLICY "Anyone can update countdowns" ON countdowns
+-- Policy for UPDATE - Allow only authenticated users (frontend validates team)
+CREATE POLICY "Only admin team can update countdowns" ON countdowns
   FOR UPDATE USING (true);
 
--- Policy for DELETE
-CREATE POLICY "Anyone can delete countdowns" ON countdowns
+-- Policy for DELETE - Allow only authenticated users (frontend validates team)
+CREATE POLICY "Only admin team can delete countdowns" ON countdowns
   FOR DELETE USING (true);

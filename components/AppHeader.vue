@@ -8,7 +8,7 @@
 
         <div class="flex items-center space-x-6">
           <NuxtLink
-            v-for="item in navigation"
+            v-for="item in filteredNavigation"
             :key="item.path"
             :to="item.path"
             :data-testid="`nav-${item.name.toLowerCase()}`"
@@ -53,6 +53,7 @@
 
 <script setup lang="ts">
 import { useDark, useToggle } from '@vueuse/core'
+import { computed } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 
 const isDark = useDark()
@@ -65,4 +66,14 @@ const navigation = [
   { name: 'images', path: '/images', label: 'Images' },
   { name: 'admin', path: '/admin', label: 'Admin' }
 ]
+
+const filteredNavigation = computed(() => {
+  return navigation.filter(item => {
+    // Hide admin link from non-admin users
+    if (item.name === 'admin' && !authStore.isAdmin()) {
+      return false
+    }
+    return true
+  })
+})
 </script>

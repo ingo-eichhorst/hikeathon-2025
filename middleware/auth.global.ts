@@ -32,7 +32,15 @@ export default defineNuxtRouteMiddleware((to, from) => {
       query: { redirect: to.fullPath, expired: 'true' }
     })
   }
-  
+
+  // Check admin route access - only LIKEHIKE team can access /admin routes
+  if (to.path.startsWith('/admin') && !authStore.isAdmin()) {
+    return navigateTo({
+      path: '/',
+      query: { unauthorized: 'true' }
+    })
+  }
+
   // Set up auto-refresh if needed
   authStore.setupAutoRefresh()
 })

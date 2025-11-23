@@ -202,8 +202,8 @@ export const useAuthStore = defineStore('auth', {
      * Checks if the user has access to admin features
      */
     isAdmin(): boolean {
-      // For now, both teams have admin access
-      return this.isAuthenticated
+      // Only LIKEHIKE team has admin access
+      return this.isAuthenticated && this.teamCode === 'LIKEHIKE'
     }
   },
 
