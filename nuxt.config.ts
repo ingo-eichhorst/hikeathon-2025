@@ -1,7 +1,19 @@
+// Determine baseURL based on deployment domain
+const getBaseURL = () => {
+  // For GitHub Pages deployment
+  if (process.env.NODE_ENV === 'production') {
+    return '/'
+  }
+  // For development
+  return '/'
+}
+
+const baseURL = getBaseURL()
+
 export default defineNuxtConfig({
   ssr: false,
   app: {
-    baseURL: '/hikeathon-2025/',
+    baseURL,
     buildAssetsDir: 'assets/',
     head: {
       title: 'HIKEathon 2025',
@@ -15,8 +27,8 @@ export default defineNuxtConfig({
         { 'http-equiv': 'Referrer-Policy', content: 'strict-origin-when-cross-origin' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/hikeathon-2025/favicon.ico' },
-        { rel: 'manifest', href: '/hikeathon-2025/manifest.json' }
+        { rel: 'icon', type: 'image/x-icon', href: `${baseURL}favicon.ico` },
+        { rel: 'manifest', href: `${baseURL}manifest.json` }
       ],
       script: [
         {
@@ -24,7 +36,7 @@ export default defineNuxtConfig({
             // Only register service worker in production
             if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
               window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/hikeathon-2025/sw.js')
+                navigator.serviceWorker.register('${baseURL}sw.js')
                   .then(function(registration) {
                     console.log('SW registered: ', registration);
                   })
