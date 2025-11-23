@@ -25,7 +25,7 @@ interface AuthActions {
 }
 
 // Team configurations - simplified without tokens
-const VALID_TEAM_CODES = ['HIKEMIKE', 'LIKEHIKE']
+const VALID_TEAM_CODES = ['HIKEMIKE', 'LIKEHIKE', 'TEAM2025']
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
