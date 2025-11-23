@@ -227,11 +227,11 @@ const convertURLAttachment = (attachment: Attachment) => {
 @import 'highlight.js/styles/github-dark.css';
 
 .prose pre {
-  @apply bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto;
+  @apply text-gray-100 p-3 rounded-lg overflow-x-auto;
 }
 
 .prose code {
-  @apply bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded;
+  @apply px-1 py-0.5;
 }
 
 .prose :is(h1, h2, h3, h4, h5, h6) {
