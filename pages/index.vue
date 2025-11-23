@@ -82,3 +82,12 @@ useHead({
   title: 'Home - HIKEathon 2025'
 })
 </script>
+
+<style>
+/* Invert image colors in dark mode for better visibility */
+@media (prefers-color-scheme: dark) {
+  img {
+    filter: invert(1);
+  }
+}
+</style>
