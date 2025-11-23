@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-300 dark:border-blue-700 rounded-lg p-3 space-y-2">
+  <div class="bg-blue-50 dark:bg-blue-900 border border-blue-300 dark:border-blue-700 rounded-lg p-3 space-y-2">
     <!-- Header with domain and fetch time -->
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2 min-w-0">
