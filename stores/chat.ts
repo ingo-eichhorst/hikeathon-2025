@@ -163,19 +163,10 @@ export const useChatStore = defineStore('chat', {
       const currentGPT = settingsStore.currentGPT
       if (currentGPT && currentGPT.systemPrompt) {
         this.systemPrompt = currentGPT.systemPrompt
-        // Inject current date and time at the end of the system prompt
-        const currentDateTime = new Date().toLocaleString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: true
-        })
-        this.systemPrompt += `\n\n**Current date and time:** ${currentDateTime}`
       }
+
+      // Append time for hikeathon-coach only
+      this.appendTimeToSystemPrompt()
 
       // Convert UploadedImage[] to Attachment[]
       const imageAttachments: Attachment[] | undefined = images?.map(img => ({
@@ -494,6 +485,33 @@ export const useChatStore = defineStore('chat', {
       this.currentGPTKey = key
     },
 
+    // Append current time to system prompt for hikeathon-coach only
+    appendTimeToSystemPrompt() {
+      // Only append time for hikeathon-coach
+      if (this.currentGPTKey !== 'hikeathon-coach') {
+        return
+      }
+
+      // Remove existing time context if present (to avoid duplicates)
+      const timeContextPattern = /\n\n\*\*Current date and time:\*\*.+$/
+      this.systemPrompt = this.systemPrompt.replace(timeContextPattern, '')
+
+      // Format current date and time
+      const currentDateTime = new Date().toLocaleString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      })
+
+      // Append time to system prompt
+      this.systemPrompt += `\n\n**Current date and time:** ${currentDateTime}`
+    },
+
     // Initialize system prompt from persisted GPT key (called on app startup)
     initializeSystemPrompt() {
       const settingsStore = useSettingsStore()
@@ -501,6 +519,8 @@ export const useChatStore = defineStore('chat', {
       if (gpt && gpt.systemPrompt) {
         this.systemPrompt = gpt.systemPrompt
       }
+      // Append time for hikeathon-coach
+      this.appendTimeToSystemPrompt()
     },
 
     saveCurrentSession() {
